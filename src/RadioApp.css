@@ -1,0 +1,312 @@
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap');
+/* Estilos generales */
+.radio-app {
+  min-height: 100vh;
+  background-color: black;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Google Sans', Helvetica, Arial, sans-serif;
+}
+
+/* Contenedor principal */
+.main-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+/* Carátula */
+.album-cover-container {
+  margin-bottom: 2rem;
+}
+
+.album-cover {
+  width: 16rem;
+  height: 16rem;
+  background-color: #111827;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #1f2937;
+  overflow: hidden;
+}
+
+.album-cover img {
+  width: 100%;
+  height: 100%;
+}
+
+.album-cover-image {
+  object-fit: cover;
+}
+
+.album-cover-logo {
+  object-fit: contain;
+  padding: 2rem;
+}
+
+.album-cover-placeholder {
+  font-size: 4.5rem;
+}
+
+/* Info de la canción */
+.track-info-container {
+  width: 100%;
+  max-width: 48rem;
+  padding: 0 1rem;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.track-title-wrapper {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.track-title {
+  font-size: 3rem;
+  animation: marquee 15s linear infinite;
+  display: inline-block;
+}
+
+.track-artist {
+  font-size: 1.875rem;
+  color: #9ca3af;
+  margin-top: 0.75rem;
+  text-align: center;
+}
+
+/* Info de la radio */
+.station-info-container {
+  width: 100%;
+  max-width: 48rem;
+  margin-bottom: 2rem;
+}
+
+.station-card {
+  background-color: #111827;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.station-name {
+  font-size: 2.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.station-location {
+  font-size: 1.875rem;
+  color: #9ca3af;
+}
+
+/* Relojes */
+.clocks-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.clock-card {
+  background-color: #111827;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.clock-label {
+  font-size: 1.125rem;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+  text-align: center;
+}
+
+.clock-time {
+  font-size: 1.875rem;
+  font-family: monospace;
+  font-weight: book;
+  text-align: center;
+}
+
+/* Controles */
+.controls-container {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.play-button {
+  width: 6rem;
+  height: 6rem;
+  background-color: white;
+  color: black;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.play-button:hover {
+  background-color: #e5e7eb;
+}
+
+.play-icon-offset {
+  margin-left: 0.5rem;
+}
+
+.skip-button {
+  width: 5rem;
+  height: 5rem;
+  background-color: #1f2937;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: white;
+}
+
+.skip-button:hover {
+  background-color: #374151;
+}
+
+/* Botón historial */
+.history-button {
+  padding: 1rem 2rem;
+  background-color: #1f2937;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: white;
+}
+
+.history-button:hover {
+  background-color: #374151;
+}
+
+.history-button-text {
+  font-size: 1.5rem;
+}
+
+/* Vista de historial */
+.history-container {
+  flex: 1;
+  padding: 1.5rem;
+}
+
+.history-content {
+  max-width: 80rem;
+  margin: 0 auto;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.history-title {
+  font-size: 2.25rem;
+}
+
+.close-button {
+  width: 4rem;
+  height: 4rem;
+  background-color: #1f2937;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: white;
+}
+
+.close-button:hover {
+  background-color: #374151;
+}
+
+/* Lista de historial */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.history-empty {
+  text-align: center;
+  padding: 5rem 0;
+}
+
+.history-empty-text {
+  font-size: 1.875rem;
+  color: #6b7280;
+}
+
+.history-empty-subtext {
+  font-size: 1.25rem;
+  color: #4b5563;
+  margin-top: 0.75rem;
+}
+
+.history-item {
+  background-color: #111827;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  transition: all 0.2s;
+}
+
+.history-item:hover {
+  background-color: #1f2937;
+}
+
+.history-item-title {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-item-artist {
+  font-size: 1.25rem;
+  color: #9ca3af;
+  margin-bottom: 0.25rem;
+}
+
+.history-item-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.125rem;
+  color: #4b5563;
+  border-top: 1px solid #374151;
+  padding-top: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.history-item-station {
+  font-weight: 600;
+}
