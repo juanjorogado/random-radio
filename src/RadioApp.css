@@ -256,17 +256,23 @@
 .track-info-section {
   text-align: center;
   overflow: hidden;
+  padding: var(--space-xs) var(--space-md);
 }
 
 .marquee-container {
+  width: 100%;
   height: var(--marquee-height);
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .marquee-content {
   display: flex;
   white-space: nowrap;
   animation: marquee var(--animation-medium) linear infinite;
+  gap: var(--space-xl); /* Espaciado entre los textos */
 }
 
 .marquee-content.short {
@@ -275,18 +281,15 @@
 }
 
 .marquee-text {
-  padding-right: var(--space-xl);
+  display: inline-block;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
 }
 
 @keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-.song-title {
-  font-size: var(--font-size-2xl);
-  font-weight: 700;
-  color: var(--color-text-primary);
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
 }
 
 /* ====================================
