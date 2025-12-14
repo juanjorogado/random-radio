@@ -21,7 +21,7 @@ const stations = [
     timezone: 'Europe/Paris',
     stream: 'https://icecast.radiofrance.fr/fip-midfi.mp3',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/0/09/FIP_logo_2021.svg',
-    metadataUrl: null
+    metadataUrl: 'https://www.radiofrance.fr/fip/api/live/webradios/fip'
   },
   {
     id: 'rp',
@@ -105,8 +105,10 @@ function RadioApp() {
 
     setLoading(true);
     try {
+      console.log('Fetching metadata for:', station.name);
       const res = await fetch(station.metadataUrl);
       const data = await res.json();
+      console.log('Metadata received:', data);
 
       let track = {
         title: 'Información no disponible',
@@ -115,33 +117,65 @@ function RadioApp() {
         cover: null
       };
 
+      // KEXP
       if (station.id === 'kexp') {
         const play = data.results?.[0];
         if (play) {
           track = {
-            title: play.song,
-            artist: play.artist,
-            album: play.album,
-            cover: play.thumbnail_uri
+            title: play.song || 'Sin título',
+            artist: play.artist || '',
+            album: play.album || '',
+            cover: play.thumbnail_uri || null
           };
         }
       }
 
+      // Radio Paradise
       if (station.id === 'rp' && data.title) {
         track = {
           title: data.title,
-          artist: data.artist,
-          album: data.album,
+          artist: data.artist || '',
+          album: data.album || '',
           cover: data.cover
             ? `https://img.radioparadise.com/${data.cover}`
             : null
         };
       }
 
+      // FIP
+      if (station.id === 'fip') {
+        const now = data?.now;
+        if (now) {
+          track = {
+            title: now.secondLine || now.firstLine || 'Sin título',
+            artist: now.firstLine || '',
+            album: '',
+            cover: now.cover || null
+          };
+        }
+      }
+
+      // NTS
+      if (station.id === 'nts') {
+        const live = data?.results?.[0];
+        if (live && live.now) {
+          track = {
+            title: live.now.broadcast_title || live.now.embeds?.details?.name || 'En vivo',
+            artist: live.now.embeds?.details?.description || '',
+            album: '',
+            cover: live.now.embeds?.details?.media?.picture_large || null
+          };
+        }
+      }
+
+      console.log('Track parsed:', track);
       setCurrentTrack(track);
 
+      // Add to history if it's a new track
       setHistory((prev) => {
-        if (prev[0]?.title === track.title) return prev;
+        if (prev[0]?.title === track.title && prev[0]?.artist === track.artist) {
+          return prev;
+        }
         return [
           {
             ...track,
@@ -151,9 +185,10 @@ function RadioApp() {
             time: new Date().toLocaleTimeString('es-ES')
           },
           ...prev
-        ];
+        ].slice(0, 50); // Limit to 50 items
       });
-    } catch {
+    } catch (error) {
+      console.error('Error fetching metadata:', error);
       setCurrentTrack({
         title: `Escuchando ${station.name}`,
         artist: '',
@@ -179,10 +214,21 @@ function RadioApp() {
       .then(() => {
         setPlaying(true);
         fetchMetadata(station);
+        
+        // Clear any existing interval
+        if (metadataTimer.current) {
+          clearInterval(metadataTimer.current);
+        }
+        
+        // Fetch metadata every 30 seconds
         metadataTimer.current = setInterval(
           () => fetchMetadata(station),
           30000
         );
+      })
+      .catch((error) => {
+        console.error('Error playing audio:', error);
+        setPlaying(false);
       })
       .finally(() => {
         startingRef.current = false;
@@ -376,4 +422,4 @@ function RadioApp() {
   );
 }
 
-export default RadioApp
+export default RadioApp;

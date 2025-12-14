@@ -323,12 +323,13 @@
   width: 100%;
   overflow: hidden;
   margin-bottom: var(--space-sm);
+  position: relative;
 }
 
 .marquee-content {
   display: inline-flex;
   white-space: nowrap;
-  gap: var(--space-5xl);
+  will-change: transform;
 }
 
 .marquee-content:not(.short) {
@@ -337,12 +338,13 @@
 
 .marquee-content.short {
   animation: none;
+  width: 100%;
   justify-content: center;
 }
 
 .marquee-text {
   display: inline-block;
-  min-width: fit-content;
+  padding-right: var(--space-5xl);
 }
 
 .song-title {
@@ -360,11 +362,11 @@
 }
 
 @keyframes marquee {
-  from {
-    transform: translateX(0);
+  0% {
+    transform: translateX(0%);
   }
-  to {
-    transform: translateX(calc(-50% - var(--space-5xl) / 2));
+  100% {
+    transform: translateX(-50%);
   }
 }
 
