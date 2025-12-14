@@ -3,40 +3,39 @@
    ==================================== */
 
 :root {
-  /* Paleta Braun - blanco roto y naranja */
   --color-primary: #e85d33;
   --color-primary-dark: #d14a28;
   --color-primary-light: #ff8c5a;
   --color-secondary: rgba(232, 93, 51, 0.1);
-  
-  /* Fondos beige cálidos */
+
   --color-background: #e8e4dc;
   --color-background-dark: #d4cfc4;
   --color-surface: #f5f3ed;
-  
-  /* Textos y displays */
+
   --color-text-primary: #3d3933;
   --color-text-secondary: #6b6459;
   --color-text-tertiary: #8a8175;
   --color-text-muted: #a39a8d;
-  
-  /* Display oscuro tipo LCD */
+
   --color-display-bg: #3d3933;
   --color-display-text: #f5f3ed;
   --color-display-accent: #e85d33;
-  
-  /* Bordes y sombras sutiles */
+
   --color-border: rgba(0, 0, 0, 0.06);
   --color-shadow: rgba(0, 0, 0, 0.15);
   --color-shadow-strong: rgba(0, 0, 0, 0.3);
   --color-overlay: rgba(245, 243, 237, 0.25);
 
-  /* Gradientes característicos */
   --gradient-background: linear-gradient(to bottom, #e8e4dc, #d4cfc4);
   --gradient-cover: linear-gradient(135deg, #6b6459, #f5f3ed);
-  --gradient-animated: linear-gradient(135deg, #6b6459, #e8e4dc, #d4cfc4, #f5f3ed);
+  --gradient-animated: linear-gradient(
+    135deg,
+    #6b6459,
+    #e8e4dc,
+    #d4cfc4,
+    #f5f3ed
+  );
 
-  /* Espaciado */
   --space-xs: 6px;
   --space-sm: 10px;
   --space-md: 16px;
@@ -47,28 +46,26 @@
   --space-4xl: 50px;
   --space-5xl: 70px;
 
-  /* Bordes redondeados suaves */
   --radius-sm: 8px;
   --radius-md: 16px;
   --radius-lg: 24px;
   --radius-xl: 36px;
   --radius-full: 50%;
 
-  /* Tipografía ligera y funcional */
-  --font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Roboto, sans-serif;
+  --font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+    "Segoe UI", Roboto, sans-serif;
   --font-weight-light: 300;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
+
   --font-size-xs: 11px;
   --font-size-sm: 14px;
   --font-size-md: 16px;
   --font-size-lg: 20px;
   --font-size-xl: 24px;
   --font-size-2xl: 32px;
-  --font-size-3xl: 36px;
 
   --button-size: 90px;
-  --marquee-height: 50px;
 
   --animation-slow: 40s;
   --animation-medium: 22s;
@@ -93,13 +90,6 @@
   align-items: center;
   padding: 12px;
   font-family: var(--font-family);
-  position: relative;
-  overflow: hidden;
-}
-
-.radio-app > * {
-  position: relative;
-  z-index: 1;
 }
 
 /* ====================================
@@ -117,158 +107,84 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2xl);
-  box-shadow: 0 20px 60px var(--color-shadow), 
-              inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  box-shadow: 0 20px 60px var(--color-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
   border: 1px solid var(--color-border);
 }
 
 /* ====================================
-   STATION HEADER
-   ==================================== */
-
-.station-header-top {
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-tertiary);
-  font-weight: var(--font-weight-light);
-}
-
-.station-playing {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-/* Equalizer indicator - estilo Braun */
-.playing-indicator {
-  width: 18px;
-  height: 14px;
-  display: inline-flex;
-  align-items: flex-end;
-  gap: 3px;
-}
-
-.playing-indicator::before,
-.playing-indicator::after,
-.playing-indicator span {
-  content: '';
-  width: 4px;
-  background: var(--color-primary);
-  border-radius: 2px;
-  animation: equalizer var(--animation-fast) infinite ease-in-out;
-}
-
-.playing-indicator::after { animation-delay: -0.4s; }
-.playing-indicator span { animation-delay: -0.8s; }
-
-@keyframes equalizer {
-  0% { height: 30%; opacity: 0.6; }
-  50% { height: 100%; opacity: 1; }
-  100% { height: 30%; opacity: 0.6; }
-}
-
-/* ====================================
-   CLOCKS - Display LCD oscuro
-   ==================================== */
-
-.clocks-horizontal {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-lg);
-}
-
-.clock-item {
-  background: var(--color-display-bg);
-  border-radius: var(--radius-sm);
-  padding: var(--space-lg);
-  text-align: center;
-  box-shadow: inset 0 2px 6px var(--color-shadow-strong);
-}
-
-.clock-label-top {
-  font-size: var(--font-size-xs);
-  text-transform: uppercase;
-  color: var(--color-display-accent);
-  margin-bottom: var(--space-sm);
-  font-weight: var(--font-weight-light);
-  letter-spacing: 1px;
-}
-
-.clock-time-large {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-light);
-  color: var(--color-display-text);
-  font-variant-numeric: tabular-nums;
-  /*font-family: monospace; */
-}
-
-/* ====================================
-   ALBUM COVER - Gradiente naranja Braun
+   ALBUM COVER (1:1 + FALLBACK)
    ==================================== */
 
 .album-cover-main {
-  flex: 1;
-  border-radius: var(--radius-sm);
-  background: var(--gradient-cover);
   position: relative;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: #000;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  box-shadow: 0 8px 24px rgba(232, 93, 51, 0.25),
-              inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
-.album-cover-main::after {
-  content: '';
+/* Solo cuando hay imagen */
+.album-cover-main.has-image {
+  background: var(--gradient-cover);
+}
+
+.album-cover-main.has-image::after {
+  content: "";
   position: absolute;
   inset: 0;
   background: var(--gradient-animated);
   background-size: 400% 400%;
   animation: gradient 15s ease infinite;
-  opacity: 0.3;
+  opacity: 0.25;
+  z-index: 1;
 }
 
+/* Imagen / logo */
 .album-cover-image,
 .album-cover-logo {
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   z-index: 2;
   position: relative;
-}
-
-.album-cover-image {
-  width: 100%;
-  height: 100%;
+  opacity: 0;
+  animation: fadeIn 0.6s ease forwards;
 }
 
 .album-cover-logo {
-  opacity: 0.6;
   max-width: 60%;
   max-height: 60%;
+  opacity: 0.6;
 }
 
-/* Loading badge */
-.loading-badge {
-  position: absolute;
-  top: var(--space-lg);
-  right: var(--space-lg);
-  background: var(--color-overlay);
-  backdrop-filter: blur(20px);
-  padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-xs);
-  color: white;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  z-index: 4;
+/* Fallback blanco / negro */
+.fallback-bg {
+  background: #000;
+}
+
+.cover-fallback {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.cover-icon {
+  opacity: 0.5;
 }
 
 /* ====================================
-   CONTROLS - Botones circulares translúcidos
+   CONTROLS OVERLAY
    ==================================== */
 
 .controls-overlay {
@@ -292,16 +208,10 @@
   cursor: pointer;
   backdrop-filter: blur(30px);
   box-shadow: 0 4px 20px var(--color-shadow);
-  touch-action: manipulation;
   transition: transform 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.play-button-overlay:hover,
-.skip-button-overlay:hover {
-  background: rgba(245, 243, 237, 0.35);
 }
 
 .play-button-overlay:active,
@@ -310,279 +220,25 @@
 }
 
 /* ====================================
-   TRACK INFO / MARQUEE
-   ==================================== */
-
-.track-info-section {
-  text-align: center;
-  overflow: hidden;
-  padding: var(--space-xs) 0;
-}
-
-.marquee-container {
-  width: 100%;
-  overflow: hidden;
-  margin-bottom: var(--space-sm);
-  position: relative;
-}
-
-.marquee-content {
-  display: inline-flex;
-  white-space: nowrap;
-  will-change: transform;
-}
-
-.marquee-content:not(.short) {
-  animation: marquee var(--animation-medium) linear infinite;
-}
-
-.marquee-content.short {
-  animation: none;
-  width: 100%;
-  justify-content: center;
-}
-
-.marquee-text {
-  display: inline-block;
-  padding-right: var(--space-5xl);
-}
-
-.song-title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-regular);
-  color: var(--color-text-primary);
-  margin: 0;
-}
-
-.song-metadata {
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-light);
-  color: var(--color-text-secondary);
-  margin: 0;
-}
-
-@keyframes marquee {
-  0% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-/* ====================================
-   HISTORY BUTTON
-   ==================================== */
-
-.history-btn {
-  width: 100%;
-  padding: var(--space-md) var(--space-lg);
-  background: var(--color-display-bg);
-  border: none;
-  border-radius: var(--radius-sm);
-  color: var(--color-display-text);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-light);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-sm);
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.history-btn:hover {
-  background: #4a443e;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.history-btn:active {
-  transform: translateY(0);
-}
-
-.history-count {
-  background: var(--color-primary);
-  color: white;
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  min-width: 24px;
-  text-align: center;
-}
-
-/* ====================================
-   HISTORY VIEW
-   ==================================== */
-
-.history-view {
-  width: 100%;
-  max-width: 550px;
-  height: calc(100vh - 24px);
-  min-height: 700px;
-  background: var(--color-surface);
-  border-radius: var(--radius-sm);
-  padding: var(--space-2xl);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-  box-shadow: 0 20px 60px var(--color-shadow), 
-              inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  border: 1px solid var(--color-border);
-  overflow: hidden;
-}
-
-.history-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: var(--space-md);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.history-title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-light);
-  color: var(--color-text-primary);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-}
-
-.close-button {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-full);
-  border: none;
-  background: var(--color-display-bg);
-  color: var(--color-display-text);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.close-button:hover {
-  background: #4a443e;
-  transform: scale(1.05);
-}
-
-.close-button:active {
-  transform: scale(0.95);
-}
-
-.history-list {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-  padding-right: var(--space-sm);
-}
-
-/* Custom scrollbar */
-.history-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.history-list::-webkit-scrollbar-track {
-  background: var(--color-background-dark);
-  border-radius: 3px;
-}
-
-.history-list::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
-  border-radius: 3px;
-}
-
-.history-list::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary-dark);
-}
-
-/* Empty state */
-.history-empty {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: var(--space-md);
-}
-
-.history-empty-icon {
-  font-size: 64px;
-  opacity: 0.3;
-}
-
-.history-empty-title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-light);
-  color: var(--color-text-primary);
-}
-
-.history-empty-subtitle {
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-light);
-  color: var(--color-text-tertiary);
-}
-
-/* History items */
-.history-item {
-  background: var(--color-display-bg);
-  border-radius: var(--radius-sm);
-  padding: var(--space-lg);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
-}
-
-.history-item:hover {
-  transform: translateX(4px);
-}
-
-.history-item-title {
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-display-text);
-  margin: 0;
-}
-
-.history-item-artist {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-light);
-  color: var(--color-display-accent);
-  margin: 0;
-}
-
-.history-item-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-light);
-  color: rgba(245, 243, 237, 0.6);
-  margin-top: var(--space-xs);
-  padding-top: var(--space-sm);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* ====================================
    ANIMATIONS
    ==================================== */
 
 @keyframes gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
 }
 
 /* ====================================
@@ -590,60 +246,13 @@
    ==================================== */
 
 @media (max-width: 550px) {
-  .main-container,
-  .history-view {
+  .main-container {
     padding: var(--space-xl) var(--space-md);
-  }
-
-  .clock-time-large {
-    font-size: 28px;
   }
 
   .play-button-overlay,
   .skip-button-overlay {
     width: 75px;
     height: 75px;
-  }
-
-  .controls-overlay {
-    gap: var(--space-2xl);
-  }
-
-  .song-title {
-    font-size: var(--font-size-md);
-  }
-
-  .song-metadata {
-    font-size: var(--font-size-sm);
-  }
-
-  .history-title {
-    font-size: var(--font-size-lg);
-  }
-
-  .close-button {
-    width: 40px;
-    height: 40px;
-  }
-}
-
-@media (max-width: 400px) {
-  .main-container,
-  .history-view {
-    min-height: 650px;
-  }
-
-  .clock-time-large {
-    font-size: 24px;
-  }
-
-  .play-button-overlay,
-  .skip-button-overlay {
-    width: 65px;
-    height: 65px;
-  }
-
-  .history-item {
-    padding: var(--space-md);
   }
 }
