@@ -4,7 +4,7 @@ Aplicación web que reproduce emisoras de radio online de forma aleatoria a part
 
 ## Demo
 
-- URL de la demo: https://tu-dominio.com (actualiza este enlace)
+- URL de la demo: https://random-radio.vercel.app/
 - Requiere navegador moderno con soporte para audio HTML5.
 
 ## Características
