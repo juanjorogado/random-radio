@@ -1,25 +1,42 @@
 /* ====================================
-   DESIGN TOKENS (CAR / DARK MODE)
+   DESIGN TOKENS (DIETER RAMS / BRAUN)
    ==================================== */
 
 :root {
-  --color-primary: #a766ee;
-  --color-primary-dark: #663399;
-  --color-secondary: rgba(255, 255, 255, 0.1);
-  --color-background: #000000;
-  --color-background-dark: #0a0612;
-  --color-text-primary: #ffffff;
-  --color-text-secondary: rgba(255, 255, 255, 0.8);
-  --color-text-tertiary: rgba(255, 255, 255, 0.6);
-  --color-border: rgba(255, 255, 255, 0.15);
-  --color-shadow: rgba(0, 0, 0, 0.7);
-  --color-overlay: rgba(0, 0, 0, 0.9);
-  --color-glass: rgba(255, 255, 255, 0.08);
+  /* Paleta Braun - blanco roto y naranja */
+  --color-primary: #e85d33;
+  --color-primary-dark: #d14a28;
+  --color-primary-light: #ff8c5a;
+  --color-secondary: rgba(232, 93, 51, 0.1);
+  
+  /* Fondos beige cálidos */
+  --color-background: #e8e4dc;
+  --color-background-dark: #d4cfc4;
+  --color-surface: #f5f3ed;
+  
+  /* Textos y displays */
+  --color-text-primary: #3d3933;
+  --color-text-secondary: #6b6459;
+  --color-text-tertiary: #8a8175;
+  --color-text-muted: #a39a8d;
+  
+  /* Display oscuro tipo LCD */
+  --color-display-bg: #3d3933;
+  --color-display-text: #f5f3ed;
+  --color-display-accent: #e85d33;
+  
+  /* Bordes y sombras sutiles */
+  --color-border: rgba(0, 0, 0, 0.06);
+  --color-shadow: rgba(0, 0, 0, 0.15);
+  --color-shadow-strong: rgba(0, 0, 0, 0.3);
+  --color-overlay: rgba(245, 243, 237, 0.25);
 
-  --gradient-background: linear-gradient(180deg, var(--color-background), var(--color-background-dark));
-  --gradient-cover: linear-gradient(135deg, #18003a, #000000);
-  --gradient-animated: linear-gradient(135deg, #a766ee, #663399, #f093fb, #a766ee);
+  /* Gradientes característicos */
+  --gradient-background: linear-gradient(to bottom, #e8e4dc, #d4cfc4);
+  --gradient-cover: linear-gradient(135deg, #e85d33, #d14a28);
+  --gradient-animated: linear-gradient(135deg, #e85d33, #d14a28, #ff8c5a, #e85d33);
 
+  /* Espaciado */
   --space-xs: 6px;
   --space-sm: 10px;
   --space-md: 16px;
@@ -30,18 +47,24 @@
   --space-4xl: 50px;
   --space-5xl: 70px;
 
+  /* Bordes redondeados suaves */
+  --radius-sm: 8px;
   --radius-md: 16px;
   --radius-lg: 24px;
   --radius-xl: 36px;
   --radius-full: 50%;
 
-  --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-  --font-size-xs: 14px;
-  --font-size-sm: 16px;
-  --font-size-md: 18px;
+  /* Tipografía ligera y funcional */
+  --font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Roboto, sans-serif;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-size-xs: 11px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
   --font-size-lg: 20px;
   --font-size-xl: 24px;
-  --font-size-2xl: 30px;
+  --font-size-2xl: 32px;
   --font-size-3xl: 36px;
 
   --button-size: 90px;
@@ -68,16 +91,6 @@
   overflow: hidden;
 }
 
-.radio-app::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--gradient-animated);
-  background-size: 600% 600%;
-  animation: appleGradient var(--animation-slow) ease infinite;
-  opacity: 0.15;
-}
-
 .radio-app > * {
   position: relative;
   z-index: 1;
@@ -92,14 +105,15 @@
   max-width: 550px;
   height: calc(100vh - 24px);
   min-height: 700px;
-  background: var(--color-glass);
+  background: var(--color-surface);
   border-radius: var(--radius-xl);
   padding: var(--space-4xl) var(--space-2xl);
   display: flex;
   flex-direction: column;
   gap: var(--space-2xl);
-  backdrop-filter: blur(50px) saturate(200%);
-  border: 2px solid var(--color-border);
+  box-shadow: 0 20px 60px var(--color-shadow), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--color-border);
 }
 
 /* ====================================
@@ -111,7 +125,8 @@
   text-transform: uppercase;
   letter-spacing: 2px;
   font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  color: var(--color-text-tertiary);
+  font-weight: var(--font-weight-light);
 }
 
 .station-playing {
@@ -120,7 +135,7 @@
   gap: var(--space-sm);
 }
 
-/* Equalizer indicator */
+/* Equalizer indicator - estilo Braun */
 .playing-indicator {
   width: 18px;
   height: 14px;
@@ -149,7 +164,7 @@
 }
 
 /* ====================================
-   CLOCKS
+   CLOCKS - Display LCD oscuro
    ==================================== */
 
 .clocks-horizontal {
@@ -159,29 +174,32 @@
 }
 
 .clock-item {
-  background: var(--color-glass);
-  border-radius: var(--radius-lg);
+  background: var(--color-display-bg);
+  border-radius: var(--radius-md);
   padding: var(--space-lg);
   text-align: center;
-  border: 1px solid var(--color-border);
+  box-shadow: inset 0 2px 6px var(--color-shadow-strong);
 }
 
 .clock-label-top {
   font-size: var(--font-size-xs);
   text-transform: uppercase;
-  color: var(--color-text-tertiary);
+  color: var(--color-display-accent);
   margin-bottom: var(--space-sm);
+  font-weight: var(--font-weight-light);
+  letter-spacing: 1px;
 }
 
 .clock-time-large {
-  font-size: var(--font-size-3xl);
-  font-weight: 700;
-  color: var(--color-text-primary);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-light);
+  color: var(--color-display-text);
   font-variant-numeric: tabular-nums;
+  font-family: monospace;
 }
 
 /* ====================================
-   ALBUM COVER
+   ALBUM COVER - Gradiente naranja Braun
    ==================================== */
 
 .album-cover-main {
@@ -193,6 +211,8 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  box-shadow: 0 8px 24px rgba(232, 93, 51, 0.25),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .album-cover-main::after {
@@ -201,7 +221,7 @@
   inset: 0;
   background: var(--gradient-animated);
   background-size: 400% 400%;
-  animation: appleGradient 15s ease infinite;
+  animation: gradient 15s ease infinite;
   opacity: 0.3;
 }
 
@@ -217,7 +237,7 @@
 }
 
 /* ====================================
-   CONTROLS
+   CONTROLS - Botones circulares translúcidos
    ==================================== */
 
 .controls-overlay {
@@ -236,12 +256,16 @@
   height: var(--button-size);
   border-radius: var(--radius-full);
   border: none;
-  background: rgba(255, 255, 255, 0.18);
+  background: var(--color-overlay);
   color: white;
   cursor: pointer;
   backdrop-filter: blur(30px);
+  box-shadow: 0 4px 20px var(--color-shadow);
   touch-action: manipulation;
-  transition: transform 0.2s;
+  transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .play-button-overlay:active,
@@ -257,22 +281,22 @@
   text-align: center;
   overflow: hidden;
   padding: var(--space-xs) var(--space-md);
+  min-height: var(--marquee-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .marquee-container {
   width: 100%;
-  height: var(--marquee-height);
   overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .marquee-content {
   display: flex;
   white-space: nowrap;
   animation: marquee var(--animation-medium) linear infinite;
-  gap: var(--space-xl); /* Espaciado entre los textos */
+  gap: var(--space-xl);
 }
 
 .marquee-content.short {
@@ -283,7 +307,7 @@
 .marquee-text {
   display: inline-block;
   font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-light);
   color: var(--color-text-primary);
 }
 
@@ -293,10 +317,92 @@
 }
 
 /* ====================================
+   VOLUME CONTROL
+   ==================================== */
+
+.volume-section {
+  padding-top: var(--space-sm);
+}
+
+.volume-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.volume-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--color-text-secondary);
+}
+
+.volume-label-text {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-light);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.volume-value {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-light);
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.volume-slider-container {
+  position: relative;
+  height: 6px;
+  background: var(--color-background-dark);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.volume-slider-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.volume-slider-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(to right, var(--color-primary), var(--color-primary-dark));
+  border-radius: 3px;
+  transition: width 0.15s ease;
+  box-shadow: 0 0 8px rgba(232, 93, 51, 0.4);
+}
+
+/* ====================================
+   BRAND
+   ==================================== */
+
+.brand-section {
+  text-align: center;
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-border);
+}
+
+.brand-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  letter-spacing: 3px;
+  font-weight: var(--font-weight-light);
+  text-transform: uppercase;
+}
+
+/* ====================================
    ANIMATIONS
    ==================================== */
 
-@keyframes appleGradient {
+@keyframes gradient {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
@@ -312,12 +418,30 @@
   }
 
   .clock-time-large {
-    font-size: 30px;
+    font-size: 28px;
   }
 
   .play-button-overlay,
   .skip-button-overlay {
     width: 75px;
     height: 75px;
+  }
+
+  .controls-overlay {
+    gap: var(--space-2xl);
+  }
+}
+
+@media (max-width: 400px) {
+  .main-container {
+    min-height: 650px;
+  }
+
+  .clock-time-large {
+    font-size: 24px;
+  }
+
+  .marquee-text {
+    font-size: var(--font-size-md);
   }
 }
