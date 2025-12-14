@@ -232,7 +232,7 @@ function RadioApp() {
             </div>
           </div>
 
-          {/* COVER */}
+          {/* COVER (Tamaño corregido en CSS) */}
           <AlbumCover
             src={currentTrack.cover || currentStation?.logo}
           />
@@ -254,18 +254,21 @@ function RadioApp() {
             )}
           </div>
 
-          {/* TRACK INFO / MARQUEE - ¡AÑADIDO! */}
+          {/* TRACK INFO / MARQUEE */}
           <div className="track-info-section">
             <div className="marquee-container">
               <div
                 className={marqueeClass(currentTrack.title, 30)}
               >
+                {/* Marquee: Corregida la duplicación para funcionar con CSS */}
                 <span className="marquee-text song-title">
                   {currentTrack.title}
-                </span>
-                {/* Duplicar para el efecto de Marquee continuo */}
-                <span className="marquee-text song-title">
-                  {currentTrack.title}
+                  {currentTrack.title.length > 30 && (
+                    <span aria-hidden="true">
+                      {' '}
+                      {currentTrack.title}
+                    </span>
+                  )}
                 </span>
               </div>
             </div>
@@ -275,7 +278,8 @@ function RadioApp() {
             </div>
             {playing && currentStation && (
               <div className="station-playing">
-                <div className="playing-indicator">
+                {/* Animación de Onda (wave-indicator) */}
+                <div className="wave-indicator">
                   <span />
                 </div>
                 <span>En directo</span>
@@ -291,7 +295,7 @@ function RadioApp() {
           </button>
         </div>
       ) : (
-        /* HISTORY VIEW - ¡AÑADIDO! */
+        /* HISTORY VIEW */
         <div className="history-view">
           <button onClick={() => setShowHistory(false)}>
             <X size={28} />
