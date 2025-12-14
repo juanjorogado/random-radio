@@ -238,13 +238,48 @@ function RadioApp() {
           />
 
           <div className="controls-overlay">
-            <button onClick={togglePlay}>
+            <button
+              onClick={togglePlay}
+              className="play-button-overlay"
+            >
               {playing ? <Pause size={48} /> : <Play size={48} />}
             </button>
             {currentStation && (
-              <button onClick={playRandomStation}>
+              <button
+                onClick={playRandomStation}
+                className="skip-button-overlay"
+              >
                 <SkipForward size={32} />
               </button>
+            )}
+          </div>
+
+          {/* TRACK INFO / MARQUEE - ¡AÑADIDO! */}
+          <div className="track-info-section">
+            <div className="marquee-container">
+              <div
+                className={marqueeClass(currentTrack.title, 30)}
+              >
+                <span className="marquee-text song-title">
+                  {currentTrack.title}
+                </span>
+                {/* Duplicar para el efecto de Marquee continuo */}
+                <span className="marquee-text song-title">
+                  {currentTrack.title}
+                </span>
+              </div>
+            </div>
+            <div className="song-metadata">
+              {currentTrack.artist}{' '}
+              {currentTrack.album && `- ${currentTrack.album}`}
+            </div>
+            {playing && currentStation && (
+              <div className="station-playing">
+                <div className="playing-indicator">
+                  <span />
+                </div>
+                <span>En directo</span>
+              </div>
             )}
           </div>
 
@@ -256,10 +291,31 @@ function RadioApp() {
           </button>
         </div>
       ) : (
+        /* HISTORY VIEW - ¡AÑADIDO! */
         <div className="history-view">
           <button onClick={() => setShowHistory(false)}>
             <X size={28} />
           </button>
+          <h2>Historial de Reproducción</h2>
+          <div className="history-list">
+            {history.length === 0 ? (
+              <p className="history-empty">
+                Aún no hay canciones en el historial.
+              </p>
+            ) : (
+              history.map((track, index) => (
+                <div key={index} className="history-item">
+                  <div className="history-info">
+                    <div className="history-title">{track.title}</div>
+                    <div className="history-meta">
+                      {track.artist} - {track.station}
+                    </div>
+                  </div>
+                  <div className="history-time">{track.time}</div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       )}
     </div>
