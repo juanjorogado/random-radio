@@ -107,60 +107,73 @@
   max-width: var(--max-width-player);
   background: var(--color-background);
   border-radius: var(--radius-xl);
-  padding: var(--space-2xl) var(--space-lg);
+  padding: var(--space-3xl) var(--space-xl);
   box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-xl);
   height: calc(100vh - 16px);
-  max-height: 850px;
+  max-height: 900px;
   min-height: 600px;
 }
 
 
 /* ====================================
-   STATION HEADER (TOP)
+   1. STATION HEADER (TOP)
    ==================================== */
 
 .station-header-top {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-sm);
-  padding: var(--space-md);
-  background: var(--color-secondary);
-  border-radius: var(--radius-md);
-  color: var(--color-text-primary);
+  text-align: center;
+  padding: var(--space-sm);
+  color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-regular);
-  flex-shrink: 0;
   text-transform: uppercase;
   letter-spacing: 1px;
-}
-
-.station-name-top {
-  font-weight: var(--font-weight-bold);
-}
-
-.station-location-top {
-  opacity: var(--opacity-secondary);
-  font-weight: var(--font-weight-regular);
+  flex-shrink: 0;
 }
 
 
 /* ====================================
-   ALBUM COVER
+   2. CLOCKS HORIZONTAL
    ==================================== */
 
-.album-cover-wrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-  min-height: 0;
+.clocks-horizontal {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  flex-shrink: 0;
 }
 
-.album-cover {
+.clock-item {
+  background: var(--color-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  text-align: center;
+}
+
+.clock-label-top {
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: var(--space-xs);
+}
+
+.clock-time-large {
+  font-size: 32px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+
+/* ====================================
+   3. ALBUM COVER MAIN
+   ==================================== */
+
+.album-cover-main {
   flex: 1;
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -170,12 +183,17 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  cursor: pointer;
-  transition: transform var(--transition-fast);
+  min-height: 300px;
 }
 
-.album-cover:active {
-  transform: scale(0.98);
+
+/* ====================================
+   ALBUM COVER
+   ==================================== */
+
+.album-cover-wrapper {
+  /* Ya no se usa esta clase */
+  display: none;
 }
 
 .loading-badge {
@@ -276,27 +294,28 @@
    TRACK INFO (BELOW COVER)
    ==================================== */
 
-.track-info-below {
+.track-info-section {
   text-align: center;
   padding: 0 var(--space-md);
+  flex-shrink: 0;
 }
 
-.track-title-main {
-  font-size: var(--font-size-2xl);
+.song-title {
+  font-size: 22px;
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   margin: 0 0 var(--space-sm) 0;
-  line-height: 1.2;
+  line-height: 1.3;
 }
 
-.track-metadata {
+.song-metadata {
   font-size: var(--font-size-md);
   color: var(--color-text-secondary);
   margin: 0 0 var(--space-xs) 0;
   font-weight: var(--font-weight-regular);
 }
 
-.track-year {
+.song-year {
   font-size: var(--font-size-sm);
   color: var(--color-text-tertiary);
   margin: 0;
@@ -305,84 +324,48 @@
 
 
 /* ====================================
-   TRACK INFO MARQUEE (NOT USED IN NEW DESIGN)
+   5. HISTORY BUTTON
    ==================================== */
 
-.track-info-marquee {
-  display: none;
-}
-
-
-/* ====================================
-   BOTTOM SECTION
-   ==================================== */
-
-.bottom-section {
-  display: flex;
-  gap: var(--space-md);
-  align-items: stretch;
-  flex-shrink: 0;
-}
-
-.clocks-compact {
-  flex: 1;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-md);
-}
-
-.clock-compact {
-  background: var(--color-secondary);
-  border-radius: var(--radius-md);
-  padding: var(--space-md);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-xs);
-}
-
-.clock-label-compact {
-  font-size: 10px;
-  color: var(--color-text-tertiary);
-  font-weight: var(--font-weight-semibold);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.clock-time-compact {
-  font-size: 26px;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  line-height: 1;
-}
-
-.history-button-compact {
-  min-width: 120px;
+.history-btn {
+  width: 100%;
+  padding: var(--space-lg);
   background: var(--color-secondary);
   border: none;
   border-radius: var(--radius-md);
   color: var(--color-text-primary);
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-regular);
   cursor: pointer;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-sm);
   transition: background var(--transition-fast), transform var(--transition-fast);
-  font-size: var(--font-size-sm);
-  padding: 0 var(--space-lg);
+  text-align: center;
+  flex-shrink: 0;
 }
 
-.history-button-compact:hover {
+.history-btn:hover {
   background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
 }
 
-.history-button-compact:active {
-  transform: translateY(0);
+.history-btn:active {
+  transform: scale(0.98);
 }
+
+.history-count {
+  display: inline-block;
+  min-width: 24px;
+  padding: 2px 8px;
+  background: rgba(102, 126, 234, 0.3);
+  border-radius: 12px;
+  font-weight: var(--font-weight-bold);
+  margin-left: var(--space-sm);
+}
+
+
+/* ====================================
+   BOTTOM SECTION - REMOVED
+   ==================================== */
+
+/* Eliminadas las clases que ya no se usan */
 
 
 /* ====================================
@@ -517,51 +500,55 @@
 
 @media (max-width: 480px) {
   .main-container {
+    padding: var(--space-xl) var(--space-md);
     max-height: calc(100vh - 16px);
   }
   
   .station-header-top {
     font-size: 11px;
-    padding: var(--space-xs) var(--space-sm);
+  }
+  
+  .clock-time-large {
+    font-size: 28px;
   }
   
   .play-button-overlay {
-    width: 64px;
-    height: 64px;
+    width: 70px;
+    height: 70px;
   }
   
   .play-button-overlay svg {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
   }
   
   .skip-button-overlay {
-    width: 48px;
-    height: 48px;
+    width: 54px;
+    height: 54px;
   }
   
   .skip-button-overlay svg {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
   }
   
-  .clock-time-compact {
-    font-size: var(--font-size-md);
+  .song-title {
+    font-size: 20px;
   }
   
-  .marquee-text {
+  .song-metadata {
     font-size: var(--font-size-sm);
   }
 }
 
 @media (max-height: 700px) {
   .main-container {
-    gap: var(--space-sm);
-    padding: var(--space-md);
+    gap: var(--space-md);
+    padding: var(--space-lg) var(--space-md);
   }
   
-  .station-header-top {
-    padding: var(--space-xs) var(--space-sm);
+  .clock-time-large {
+    font-size: 24px;
   }
   
   .play-button-overlay {
@@ -572,5 +559,9 @@
   .skip-button-overlay {
     width: 48px;
     height: 48px;
+  }
+  
+  .song-title {
+    font-size: 18px;
   }
 }
