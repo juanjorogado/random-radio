@@ -19,7 +19,7 @@ const RadioApp = () => {
       city: "París", 
       timezone: "Europe/Paris", 
       stream: "https://icecast.radiofrance.fr/fip-midfi.mp3", 
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/FIP_logo_2021.svg/1200px-FIP_logo_2021.svg.png",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/FIP_logo_2021.svg/1200px-BBC_Radio_6_Music.svg.png",
       metadataUrl: "https://www.fip.fr/latest/api/graphql?operationName=Now&variables=%7B%22stationId%22%3A7%7D&extensions=%7B%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%228a13e023e48519ce88b0b481361d7b850c9cb78e89bca2e4ecf70f8bf1f5033f%22%7D%7D"
     },
     { 
@@ -82,6 +82,7 @@ const RadioApp = () => {
 
   const getMarqueeClassName = (text, maxLength) => {
     // Si el texto es más largo que un umbral (ej: 40 caracteres), retorna la clase Marquee
+    // Si el texto es nulo o corto, retorna la clase 'short'
     return text && text.length > maxLength ? 'marquee-content' : 'marquee-content short';
   };
 
@@ -329,7 +330,9 @@ const RadioApp = () => {
               <div 
                 className={getMarqueeClassName(currentTrack.title, 40)}
               >
-                <h1 className="song-title">{currentTrack.title}</h1>
+                {/* Texto duplicado para Marquee continuo */}
+                <span className="marquee-text"><h1 className="song-title">{currentTrack.title}</h1></span>
+                <span className="marquee-text"><h1 className="song-title">{currentTrack.title}</h1></span>
               </div>
             </div>
             
@@ -338,10 +341,19 @@ const RadioApp = () => {
               <div 
                 className={getMarqueeClassName(currentTrack.artist + currentTrack.album, 50)}
               >
-                <p className="song-metadata">
-                  {currentTrack.artist || 'Artista desconocido'}
-                  {currentTrack.album && ` — ${currentTrack.album}`}
-                </p>
+                {/* Texto duplicado para Marquee continuo */}
+                <span className="marquee-text">
+                    <p className="song-metadata">
+                      {currentTrack.artist || 'Artista desconocido'}
+                      {currentTrack.album && ` — ${currentTrack.album}`}
+                    </p>
+                </span>
+                <span className="marquee-text">
+                    <p className="song-metadata">
+                      {currentTrack.artist || 'Artista desconocido'}
+                      {currentTrack.album && ` — ${currentTrack.album}`}
+                    </p>
+                </span>
               </div>
             </div>
             

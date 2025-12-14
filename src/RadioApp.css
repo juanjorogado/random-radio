@@ -76,14 +76,14 @@
   --transition-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
   
   /* Sizes - BIGGER BUTTONS */
-  --max-width-player: 550px; /* Permitir que el contenedor sea un poco más ancho */
+  --max-width-player: 550px;
   --max-width-history: 700px;
   --button-size: 90px; /* Botones de control más grandes */
 }
 
 
 /* ====================================
-   GLOBAL STYLES (Minor Adjustments)
+   GLOBAL STYLES
    ==================================== */
 
 .radio-app {
@@ -124,15 +124,15 @@
   max-width: var(--max-width-player);
   background: var(--color-glass);
   border-radius: var(--radius-xl);
-  padding: var(--space-4xl) var(--space-2xl); /* Mayor padding */
+  padding: var(--space-4xl) var(--space-2xl);
   box-shadow: var(--shadow-glass);
   backdrop-filter: blur(50px) saturate(200%); /* BLUR MÁS FUERTE (Liquid Glass) */
   -webkit-backdrop-filter: blur(50px) saturate(200%);
-  border: 2px solid var(--color-border); /* Borde más visible para efecto cristal */
+  border: 2px solid var(--color-border);
   display: flex;
   flex-direction: column;
-  gap: var(--space-2xl); /* Mayor espacio entre secciones */
-  height: calc(100vh - 24px); /* Ajuste de altura consistente */
+  gap: var(--space-2xl);
+  height: calc(100vh - 24px);
   max-height: 1000px;
   min-height: 700px;
 }
@@ -146,29 +146,29 @@
   text-align: center;
   padding: var(--space-sm);
   color: var(--color-text-secondary);
-  font-size: var(--font-size-sm); /* Tamaño subido */
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-regular);
   text-transform: uppercase;
-  letter-spacing: 2px; /* Aumentado para mejor legibilidad en mayúsculas */
+  letter-spacing: 2px;
   flex-shrink: 0;
 }
 
 
 /* ====================================
-   2. CLOCKS HORIZONTAL (Larger Time)
+   2. CLOCKS HORIZONTAL
    ==================================== */
 
 .clocks-horizontal {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-lg); /* Mayor espacio */
+  gap: var(--space-lg);
   flex-shrink: 0;
 }
 
 .clock-item {
   background: var(--color-glass);
   border-radius: var(--radius-lg);
-  padding: var(--space-lg); /* CORREGIDO: Usando el token correcto */
+  padding: var(--space-lg);
   text-align: center;
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
@@ -178,21 +178,21 @@
 
 .clock-item:active {
   transform: scale(0.98);
-  background: rgba(255, 255, 255, 0.12); /* Feedback de click más visible */
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .clock-label-top {
-  font-size: var(--font-size-xs); /* Tamaño subido */
+  font-size: var(--font-size-xs);
   color: var(--color-text-tertiary);
-  font-weight: var(--font-weight-semibold); 
+  font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  margin-bottom: var(--space-sm); /* Mayor espacio */
+  margin-bottom: var(--space-sm);
 }
 
 .clock-time-large {
-  font-size: var(--font-size-3xl); /* TAMAÑO MUY GRANDE Y LEGIBLE */
-  font-weight: var(--font-weight-bold); /* Usando Bold para máximo impacto */
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -207,7 +207,7 @@
   flex: 1;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); /* Sombra más fuerte */
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   background: var(--gradient-cover);
   display: flex;
   align-items: center;
@@ -225,7 +225,7 @@
   background-size: 400% 400%; /* Tamaño grande para la animación */
   animation: appleGradient 15s ease infinite; /* Aplicar animación */
   opacity: 0.3; /* Opacidad para que el fondo original se vea, pero la animación sea notable */
-  z-index: 1; /* Asegurar que esté bajo los controles */
+  z-index: 1;
   pointer-events: none;
 }
 
@@ -285,7 +285,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-4xl); /* Mayor espacio entre botones */
+  gap: var(--space-4xl);
   z-index: 10;
   pointer-events: none;
 }
@@ -293,35 +293,34 @@
 .play-button-overlay,
 .skip-button-overlay {
   pointer-events: auto;
-  width: var(--button-size); /* USA EL TAMAÑO AUMENTADO */
-  height: var(--button-size); /* USA EL TAMAÑO AUMENTADO */
+  width: var(--button-size);
+  height: var(--button-size);
   border-radius: var(--radius-full);
   border: none;
-  background: rgba(255, 255, 255, 0.18); /* Un poco más opaco */
+  background: rgba(255, 255, 255, 0.18);
   color: var(--color-text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.3); /* Sombra más fuerte/visible */
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(30px) saturate(180%);
   -webkit-backdrop-filter: blur(30px) saturate(180%);
-  border: 2px solid rgba(255, 255, 255, 0.25); /* Borde más visible */
+  border: 2px solid rgba(255, 255, 255, 0.25);
   transition: all var(--transition-fast) var(--transition-bounce);
 }
 
 .play-button-overlay:active {
-  transform: scale(0.90); /* Mayor feedback de click */
+  transform: scale(0.90);
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .skip-button-overlay {
-  /* Propiedades iguales para que sean del mismo tamaño */
   width: var(--button-size); 
   height: var(--button-size);
   border-radius: var(--radius-full);
   border: none;
-  background: rgba(255, 255, 255, 0.1); /* Menos opaco que el botón de play */
+  background: rgba(255, 255, 255, 0.1);
   color: var(--color-text-primary);
   display: flex;
   align-items: center;
@@ -345,7 +344,7 @@
 
 .play-button-overlay svg,
 .skip-button-overlay svg {
-    width: 45px; /* Iconos más grandes */
+    width: 45px;
     height: 45px;
 }
 
@@ -358,36 +357,53 @@
   text-align: center;
   padding: 0 var(--space-lg);
   flex-shrink: 0;
-  overflow: hidden; /* Ocultar el desbordamiento fuera de la sección */
-  height: calc(var(--marquee-height) * 2); /* Altura suficiente para dos líneas de Marquee */
+  overflow: hidden; /* Ocultar el desbordamiento horizontal */
+  height: calc(var(--marquee-height) * 2 + var(--space-xs)); /* Altura suficiente para dos líneas de Marquee + espacio */
 }
 
-/* Contenedor Marquee */
+/* Contenedor (Viewport) del Marquee */
 .marquee-container {
   width: 100%;
   overflow: hidden;
   height: var(--marquee-height);
-  white-space: nowrap; /* Evitar saltos de línea */
   display: flex;
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
 }
 
-/* Contenido Marquee - Duplicado para un bucle fluido */
+/* Contenido Marquee - Contiene el texto duplicado y se anima */
 .marquee-content {
-  display: inline-block;
-  padding-left: 100%; /* Empieza completamente fuera del contenedor */
-  animation: marquee 15s linear infinite; /* Animación de desplazamiento, velocidad ajustable */
+  display: flex; /* Para que las dos copias se pongan en línea */
+  white-space: nowrap; /* Evitar saltos de línea */
+  animation: marquee 15s linear infinite; 
 }
 
+/* Clase para manejar el texto corto (sin animación) */
 .marquee-content.short {
-  animation: none; /* Desactivar Marquee si el contenido es corto */
-  padding-left: 0;
-  white-space: normal;
-  display: flex;
-  justify-content: center;
+  animation: none; 
+  justify-content: center; /* Centrar el texto corto */
+  width: 100%;
   transform: none;
+  text-align: center;
+}
+
+.marquee-content.short .marquee-text:nth-child(2) {
+    display: none; /* Ocultar el duplicado si el texto es corto */
+}
+
+/* Espaciado entre los duplicados de texto (solo visible para el Marquee largo) */
+.marquee-text {
+  display: inline-flex; 
+  align-items: center;
+  /* Espacio entre el final de la primera copia y el inicio de la segunda */
+  padding-right: var(--space-xl); 
+}
+
+/* Asegurar que los elementos de texto dentro de marquee-text se comporten correctamente */
+.marquee-text h1, .marquee-text p {
+    display: inline;
+    margin: 0;
 }
 
 /* Keyframes de la animación Marquee */
@@ -396,8 +412,8 @@
     transform: translateX(0);
   }
   100% {
-    /* Mueve el contenido completamente a la izquierda, la mitad para mostrar el texto y la otra mitad el duplicado */
-    transform: translateX(calc(-100% - var(--space-md))); 
+    /* Mueve exactamente la distancia de la primera copia (50% de la longitud combinada) para un loop perfecto */
+    transform: translateX(-50%); 
   }
 }
 
@@ -406,17 +422,15 @@
   font-size: var(--font-size-2xl); 
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
-  margin: 0; 
   line-height: 1.3;
-  display: inline-block;
 }
 
 .song-metadata {
   font-size: var(--font-size-lg);
   color: var(--color-text-secondary);
-  margin: var(--space-xs) 0; /* Espacio mínimo entre líneas Marquee */
+  /* Ajuste de margen para espaciar las dos líneas de Marquee */
+  margin: var(--space-xs) 0; 
   font-weight: var(--font-weight-regular);
-  display: inline-block;
 }
 
 .song-year {
@@ -430,12 +444,12 @@
 
 .history-btn {
   width: 100%;
-  padding: var(--space-xl); /* Mayor padding */
+  padding: var(--space-xl);
   background: var(--color-glass);
   border: none;
   border-radius: var(--radius-lg);
   color: var(--color-text-primary);
-  font-size: var(--font-size-lg); /* Tamaño subido */
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: all var(--transition-fast) var(--transition-bounce);
@@ -455,21 +469,21 @@
 
 .history-count {
   display: inline-block;
-  min-width: 30px; /* Mayor tamaño */
-  padding: 5px 12px; /* Mayor padding */
-  background: rgba(167, 102, 238, 0.3); /* Actualizado al nuevo morado */
+  min-width: 30px;
+  padding: 5px 12px;
+  background: rgba(167, 102, 238, 0.3);
   border-radius: 16px;
   font-weight: var(--font-weight-bold);
   margin-left: var(--space-sm);
-  font-size: var(--font-size-md); /* Tamaño subido */
+  font-size: var(--font-size-md);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(167, 102, 238, 0.4); /* Actualizado al nuevo morado */
+  border: 1px solid rgba(167, 102, 238, 0.4);
 }
 
 
 /* ====================================
-   HISTORY VIEW (Larger Text/Spacing)
+   HISTORY VIEW
    ==================================== */
 
 .history-view {
@@ -479,9 +493,9 @@
   border-radius: var(--radius-xl);
   padding: var(--space-3xl) var(--space-lg);
   box-shadow: var(--shadow-glass);
-  backdrop-filter: blur(50px) saturate(200%); /* BLUR MÁS FUERTE */
+  backdrop-filter: blur(50px) saturate(200%);
   -webkit-backdrop-filter: blur(50px) saturate(200%);
-  border: 2px solid var(--color-border); /* Borde más visible */
+  border: 2px solid var(--color-border);
   max-height: 90vh;
   display: flex;
   flex-direction: column;
@@ -491,9 +505,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-3xl); /* Mayor espacio */
+  margin-bottom: var(--space-3xl);
   padding-bottom: var(--space-xl);
-  border-bottom: 2px solid var(--color-border); /* Borde más grueso */
+  border-bottom: 2px solid var(--color-border);
 }
 
 .history-title {
@@ -504,11 +518,11 @@
 }
 
 .close-button {
-  background: rgba(255, 255, 255, 0.15); /* Botón más visible */
+  background: rgba(255, 255, 255, 0.15);
   border: none;
   color: var(--color-text-primary);
   cursor: pointer;
-  padding: var(--space-md); /* Mayor padding */
+  padding: var(--space-md);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
@@ -520,13 +534,13 @@
 }
 
 .close-button:active {
-  transform: scale(0.90); /* Mayor feedback de click */
+  transform: scale(0.90);
   background: rgba(255, 255, 255, 0.2);
 }
 
 
 /* ====================================
-   HISTORY LIST (Larger Items)
+   HISTORY LIST
    ==================================== */
 
 .history-list {
@@ -553,16 +567,16 @@
 }
 
 .history-empty-subtitle {
-  font-size: var(--font-size-md); /* Usando md para subtítulo legible */
+  font-size: var(--font-size-md);
   margin: 0;
 }
 
 .history-item {
-  padding: var(--space-xl); /* Mayor padding */
-  margin-bottom: var(--space-lg); /* Mayor espacio entre items */
+  padding: var(--space-xl);
+  margin-bottom: var(--space-lg);
   background: var(--color-glass);
   border-radius: var(--radius-lg);
-  border-left: 5px solid var(--color-primary); /* Borde acentuado más grueso */
+  border-left: 5px solid var(--color-primary);
   transition: all var(--transition-fast);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -571,19 +585,19 @@
 }
 
 .history-item:active {
-  transform: translateX(6px) scale(0.99); /* Feedback de click más notorio */
+  transform: translateX(6px) scale(0.99);
   background: rgba(255, 255, 255, 0.12);
 }
 
 .history-item-title {
-  font-size: var(--font-size-lg); /* Tamaño subido */
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0 0 var(--space-sm) 0;
 }
 
 .history-item-artist {
-  font-size: var(--font-size-md); /* Tamaño subido */
+  font-size: var(--font-size-md);
   color: var(--color-text-secondary);
   margin: 0 0 var(--space-md) 0;
 }
@@ -591,13 +605,13 @@
 .history-item-footer {
   display: flex;
   justify-content: space-between;
-  font-size: var(--font-size-sm); /* Tamaño subido */
+  font-size: var(--font-size-sm);
   color: var(--color-text-tertiary);
 }
 
 
 /* ====================================
-   RESPONSIVE (Adjusted to new larger sizes)
+   RESPONSIVE
    ==================================== */
 
 @media (max-width: 550px) {
@@ -611,12 +625,12 @@
   }
   
   .clock-time-large {
-    font-size: 30px; /* Reducción ligera en móvil */
+    font-size: 30px;
   }
   
   .play-button-overlay,
   .skip-button-overlay {
-    width: 75px; /* Siguen siendo grandes en móvil */
+    width: 75px;
     height: 75px;
   }
   
