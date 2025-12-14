@@ -32,6 +32,10 @@
   --space-4xl: 40px;
   --space-5xl: 60px;
   
+  /* App specific */
+  --app-padding: 8px;
+  --marquee-height: 40px;
+  
   /* Border Radius */
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -88,7 +92,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-xl);
+  padding: var(--app-padding);
   font-family: var(--font-family);
 }
 
@@ -102,9 +106,42 @@
   max-width: var(--max-width-player);
   background: var(--color-overlay);
   border-radius: var(--radius-xl);
-  padding: var(--space-4xl) var(--space-3xl);
+  padding: var(--space-lg);
   box-shadow: var(--shadow-lg);
   backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  height: calc(100vh - 16px);
+  max-height: 800px;
+}
+
+
+/* ====================================
+   STATION HEADER (TOP)
+   ==================================== */
+
+.station-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--gradient-primary);
+  border-radius: var(--radius-md);
+  color: var(--color-background);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  flex-shrink: 0;
+}
+
+.station-name-top {
+  font-weight: var(--font-weight-bold);
+}
+
+.station-location-top {
+  opacity: var(--opacity-secondary);
+  font-weight: var(--font-weight-regular);
 }
 
 
@@ -113,15 +150,15 @@
    ==================================== */
 
 .album-cover-wrapper {
-  width: 100%;
-  aspect-ratio: 1;
-  margin-bottom: var(--space-3xl);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   position: relative;
+  min-height: 0;
 }
 
 .album-cover {
-  width: 100%;
-  height: 100%;
+  flex: 1;
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-md);
@@ -130,19 +167,25 @@
   align-items: center;
   justify-content: center;
   position: relative;
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.album-cover:active {
+  transform: scale(0.98);
 }
 
 .loading-badge {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(0, 0, 0, 0.6);
+  top: var(--space-sm);
+  right: var(--space-sm);
+  background: rgba(0, 0, 0, 0.7);
   color: var(--color-background);
-  padding: 6px var(--space-md);
+  padding: var(--space-xs) var(--space-md);
   border-radius: var(--space-xl);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-regular);
-  z-index: 10;
+  z-index: 20;
 }
 
 .album-cover-image {
@@ -152,8 +195,8 @@
 }
 
 .album-cover-logo {
-  width: 60%;
-  height: 60%;
+  width: 50%;
+  height: 50%;
   object-fit: contain;
   opacity: var(--opacity-secondary);
 }
@@ -165,188 +208,190 @@
 
 
 /* ====================================
-   TRACK INFO
+   CONTROLS OVERLAY
    ==================================== */
 
-.track-info {
-  margin-bottom: var(--space-3xl);
-  text-align: center;
-}
-
-.track-title {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin: 0 0 var(--space-sm) 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.track-artist {
-  font-size: var(--font-size-lg);
-  color: var(--color-text-secondary);
-  margin: 0;
-  font-weight: var(--font-weight-regular);
-}
-
-.track-album {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-tertiary);
-  margin: var(--space-xs) 0 0 0;
-}
-
-
-/* ====================================
-   STATION INFO
-   ==================================== */
-
-.station-section {
-  margin-bottom: var(--space-3xl);
-}
-
-.station-card {
-  background: var(--gradient-primary);
-  border-radius: var(--radius-md);
-  padding: var(--space-lg);
-  margin-bottom: var(--space-lg);
-  color: var(--color-background);
-  text-align: center;
-}
-
-.station-header {
+.controls-overlay {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-xs);
+  gap: var(--space-lg);
+  background: rgba(0, 0, 0, 0);
+  opacity: 0;
+  transition: opacity var(--transition-medium), background var(--transition-medium);
+  z-index: 10;
 }
 
-.station-name {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  margin: 0;
+.album-cover:hover .controls-overlay {
+  background: rgba(0, 0, 0, 0.3);
+  opacity: 1;
 }
 
-.station-location {
-  font-size: var(--font-size-sm);
-  margin: 0;
-  opacity: var(--opacity-hover);
-}
-
-
-/* ====================================
-   CLOCKS
-   ==================================== */
-
-.clocks-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-md);
-}
-
-.clock-card {
-  background: var(--color-secondary);
-  border-radius: var(--radius-md);
-  padding: var(--space-md);
-  text-align: center;
-}
-
-.clock-label {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-secondary);
-  margin: 0 0 var(--space-xs) 0;
-  font-weight: var(--font-weight-regular);
-}
-
-.clock-time {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin: 0;
-}
-
-
-/* ====================================
-   CONTROLS
-   ==================================== */
-
-.controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-xl);
-  margin-bottom: var(--space-2xl);
-}
-
-.play-button {
-  width: var(--button-play-size);
-  height: var(--button-play-size);
+.play-button-overlay {
+  width: 80px;
+  height: 80px;
   border-radius: var(--radius-full);
   border: none;
-  background: var(--gradient-primary);
-  color: var(--color-background);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.play-button:hover {
-  transform: scale(1.05);
-  box-shadow: var(--shadow-hover);
-}
-
-.play-icon {
-  margin-left: 4px;
-}
-
-.skip-button {
-  width: var(--button-skip-size);
-  height: var(--button-skip-size);
-  border-radius: var(--radius-full);
-  border: 2px solid var(--color-primary);
-  background: var(--color-background);
+  background: rgba(255, 255, 255, 0.95);
   color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-fast), background var(--transition-fast);
+  backdrop-filter: blur(10px);
 }
 
-.skip-button:hover {
-  background: var(--color-primary);
+.play-button-overlay:hover {
+  transform: scale(1.1);
+  background: var(--color-background);
+}
+
+.play-button-overlay:active {
+  transform: scale(1.05);
+}
+
+.skip-button-overlay {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.2);
   color: var(--color-background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(10px);
+}
+
+.skip-button-overlay:hover {
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--color-primary);
+  transform: scale(1.1);
+}
+
+.skip-button-overlay:active {
   transform: scale(1.05);
 }
 
 
 /* ====================================
-   HISTORY BUTTON
+   TRACK INFO MARQUEE
    ==================================== */
 
-.history-button {
-  width: 100%;
-  padding: var(--space-lg);
-  border-radius: var(--radius-md);
-  border: none;
-  background: var(--color-secondary);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
+.track-info-marquee {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--marquee-height);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4));
+  overflow: hidden;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: var(--space-sm);
-  transition: background var(--transition-fast);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
 
-.history-button:hover {
+.marquee-content {
+  display: flex;
+  animation: marquee 20s linear infinite;
+  padding-left: 100%;
+}
+
+.marquee-text {
+  white-space: nowrap;
+  padding-right: 2rem;
+  color: var(--color-background);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Pausar animación al hacer hover sobre la carátula */
+.album-cover:hover .marquee-content {
+  animation-play-state: paused;
+}
+
+
+/* ====================================
+   BOTTOM SECTION
+   ==================================== */
+
+.bottom-section {
+  display: flex;
+  gap: var(--space-md);
+  align-items: stretch;
+  flex-shrink: 0;
+}
+
+.clocks-compact {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+}
+
+.clock-compact {
+  background: var(--color-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.clock-label-compact {
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+  font-weight: var(--font-weight-regular);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.clock-time-compact {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.history-button-compact {
+  width: 64px;
+  background: var(--color-secondary);
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  transition: background var(--transition-fast);
+  font-size: var(--font-size-md);
+}
+
+.history-button-compact:hover {
   background: var(--color-border);
+}
+
+.history-button-compact:active {
+  transform: scale(0.95);
 }
 
 
@@ -460,31 +505,75 @@
   color: var(--color-text-tertiary);
 }
 
+.history-item-station {
+  /* Inherits styles from parent */
+}
+
+.history-item-time {
+  /* Inherits styles from parent */
+}
+
 
 /* ====================================
    RESPONSIVE
    ==================================== */
 
 @media (max-width: 480px) {
-  .radio-app {
+  .main-container {
+    max-height: calc(100vh - 16px);
+  }
+  
+  .station-header-top {
+    font-size: 11px;
+    padding: var(--space-xs) var(--space-sm);
+  }
+  
+  .play-button-overlay {
+    width: 64px;
+    height: 64px;
+  }
+  
+  .play-button-overlay svg {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .skip-button-overlay {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .skip-button-overlay svg {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .clock-time-compact {
+    font-size: var(--font-size-md);
+  }
+  
+  .marquee-text {
+    font-size: var(--font-size-sm);
+  }
+}
+
+@media (max-height: 700px) {
+  .main-container {
+    gap: var(--space-sm);
     padding: var(--space-md);
   }
   
-  .main-container {
-    padding: var(--space-3xl) var(--space-xl);
+  .station-header-top {
+    padding: var(--space-xs) var(--space-sm);
   }
   
-  .track-title {
-    font-size: var(--font-size-xl);
+  .play-button-overlay {
+    width: 64px;
+    height: 64px;
   }
   
-  .play-button {
-    width: 70px;
-    height: 70px;
-  }
-  
-  .skip-button {
-    width: 50px;
-    height: 50px;
+  .skip-button-overlay {
+    width: 48px;
+    height: 48px;
   }
 }

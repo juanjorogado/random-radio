@@ -239,9 +239,24 @@ const RadioApp = () => {
       {!showHistory ? (
         <div className="main-container">
           
-          {/* Carátula */}
+          {/* Nombre de la radio arriba */}
+          {currentStation && (
+            <div className="station-header-top">
+              <Radio size={16} />
+              <span className="station-name-top">{currentStation.name}</span>
+              <span className="station-location-top">
+                {currentStation.city}, {currentStation.country}
+              </span>
+            </div>
+          )}
+
+          {/* Carátula con controles superpuestos */}
           <div className="album-cover-wrapper">
-            <div className="album-cover">
+            <div 
+              className="album-cover"
+              onClick={togglePlay}
+              style={{ cursor: currentStation ? 'pointer' : 'default' }}
+            >
               {loading && (
                 <div className="loading-badge">
                   Cargando...
@@ -265,65 +280,72 @@ const RadioApp = () => {
               ) : (
                 <div className="album-cover-placeholder">🎵</div>
               )}
-            </div>
-          </div>
-
-          {/* Info canción */}
-          <div className="track-info">
-            <h1 className="track-title">{currentTrack.title}</h1>
-            <p className="track-artist">{currentTrack.artist}</p>
-            {currentTrack.album && (
-              <p className="track-album">{currentTrack.album}</p>
-            )}
-          </div>
-
-          {/* Info radio */}
-          {currentStation && (
-            <div className="station-section">
-              <div className="station-card">
-                <div className="station-header">
-                  <Radio size={18} />
-                  <p className="station-name">{currentStation.name}</p>
-                </div>
-                <p className="station-location">
-                  {currentStation.city}, {currentStation.country}
-                </p>
-              </div>
               
-              {/* Relojes */}
-              <div className="clocks-grid">
-                <div className="clock-card">
-                  <p className="clock-label">Tu hora</p>
-                  <p className="clock-time">
-                    {currentTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-                  </p>
-                </div>
-                <div className="clock-card">
-                  <p className="clock-label">{currentStation.city}</p>
-                  <p className="clock-time">{getLocalTime(currentStation.timezone)}</p>
-                </div>
+              {/* Controles superpuestos */}
+              <div className="controls-overlay">
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    togglePlay();
+                  }} 
+                  className="play-button-overlay"
+                >
+                  {playing ? <Pause size={48} /> : <Play size={48} className="play-icon" />}
+                </button>
+                
+                {currentStation && (
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      playRandomStation();
+                    }} 
+                    className="skip-button-overlay"
+                  >
+                    <SkipForward size={32} />
+                  </button>
+                )}
               </div>
             </div>
-          )}
 
-          {/* Controles */}
-          <div className="controls">
-            <button onClick={togglePlay} className="play-button">
-              {playing ? <Pause size={36} /> : <Play size={36} className="play-icon" />}
-            </button>
-            
-            {currentStation && (
-              <button onClick={playRandomStation} className="skip-button">
-                <SkipForward size={28} />
-              </button>
-            )}
+            {/* Info canción con marquee en la parte inferior */}
+            <div className="track-info-marquee">
+              <div className="marquee-content">
+                <span className="marquee-text">
+                  {currentTrack.title}
+                  {currentTrack.artist && ` • ${currentTrack.artist}`}
+                  {currentTrack.album && ` • ${currentTrack.album}`}
+                </span>
+                <span className="marquee-text">
+                  {currentTrack.title}
+                  {currentTrack.artist && ` • ${currentTrack.artist}`}
+                  {currentTrack.album && ` • ${currentTrack.album}`}
+                </span>
+              </div>
+            </div>
           </div>
 
-          {/* Botón historial */}
-          <button onClick={() => setShowHistory(true)} className="history-button">
-            <List size={24} />
-            <span>Historial ({history.length})</span>
-          </button>
+          {/* Relojes e historial en fila */}
+          <div className="bottom-section">
+            {currentStation && (
+              <div className="clocks-compact">
+                <div className="clock-compact">
+                  <span className="clock-label-compact">Tu hora</span>
+                  <span className="clock-time-compact">
+                    {currentTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+                <div className="clock-compact">
+                  <span className="clock-label-compact">{currentStation.city}</span>
+                  <span className="clock-time-compact">{getLocalTime(currentStation.timezone)}</span>
+                </div>
+              </div>
+            )}
+            
+            <button onClick={() => setShowHistory(true)} className="history-button-compact">
+              <List size={20} />
+              <span>{history.length}</span>
+            </button>
+          </div>
         </div>
       ) : (
         <div className="history-view">
