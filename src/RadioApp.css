@@ -33,7 +33,7 @@
 
   /* Gradientes característicos */
   --gradient-background: linear-gradient(to bottom, #e8e4dc, #d4cfc4);
-  --gradient-cover: linear-gradient(135deg, #e85d33, #d14a28);
+  --gradient-cover: linear-gradient(135deg, var(--color-text-primary), var(--color-text-primary));
   --gradient-animated: linear-gradient(135deg, #e85d33, #d14a28, #ff8c5a, #e85d33);
 
   /* Espaciado */
