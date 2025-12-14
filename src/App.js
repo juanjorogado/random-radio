@@ -1,49 +1,37 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, SkipForward, X, Radio } from 'lucide-react';
 import './RadioApp.css';
+import { useState, useEffect } from 'react';
 
-const stations = [
-  {
-    id: 'kexp',
-    name: 'KEXP',
-    country: 'USA',
-    city: 'Seattle',
-    timezone: 'America/Los_Angeles',
-    stream: 'https://kexp-mp3-128.streamguys1.com/kexp128.mp3',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/4/42/KEXP_logo.svg',
-    metadataUrl: 'https://api.kexp.org/v2/plays/?limit=1&ordering=-airdate'
-  },
-  {
-    id: 'fip',
-    name: 'FIP',
-    country: 'Francia',
-    city: 'París',
-    timezone: 'Europe/Paris',
-    stream: 'https://icecast.radiofrance.fr/fip-midfi.mp3',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/0/09/FIP_logo_2021.svg',
-    metadataUrl: 'https://www.radiofrance.fr/fip/api/live/webradios/fip'
-  },
-  {
-    id: 'rp',
-    name: 'Radio Paradise',
-    country: 'USA',
-    city: 'California',
-    timezone: 'America/Los_Angeles',
-    stream: 'https://stream.radioparadise.com/mp3-128',
-    logo: 'https://img.radioparadise.com/covers/l/B000000.jpg',
-    metadataUrl: 'https://api.radioparadise.com/api/now_playing?chan=0'
-  },
-  {
-    id: 'nts',
-    name: 'NTS Radio',
-    country: 'Reino Unido',
-    city: 'Londres',
-    timezone: 'Europe/London',
-    stream: 'https://stream-mixtape-geo.ntslive.net/mixtape',
-    logo: 'https://pbs.twimg.com/profile_images/1630226075535544320/xrT89-vr_400x400.jpg',
-    metadataUrl: 'https://www.nts.live/api/v2/live'
-  }
-];
+import stations from './data/stations.json';
+import AlbumCover from './components/AlbumCover';
+
+<AlbumCover
+  src={currentTrack.cover || currentStation?.logo}
+/>
+
+
+export function useImageStatus(src) {
+  const [status, setStatus] = useState('idle'); // idle | loading | loaded | error
+
+  useEffect(() => {
+    if (!src) {
+      setStatus('error');
+      return;
+    }
+
+    setStatus('loading');
+    const img = new Image();
+
+    img.onload = () => setStatus('loaded');
+    img.onerror = () => setStatus('error');
+    img.src = src;
+  }, [src]);
+
+  return status;
+}
+
+import stations from './stations.json';
 
 function RadioApp() {
   const audioRef = useRef(null);
