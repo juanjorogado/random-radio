@@ -22,7 +22,7 @@
   --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   --gradient-background: linear-gradient(180deg, var(--color-background) 0%, var(--color-background-dark) 100%);
   --gradient-cover: linear-gradient(135deg, #18003a 0%, #000000 100%); /* Degradado de cubierta más oscuro */
-  --gradient-animated: linear-gradient(135deg, #a766ee, #663399, #f093fb, #a766ee); /* Actualizado al nuevo color */
+  --gradient-animated: linear-gradient(135deg, #a766ee, #663399, #f093fb, #a766ee); /* Degradado para animación */
   
   /* Spacing - INCREASED */
   --space-xs: 6px;
@@ -37,13 +37,13 @@
   
   /* App specific */
   --app-padding: 12px;
-  --marquee-height: 50px;
+  --marquee-height: 50px; /* Tamaño del contenedor de texto Marquee */
   
   /* Border Radius */
   --radius-sm: 8px;
   --radius-md: 16px;
   --radius-lg: 24px;
-  --radius-xl: 32px; /* Bordes más redondeados */
+  --radius-xl: 36px; /* Bordes más redondeados */
   --radius-full: 50%;
   
   /* Shadows - UPDATED TO NEW PRIMARY COLOR */
@@ -60,8 +60,8 @@
   --font-size-md: 18px;
   --font-size-lg: 20px;
   --font-size-xl: 24px;
-  --font-size-2xl: 28px;
-  --font-size-3xl: 34px;
+  --font-size-2xl: 30px; /* Aumento para título */
+  --font-size-3xl: 36px; /* Aumento para la hora */
   --font-size-icon-lg: 70px;
   --font-size-icon-xl: 90px;
   
@@ -87,7 +87,7 @@
    ==================================== */
 
 .radio-app {
-  min-height: 100%;
+  min-height: 100vh;
   background: var(--gradient-background);
   display: flex;
   align-items: center;
@@ -128,11 +128,11 @@
   box-shadow: var(--shadow-glass);
   backdrop-filter: blur(50px) saturate(200%); /* BLUR MÁS FUERTE (Liquid Glass) */
   -webkit-backdrop-filter: blur(50px) saturate(200%);
-  border: 1px solid var(--color-border); /* Borde menos visible */
+  border: 2px solid var(--color-border); /* Borde más visible para efecto cristal */
   display: flex;
   flex-direction: column;
   gap: var(--space-2xl); /* Mayor espacio entre secciones */
-  height: calc(100vh - 24px);
+  height: calc(100vh - 24px); /* Ajuste de altura consistente */
   max-height: 1000px;
   min-height: 700px;
 }
@@ -149,6 +149,7 @@
   font-size: var(--font-size-sm); /* Tamaño subido */
   font-weight: var(--font-weight-regular);
   text-transform: uppercase;
+  letter-spacing: 2px; /* Aumentado para mejor legibilidad en mayúsculas */
   flex-shrink: 0;
 }
 
@@ -167,7 +168,7 @@
 .clock-item {
   background: var(--color-glass);
   border-radius: var(--radius-lg);
-  padding: var(--space-l);
+  padding: var(--space-lg); /* CORREGIDO: Usando el token correcto */
   text-align: center;
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
@@ -183,15 +184,15 @@
 .clock-label-top {
   font-size: var(--font-size-xs); /* Tamaño subido */
   color: var(--color-text-tertiary);
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-semibold); 
   text-transform: uppercase;
   letter-spacing: 1.5px;
   margin-bottom: var(--space-sm); /* Mayor espacio */
 }
 
 .clock-time-large {
-  font-size: var(--font-size-2xl); /* TAMAÑO MUY GRANDE */
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-3xl); /* TAMAÑO MUY GRANDE Y LEGIBLE */
+  font-weight: var(--font-weight-bold); /* Usando Bold para máximo impacto */
   color: var(--color-text-primary);
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -199,7 +200,7 @@
 
 
 /* ====================================
-   3. ALBUM COVER MAIN
+   3. ALBUM COVER MAIN (Añadir animación de fondo)
    ==================================== */
 
 .album-cover-main {
@@ -215,12 +216,63 @@
   min-height: 350px;
 }
 
+/* Animación del fondo (Overlay de degradado) */
+.album-cover-main::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-animated);
+  background-size: 400% 400%; /* Tamaño grande para la animación */
+  animation: appleGradient 15s ease infinite; /* Aplicar animación */
+  opacity: 0.3; /* Opacidad para que el fondo original se vea, pero la animación sea notable */
+  z-index: 1; /* Asegurar que esté bajo los controles */
+  pointer-events: none;
+}
 
-/* ====================================
-   ALBUM COVER (Unchanged)
-   ==================================== */
+@keyframes appleGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
 
-/* ... (Mantenemos el resto de las clases de la cubierta sin cambios, ya que usan variables) ... */
+.loading-badge {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  background: rgba(0, 0, 0, 0.8);
+  color: var(--color-text-primary);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--space-xl);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+  z-index: 20;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.album-cover-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.album-cover-logo {
+  width: 50%;
+  height: 50%;
+  object-fit: contain;
+  opacity: 0.6;
+  filter: brightness(1.2);
+}
+
+.album-cover-placeholder {
+  font-size: var(--font-size-icon-xl);
+  opacity: 0.2;
+}
 
 
 /* ====================================
@@ -287,6 +339,10 @@
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
+.play-icon {
+  margin-left: 3px;
+}
+
 .play-button-overlay svg,
 .skip-button-overlay svg {
     width: 45px; /* Iconos más grandes */
@@ -295,35 +351,76 @@
 
 
 /* ====================================
-   TRACK INFO (BELOW COVER) (Larger Text)
+   TRACK INFO (BELOW COVER) - IMPLEMENTACIÓN MARQUEE
    ==================================== */
 
 .track-info-section {
   text-align: center;
   padding: 0 var(--space-lg);
   flex-shrink: 0;
+  overflow: hidden; /* Ocultar el desbordamiento fuera de la sección */
+  height: calc(var(--marquee-height) * 2); /* Altura suficiente para dos líneas de Marquee */
 }
 
+/* Contenedor Marquee */
+.marquee-container {
+  width: 100%;
+  overflow: hidden;
+  height: var(--marquee-height);
+  white-space: nowrap; /* Evitar saltos de línea */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* Contenido Marquee - Duplicado para un bucle fluido */
+.marquee-content {
+  display: inline-block;
+  padding-left: 100%; /* Empieza completamente fuera del contenedor */
+  animation: marquee 15s linear infinite; /* Animación de desplazamiento, velocidad ajustable */
+}
+
+.marquee-content.short {
+  animation: none; /* Desactivar Marquee si el contenido es corto */
+  padding-left: 0;
+  white-space: normal;
+  display: flex;
+  justify-content: center;
+  transform: none;
+}
+
+/* Keyframes de la animación Marquee */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    /* Mueve el contenido completamente a la izquierda, la mitad para mostrar el texto y la otra mitad el duplicado */
+    transform: translateX(calc(-100% - var(--space-md))); 
+  }
+}
+
+
 .song-title {
-  font-size: var(--font-size-2xl); /* TAMAÑO GRANDE */
+  font-size: var(--font-size-2xl); 
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
-  margin: 0 0 var(--space-md) 0; /* Mayor espacio */
+  margin: 0; 
   line-height: 1.3;
+  display: inline-block;
 }
 
 .song-metadata {
-  font-size: var(--font-size-lg); /* TAMAÑO GRANDE */
+  font-size: var(--font-size-lg);
   color: var(--color-text-secondary);
-  margin: 0 0 var(--space-sm) 0;
+  margin: var(--space-xs) 0; /* Espacio mínimo entre líneas Marquee */
   font-weight: var(--font-weight-regular);
+  display: inline-block;
 }
 
 .song-year {
-  font-size: var(--font-size-md); /* TAMAÑO GRANDE */
-  color: var(--color-text-tertiary);
-  margin: 0;
-  font-weight: var(--font-weight-regular);
+  display: none; /* Ocultar el año para dar más espacio al Marquee */
 }
 
 
@@ -437,7 +534,28 @@
   flex: 1;
 }
 
-/* ... (El resto de clases de history-empty y history-item actualizan sus tamaños y colores automáticamente gracias a los tokens) ... */
+.history-empty {
+  text-align: center;
+  padding: var(--space-5xl) var(--space-xl);
+  color: var(--color-text-tertiary);
+}
+
+.history-empty-icon {
+  font-size: var(--font-size-icon-lg);
+  margin-bottom: var(--space-lg);
+  opacity: 0.5;
+}
+
+.history-empty-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.history-empty-subtitle {
+  font-size: var(--font-size-md); /* Usando md para subtítulo legible */
+  margin: 0;
+}
 
 .history-item {
   padding: var(--space-xl); /* Mayor padding */
@@ -485,7 +603,7 @@
 @media (max-width: 550px) {
   .main-container {
     padding: var(--space-xl) var(--space-md);
-    max-height: calc(100vh - 24px);
+    height: calc(100vh - 24px);
   }
   
   .station-header-top {

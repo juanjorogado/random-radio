@@ -80,6 +80,11 @@ const RadioApp = () => {
     };
   }, []);
 
+  const getMarqueeClassName = (text, maxLength) => {
+    // Si el texto es más largo que un umbral (ej: 40 caracteres), retorna la clase Marquee
+    return text && text.length > maxLength ? 'marquee-content' : 'marquee-content short';
+  };
+
   const getLocalTime = (timezone) => {
     try {
       return new Date().toLocaleTimeString('es-ES', { 
@@ -268,7 +273,7 @@ const RadioApp = () => {
             </div>
           </div>
 
-          {/* 3. Carátula grande */}
+          {/* 3. Carátula grande (El fondo animado se aplica en CSS) */}
           <div className="album-cover-main">
             {loading && (
               <div className="loading-badge">
@@ -316,14 +321,31 @@ const RadioApp = () => {
             </div>
           </div>
 
-          {/* 4. Info de la canción */}
+          {/* 4. Info de la canción - IMPLEMENTACIÓN MARQUEE */}
           <div className="track-info-section">
-            <h1 className="song-title">{currentTrack.title}</h1>
-            <p className="song-metadata">
-              {currentTrack.artist || 'Artista desconocido'}
-              {currentTrack.album && ` — ${currentTrack.album}`}
-            </p>
-            <p className="song-year">{new Date().getFullYear()}</p>
+            
+            {/* MARQUEE TÍTULO DE LA CANCIÓN */}
+            <div className="marquee-container">
+              <div 
+                className={getMarqueeClassName(currentTrack.title, 40)}
+              >
+                <h1 className="song-title">{currentTrack.title}</h1>
+              </div>
+            </div>
+            
+            {/* MARQUEE METADATA (ARTISTA/ÁLBUM) */}
+            <div className="marquee-container">
+              <div 
+                className={getMarqueeClassName(currentTrack.artist + currentTrack.album, 50)}
+              >
+                <p className="song-metadata">
+                  {currentTrack.artist || 'Artista desconocido'}
+                  {currentTrack.album && ` — ${currentTrack.album}`}
+                </p>
+              </div>
+            </div>
+            
+            <p className="song-year">{new Date().getFullYear()}</p> 
           </div>
 
           {/* 5. Botón de historial */}
