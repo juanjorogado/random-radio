@@ -3,6 +3,7 @@
    ==================================== */
 
 :root {
+  /* Paleta Braun */
   --color-primary: #e85d33;
   --color-primary-dark: #d14a28;
   --color-primary-light: #ff8c5a;
@@ -28,13 +29,7 @@
 
   --gradient-background: linear-gradient(to bottom, #e8e4dc, #d4cfc4);
   --gradient-cover: linear-gradient(135deg, #6b6459, #f5f3ed);
-  --gradient-animated: linear-gradient(
-    135deg,
-    #6b6459,
-    #e8e4dc,
-    #d4cfc4,
-    #f5f3ed
-  );
+  --gradient-animated: linear-gradient(135deg, #6b6459, #e8e4dc, #d4cfc4, #f5f3ed);
 
   --space-xs: 6px;
   --space-sm: 10px;
@@ -54,6 +49,7 @@
 
   --font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
     "Segoe UI", Roboto, sans-serif;
+
   --font-weight-light: 300;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
@@ -64,12 +60,16 @@
   --font-size-lg: 20px;
   --font-size-xl: 24px;
   --font-size-2xl: 32px;
+  --font-size-3xl: 36px;
 
   --button-size: 90px;
+  --marquee-height: 50px;
 
-  --animation-slow: 40s;
-  --animation-medium: 22s;
-  --animation-fast: 1.2s;
+  /* Braun Atelier motion */
+  --ease-braun: cubic-bezier(0.2, 0, 0.1, 1);
+  --motion-fast: 0.15s;
+  --motion-medium: 0.5s;
+  --motion-slow: 0.7s;
 }
 
 /* ====================================
@@ -90,6 +90,7 @@
   align-items: center;
   padding: 12px;
   font-family: var(--font-family);
+  overflow: hidden;
 }
 
 /* ====================================
@@ -113,28 +114,118 @@
 }
 
 /* ====================================
-   ALBUM COVER (1:1 + FALLBACK)
+   HEADER
+   ==================================== */
+
+.station-header-top {
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  font-weight: var(--font-weight-light);
+}
+
+.station-playing {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* ====================================
+   PLAYING INDICATOR
+   ==================================== */
+
+.playing-indicator {
+  width: 18px;
+  height: 14px;
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.playing-indicator::before,
+.playing-indicator::after,
+.playing-indicator span {
+  content: "";
+  width: 4px;
+  background: var(--color-primary);
+  border-radius: 2px;
+  animation: equalizer 1.4s infinite linear;
+}
+
+.playing-indicator::after {
+  animation-delay: -0.4s;
+}
+.playing-indicator span {
+  animation-delay: -0.8s;
+}
+
+@keyframes equalizer {
+  0% {
+    height: 30%;
+    opacity: 0.6;
+  }
+  50% {
+    height: 100%;
+    opacity: 1;
+  }
+  100% {
+    height: 30%;
+    opacity: 0.6;
+  }
+}
+
+/* ====================================
+   CLOCKS
+   ==================================== */
+
+.clocks-horizontal {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+.clock-item {
+  background: var(--color-display-bg);
+  border-radius: var(--radius-sm);
+  padding: var(--space-lg);
+  text-align: center;
+  box-shadow: inset 0 2px 6px var(--color-shadow-strong);
+}
+
+.clock-label-top {
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  color: var(--color-display-accent);
+  margin-bottom: var(--space-sm);
+  letter-spacing: 1px;
+}
+
+.clock-time-large {
+  font-size: var(--font-size-2xl);
+  color: var(--color-display-text);
+  font-weight: var(--font-weight-light);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ====================================
+   ALBUM COVER
    ==================================== */
 
 .album-cover-main {
-  position: relative;
-  aspect-ratio: 1 / 1;
-  width: 100%;
+  flex: 1;
   border-radius: var(--radius-sm);
-  overflow: hidden;
-  background: #000;
+  background: var(--gradient-cover);
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(232, 93, 51, 0.25);
 }
 
-/* Solo cuando hay imagen */
-.album-cover-main.has-image {
-  background: var(--gradient-cover);
-}
-
-.album-cover-main.has-image::after {
+.album-cover-main::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -142,49 +233,36 @@
   background-size: 400% 400%;
   animation: gradient 15s ease infinite;
   opacity: 0.25;
-  z-index: 1;
 }
 
-/* Imagen / logo */
 .album-cover-image,
 .album-cover-logo {
   width: 100%;
   height: 100%;
   object-fit: cover;
   z-index: 2;
-  position: relative;
-  opacity: 0;
-  animation: fadeIn 0.6s ease forwards;
+  animation: braun-cover-in var(--motion-slow) var(--ease-braun);
 }
 
 .album-cover-logo {
-  max-width: 60%;
-  max-height: 60%;
+  width: 60%;
+  height: 60%;
   opacity: 0.6;
 }
 
-/* Fallback blanco / negro */
-.fallback-bg {
-  background: #000;
-}
-
-.cover-fallback {
-  width: 100%;
-  height: 100%;
-  background: #000;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-}
-
-.cover-icon {
-  opacity: 0.5;
+@keyframes braun-cover-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ====================================
-   CONTROLS OVERLAY
+   CONTROLS
    ==================================== */
 
 .controls-overlay {
@@ -208,15 +286,83 @@
   cursor: pointer;
   backdrop-filter: blur(30px);
   box-shadow: 0 4px 20px var(--color-shadow);
-  transition: transform 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  transition: transform var(--motion-fast) ease-out,
+    box-shadow var(--motion-fast) ease-out,
+    background var(--motion-fast) ease-out;
 }
 
 .play-button-overlay:active,
 .skip-button-overlay:active {
-  transform: scale(0.9);
+  transform: scale(0.96);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* ====================================
+   TRACK INFO / MARQUEE
+   ==================================== */
+
+.track-info-section {
+  text-align: center;
+  overflow: hidden;
+}
+
+.marquee-container {
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: var(--space-sm);
+}
+
+.marquee-content {
+  display: inline-flex;
+  white-space: nowrap;
+}
+
+.marquee-content:not(.short) {
+  animation: marquee 22s linear infinite;
+}
+
+.marquee-content.short {
+  width: 100%;
+  justify-content: center;
+}
+
+.marquee-text {
+  padding-right: var(--space-5xl);
+}
+
+.song-title {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+}
+
+.song-metadata {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ====================================
+   HISTORY BUTTON
+   ==================================== */
+
+.history-btn {
+  width: 100%;
+  padding: var(--space-md);
+  background: var(--color-display-bg);
+  color: var(--color-display-text);
+  border: none;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
 }
 
 /* ====================================
@@ -235,9 +381,14 @@
   }
 }
 
-@keyframes fadeIn {
-  to {
-    opacity: 1;
+/* ====================================
+   ACCESSIBILITY
+   ==================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
   }
 }
 
@@ -246,10 +397,6 @@
    ==================================== */
 
 @media (max-width: 550px) {
-  .main-container {
-    padding: var(--space-xl) var(--space-md);
-  }
-
   .play-button-overlay,
   .skip-button-overlay {
     width: 75px;
