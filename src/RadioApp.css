@@ -207,6 +207,10 @@
   border-radius: var(--radius-full);
   transform: translate(-50%, -50%);
   opacity: 0;
+  animation: none;
+}
+
+.wave-indicator.wave-playing::after {
   animation: wave 1.8s infinite var(--ease-braun);
 }
 
@@ -277,6 +281,9 @@
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+}
+
+.cover-with-controls:not(.cover-swipe-out-left):not(.cover-swipe-out-right):not(.cover-swipe-in-left):not(.cover-swipe-in-right) {
   transition: transform var(--motion-medium) var(--ease-braun),
     opacity var(--motion-medium) var(--ease-braun);
 }
@@ -284,21 +291,31 @@
 .cover-swipe-out-left {
   transform: translateX(-120%) scale(0.96);
   opacity: 0;
+  transition: transform 0.3s var(--ease-braun), opacity 0.3s var(--ease-braun);
 }
 
 .cover-swipe-out-right {
   transform: translateX(120%) scale(0.96);
   opacity: 0;
+  transition: transform 0.3s var(--ease-braun), opacity 0.3s var(--ease-braun);
 }
 
 .cover-swipe-in-left {
   transform: translateX(120%);
   opacity: 0;
+  transition: transform 0.3s var(--ease-braun), opacity 0.3s var(--ease-braun);
 }
 
 .cover-swipe-in-right {
   transform: translateX(-120%);
   opacity: 0;
+  transition: transform 0.3s var(--ease-braun), opacity 0.3s var(--ease-braun);
+}
+
+/* Cuando se quita la clase de entrada, vuelve al centro suavemente */
+.cover-with-controls:not(.cover-swipe-out-left):not(.cover-swipe-out-right):not(.cover-swipe-in-left):not(.cover-swipe-in-right) {
+  transform: translateX(0) scale(1);
+  opacity: 1;
 }
 
 .buffering-indicator {
@@ -353,6 +370,11 @@
     box-shadow: 0 12px 32px rgba(202, 169, 159, 0.35),
       0 0 20px rgba(232, 93, 51, 0.2);
   }
+}
+
+/* Asegurar que la animación solo se active cuando está playing */
+.cover-with-controls:not(.cover-playing) .album-cover-main {
+  animation: none;
 }
 
 .album-cover-main::after {
@@ -417,16 +439,8 @@
 .marquee-content {
   display: inline-flex;
   white-space: nowrap;
-}
-
-.marquee-content:not(.short) {
   min-width: 200%;
   animation: marquee 22s linear infinite;
-}
-
-.marquee-content.short {
-  width: 100%;
-  justify-content: center;
 }
 
 .marquee-text {

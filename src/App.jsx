@@ -78,8 +78,6 @@ function RadioApp() {
     }
   };
 
-  const marqueeClass = (text, max) =>
-    text && text.length > max ? 'marquee-content' : 'marquee-content short';
 
   // Helper para generar enlace de Apple Music
   const getAppleMusicLink = (track) => {
@@ -268,8 +266,15 @@ function RadioApp() {
   const coverRef = useRef(null);
   const lastTapRef = useRef(0);
   const tapTimeoutRef = useRef(null);
+  const isSwipeRef = useRef(false);
 
   const handleCoverTap = (e) => {
+    // Si fue un swipe, ignorar el tap
+    if (isSwipeRef.current) {
+      isSwipeRef.current = false;
+      return;
+    }
+
     const now = Date.now();
     const DOUBLE_TAP_DELAY = 300;
     
@@ -294,6 +299,7 @@ function RadioApp() {
 
   const handleCoverDoubleClick = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     togglePlay();
   };
 
@@ -324,11 +330,12 @@ function RadioApp() {
     const deltaY = Math.abs(e.changedTouches[0].clientY - touchStartYRef.current);
     const deltaX = Math.abs(touchEndRef.current - touchStartRef.current);
     
-    // Solo procesar swipe si el movimiento horizontal es mayor que el vertical
-    if (deltaX > deltaY) {
+    // Solo procesar swipe si el movimiento horizontal es mayor que el vertical y suficiente
+    if (deltaX > deltaY && deltaX > 30) {
+      isSwipeRef.current = true;
       handleSwipe();
     } else {
-      // Si es más vertical, podría ser un tap simple
+      // Si es más vertical o movimiento pequeño, tratar como tap
       handleCoverTap(e);
     }
     
@@ -359,18 +366,19 @@ function RadioApp() {
     // Fase 2: Cambiar emisora y preparar entrada desde el lado opuesto
     swipeTimeoutRef.current = setTimeout(() => {
       playRandomStation();
+      // Aplicar clase de entrada inmediatamente después del cambio
       setSwipeDirection(inClass);
 
-      // Fase 3: Transición a centro (estado neutro)
+      // Fase 3: Transición a centro (estado neutro) después de que la entrada termine
       swipeTimeoutRef.current = setTimeout(() => {
         setSwipeDirection(null);
 
-        // Desbloquear después de que termine la animación
+        // Desbloquear después de que termine la animación completa
         swipeTimeoutRef.current = setTimeout(() => {
           swipeLockRef.current = false;
-        }, 300);
-      }, 50);
-    }, 250);
+        }, 100);
+      }, 300);
+    }, 300);
   };
 
   const handleSwipe = () => {
@@ -415,7 +423,7 @@ function RadioApp() {
               <span className="station-header-content">
                 {playing && (
                   <span className="station-live-indicator">
-                    <span className={`wave-indicator ${playing ? 'wave-playing' : ''}`} />
+                    <span className="wave-indicator wave-playing" />
                   </span>
                 )}
                 <span>
@@ -476,21 +484,17 @@ function RadioApp() {
           {/* TRACK INFO / MARQUEE */}
           <div className="track-info-section">
             <div className="marquee-container">
-              <div
-                className={marqueeClass(currentTrack.title, 30)}
-              >
-                {/* Marquee: texto duplicado como hermanos para scroll continuo */}
+              <div className="marquee-content">
+                {/* Marquee: siempre se mueve, texto duplicado */}
                 <span className="marquee-text song-title">
                   {currentTrack.title}
                 </span>
-                {currentTrack.title.length > 30 && (
-                  <span
-                    className="marquee-text song-title"
-                    aria-hidden="true"
-                  >
-                    {currentTrack.title}
-                  </span>
-                )}
+                <span
+                  className="marquee-text song-title"
+                  aria-hidden="true"
+                >
+                  {currentTrack.title}
+                </span>
               </div>
             </div>
             <div className="song-metadata">
