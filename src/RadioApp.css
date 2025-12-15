@@ -229,6 +229,11 @@
    ALBUM COVER (Formato 1:1 forzado)
    ==================================== */
 
+.cover-with-controls {
+  position: relative;
+  width: 100%;
+}
+
 .album-cover-main {
   /* flex: 1; <-- ELIMINADO para forzar tamaño */
   width: 100%; /* AÑADIDO */
