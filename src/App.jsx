@@ -232,26 +232,28 @@ function RadioApp() {
             </div>
           </div>
 
-          {/* COVER (Tamaño corregido en CSS) */}
-          <AlbumCover
-            src={currentTrack.cover || currentStation?.logo}
-          />
+          {/* COVER + CONTROLES CENTRADOS SOBRE LA CARÁTULA */}
+          <div className="cover-with-controls">
+            <AlbumCover
+              src={currentTrack.cover || currentStation?.logo}
+            />
 
-          <div className="controls-overlay">
-            <button
-              onClick={togglePlay}
-              className="play-button-overlay"
-            >
-              {playing ? <Pause size={48} /> : <Play size={48} />}
-            </button>
-            {currentStation && (
+            <div className="controls-overlay">
               <button
-                onClick={playRandomStation}
-                className="skip-button-overlay"
+                onClick={togglePlay}
+                className="play-button-overlay"
               >
-                <SkipForward size={32} />
+                {playing ? <Pause size={48} /> : <Play size={48} />}
               </button>
-            )}
+              {currentStation && (
+                <button
+                  onClick={playRandomStation}
+                  className="skip-button-overlay"
+                >
+                  <SkipForward size={32} />
+                </button>
+              )}
+            </div>
           </div>
 
           {/* TRACK INFO / MARQUEE */}
@@ -260,16 +262,18 @@ function RadioApp() {
               <div
                 className={marqueeClass(currentTrack.title, 30)}
               >
-                {/* Marquee: Corregida la duplicación para funcionar con CSS */}
+                {/* Marquee: texto duplicado como hermanos para scroll continuo */}
                 <span className="marquee-text song-title">
                   {currentTrack.title}
-                  {currentTrack.title.length > 30 && (
-                    <span aria-hidden="true">
-                      {' '}
-                      {currentTrack.title}
-                    </span>
-                  )}
                 </span>
+                {currentTrack.title.length > 30 && (
+                  <span
+                    className="marquee-text song-title"
+                    aria-hidden="true"
+                  >
+                    {currentTrack.title}
+                  </span>
+                )}
               </div>
             </div>
             <div className="song-metadata">
