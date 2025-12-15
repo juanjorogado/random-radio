@@ -17,8 +17,11 @@ function RadioApp() {
   const [showHistory, setShowHistory] = useState(false);
   const [closingHistory, setClosingHistory] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [swipeDirection, setSwipeDirection] = useState(null);
+
   const retryTimeoutRef = useRef(null);
   const retryCountRef = useRef(0);
+  const swipeTimeoutRef = useRef(null);
 
   const [currentTrack, setCurrentTrack] = useState({
     title: 'Selecciona una radio',
@@ -56,6 +59,7 @@ function RadioApp() {
     return () => {
       metadataTimer.current && clearInterval(metadataTimer.current);
       retryTimeoutRef.current && clearTimeout(retryTimeoutRef.current);
+      swipeTimeoutRef.current && clearTimeout(swipeTimeoutRef.current);
     };
   }, []);
 
@@ -292,11 +296,19 @@ function RadioApp() {
 
     if (Math.abs(distance) > minSwipeDistance) {
       if (distance > 0) {
-        // Swipe izquierda: siguiente emisora
-        playRandomStation();
+        // Swipe izquierda: animar salida hacia la izquierda y cambiar emisora
+        setSwipeDirection('left');
+        swipeTimeoutRef.current = setTimeout(() => {
+          playRandomStation();
+          setSwipeDirection(null);
+        }, 280);
       } else {
-        // Swipe derecha: también siguiente emisora (o podría ser anterior)
-        playRandomStation();
+        // Swipe derecha: animar salida hacia la derecha y cambiar emisora
+        setSwipeDirection('right');
+        swipeTimeoutRef.current = setTimeout(() => {
+          playRandomStation();
+          setSwipeDirection(null);
+        }, 280);
       }
     }
     touchStartRef.current = null;
@@ -365,7 +377,13 @@ function RadioApp() {
 
           {/* COVER + CONTROLES CENTRADOS SOBRE LA CARÁTULA */}
           <div
-            className="cover-with-controls"
+            className={`cover-with-controls ${
+              swipeDirection === 'left'
+                ? 'cover-swipe-left'
+                : swipeDirection === 'right'
+                ? 'cover-swipe-right'
+                : ''
+            }`}
             ref={coverRef}
             onDoubleClick={handleCoverDoubleTap}
             onTouchStart={handleTouchStart}

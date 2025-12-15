@@ -277,6 +277,18 @@
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  transition: transform var(--motion-medium) var(--ease-braun),
+    opacity var(--motion-medium) var(--ease-braun);
+}
+
+.cover-swipe-left {
+  transform: translateX(-120%) scale(0.96);
+  opacity: 0;
+}
+
+.cover-swipe-right {
+  transform: translateX(120%) scale(0.96);
+  opacity: 0;
 }
 
 .buffering-indicator {
@@ -613,15 +625,15 @@
 }
 
 .history-link {
-  color: var(--color-text-primary);
+  color: var(--color-display-accent);
   text-decoration: none;
   transition: color var(--motion-fast) var(--ease-braun);
   border-bottom: 1px solid transparent;
 }
 
 .history-link:hover {
-  color: var(--color-primary);
-  border-bottom-color: var(--color-primary);
+  color: var(--color-display-accent);
+  border-bottom-color: var(--color-display-accent);
 }
 
 .history-link:focus-visible {
