@@ -22,6 +22,7 @@ function RadioApp() {
   const retryTimeoutRef = useRef(null);
   const retryCountRef = useRef(0);
   const swipeTimeoutRef = useRef(null);
+  const swipeLockRef = useRef(false);
 
   const [currentTrack, setCurrentTrack] = useState({
     title: 'Selecciona una radio',
@@ -289,6 +290,40 @@ function RadioApp() {
     handleSwipe();
   };
 
+  const startSwipe = (direction) => {
+    if (swipeLockRef.current) return;
+    swipeLockRef.current = true;
+
+    const outClass =
+      direction === 'left'
+        ? 'cover-swipe-out-left'
+        : 'cover-swipe-out-right';
+    const inClass =
+      direction === 'left'
+        ? 'cover-swipe-in-left'
+        : 'cover-swipe-in-right';
+
+    setSwipeDirection(outClass);
+
+    // Fase de salida
+    swipeTimeoutRef.current = setTimeout(() => {
+      playRandomStation();
+
+      // Preparar entrada desde el lado opuesto
+      setSwipeDirection(inClass);
+
+      // Siguiente tick: volver a estado neutro para que transicione a centro
+      swipeTimeoutRef.current = setTimeout(() => {
+        setSwipeDirection(null);
+
+        // Desbloquear después de la animación
+        swipeTimeoutRef.current = setTimeout(() => {
+          swipeLockRef.current = false;
+        }, 280);
+      }, 20);
+    }, 180);
+  };
+
   const handleSwipe = () => {
     if (!touchStartRef.current || !touchEndRef.current) return;
     const distance = touchStartRef.current - touchEndRef.current;
@@ -296,19 +331,11 @@ function RadioApp() {
 
     if (Math.abs(distance) > minSwipeDistance) {
       if (distance > 0) {
-        // Swipe izquierda: animar salida hacia la izquierda y cambiar emisora
-        setSwipeDirection('left');
-        swipeTimeoutRef.current = setTimeout(() => {
-          playRandomStation();
-          setSwipeDirection(null);
-        }, 280);
+        // Swipe izquierda
+        startSwipe('left');
       } else {
-        // Swipe derecha: animar salida hacia la derecha y cambiar emisora
-        setSwipeDirection('right');
-        swipeTimeoutRef.current = setTimeout(() => {
-          playRandomStation();
-          setSwipeDirection(null);
-        }, 280);
+        // Swipe derecha
+        startSwipe('right');
       }
     }
     touchStartRef.current = null;
@@ -375,13 +402,11 @@ function RadioApp() {
             </div>
           </div>
 
-          {/* COVER + CONTROLES CENTRADOS SOBRE LA CARÁTULA */}
+          {/* COVER + GESTOS (doble tap y swipe) */}
           <div
             className={`cover-with-controls ${
-              swipeDirection === 'left'
-                ? 'cover-swipe-left'
-                : swipeDirection === 'right'
-                ? 'cover-swipe-right'
+              swipeDirection
+                ? swipeDirection
                 : ''
             }`}
             ref={coverRef}
@@ -399,25 +424,6 @@ function RadioApp() {
                 <div className="buffering-spinner" />
               </div>
             )}
-
-            <div className="controls-overlay">
-              <button
-                onClick={togglePlay}
-                className="play-button-overlay"
-                aria-label={playing ? 'Pausar' : 'Reproducir'}
-              >
-                {playing ? <Pause size={48} /> : <Play size={48} />}
-              </button>
-              {currentStation && (
-                <button
-                  onClick={playRandomStation}
-                  className="skip-button-overlay"
-                  aria-label="Siguiente emisora"
-                >
-                  <SkipForward size={32} />
-                </button>
-              )}
-            </div>
           </div>
 
           {/* TRACK INFO / MARQUEE */}
