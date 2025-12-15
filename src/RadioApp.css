@@ -296,8 +296,8 @@
   inset: 0;
   background: var(--gradient-animated);
   background-size: 400% 400%;
-  animation: gradient 15s ease infinite;
-  opacity: 0.25;
+  animation: gradient 12s ease infinite;
+  opacity: 0.5;
 }
 
 .album-cover-image,
@@ -366,7 +366,7 @@
 }
 
 .play-button-overlay {
-  margin-bottom: 40px;
+  margin-bottom: 70px;
 }
 
 .play-button-overlay:active,
