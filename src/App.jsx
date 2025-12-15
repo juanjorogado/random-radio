@@ -61,6 +61,7 @@ function RadioApp() {
       metadataTimer.current && clearInterval(metadataTimer.current);
       retryTimeoutRef.current && clearTimeout(retryTimeoutRef.current);
       swipeTimeoutRef.current && clearTimeout(swipeTimeoutRef.current);
+      tapTimeoutRef.current && clearTimeout(tapTimeoutRef.current);
     };
   }, []);
 
@@ -263,65 +264,113 @@ function RadioApp() {
     }
   };
 
-  // Gestos: doble tap en carátula
+  // Gestos: doble tap en carátula (funciona en móvil y desktop)
   const coverRef = useRef(null);
   const lastTapRef = useRef(0);
+  const tapTimeoutRef = useRef(null);
 
-  const handleCoverDoubleTap = (e) => {
+  const handleCoverTap = (e) => {
     const now = Date.now();
     const DOUBLE_TAP_DELAY = 300;
+    
     if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
+      // Es un doble tap
       e.preventDefault();
+      e.stopPropagation();
+      if (tapTimeoutRef.current) {
+        clearTimeout(tapTimeoutRef.current);
+        tapTimeoutRef.current = null;
+      }
       togglePlay();
+      lastTapRef.current = 0;
+    } else {
+      // Primer tap, esperar para ver si hay segundo
+      lastTapRef.current = now;
+      tapTimeoutRef.current = setTimeout(() => {
+        lastTapRef.current = 0;
+      }, DOUBLE_TAP_DELAY);
     }
-    lastTapRef.current = now;
+  };
+
+  const handleCoverDoubleClick = (e) => {
+    e.preventDefault();
+    togglePlay();
   };
 
   // Gestos: swipe lateral
   const touchStartRef = useRef(null);
   const touchEndRef = useRef(null);
+  const touchStartYRef = useRef(null);
 
   const handleTouchStart = (e) => {
     touchStartRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e) => {
+    // Prevenir scroll vertical si hay movimiento horizontal
+    if (touchStartRef.current !== null) {
+      const deltaX = Math.abs(e.touches[0].clientX - touchStartRef.current);
+      const deltaY = Math.abs(e.touches[0].clientY - touchStartYRef.current);
+      if (deltaX > deltaY && deltaX > 10) {
+        e.preventDefault();
+      }
+    }
   };
 
   const handleTouchEnd = (e) => {
+    if (touchStartRef.current === null) return;
     touchEndRef.current = e.changedTouches[0].clientX;
-    handleSwipe();
+    const deltaY = Math.abs(e.changedTouches[0].clientY - touchStartYRef.current);
+    const deltaX = Math.abs(touchEndRef.current - touchStartRef.current);
+    
+    // Solo procesar swipe si el movimiento horizontal es mayor que el vertical
+    if (deltaX > deltaY) {
+      handleSwipe();
+    } else {
+      // Si es más vertical, podría ser un tap simple
+      handleCoverTap(e);
+    }
+    
+    touchStartRef.current = null;
+    touchEndRef.current = null;
+    touchStartYRef.current = null;
   };
 
   const startSwipe = (direction) => {
     if (swipeLockRef.current) return;
     swipeLockRef.current = true;
 
+    // Determinar clases según dirección del swipe
+    // Si swipe es de derecha a izquierda (distance > 0), la carátula sale a la izquierda
+    // y la nueva entra desde la derecha
     const outClass =
       direction === 'left'
         ? 'cover-swipe-out-left'
         : 'cover-swipe-out-right';
     const inClass =
       direction === 'left'
-        ? 'cover-swipe-in-left'
-        : 'cover-swipe-in-right';
+        ? 'cover-swipe-in-right'
+        : 'cover-swipe-in-left';
 
+    // Fase 1: Salida de la carátula actual
     setSwipeDirection(outClass);
 
-    // Fase de salida
+    // Fase 2: Cambiar emisora y preparar entrada desde el lado opuesto
     swipeTimeoutRef.current = setTimeout(() => {
       playRandomStation();
-
-      // Preparar entrada desde el lado opuesto
       setSwipeDirection(inClass);
 
-      // Siguiente tick: volver a estado neutro para que transicione a centro
+      // Fase 3: Transición a centro (estado neutro)
       swipeTimeoutRef.current = setTimeout(() => {
         setSwipeDirection(null);
 
-        // Desbloquear después de la animación
+        // Desbloquear después de que termine la animación
         swipeTimeoutRef.current = setTimeout(() => {
           swipeLockRef.current = false;
-        }, 280);
-      }, 20);
-    }, 180);
+        }, 300);
+      }, 50);
+    }, 250);
   };
 
   const handleSwipe = () => {
@@ -331,15 +380,13 @@ function RadioApp() {
 
     if (Math.abs(distance) > minSwipeDistance) {
       if (distance > 0) {
-        // Swipe izquierda
+        // Swipe de derecha a izquierda: carátula sale a la izquierda, nueva entra desde la derecha
         startSwipe('left');
       } else {
-        // Swipe derecha
+        // Swipe de izquierda a derecha: carátula sale a la derecha, nueva entra desde la izquierda
         startSwipe('right');
       }
     }
-    touchStartRef.current = null;
-    touchEndRef.current = null;
   };
 
   // Teclado: espacio para play/pause
@@ -368,7 +415,7 @@ function RadioApp() {
               <span className="station-header-content">
                 {playing && (
                   <span className="station-live-indicator">
-                    <span className="wave-indicator" />
+                    <span className={`wave-indicator ${playing ? 'wave-playing' : ''}`} />
                   </span>
                 )}
                 <span>
@@ -405,13 +452,13 @@ function RadioApp() {
           {/* COVER + GESTOS (doble tap y swipe) */}
           <div
             className={`cover-with-controls ${
-              swipeDirection
-                ? swipeDirection
-                : ''
-            }`}
+              swipeDirection ? swipeDirection : ''
+            } ${playing ? 'cover-playing' : ''}`}
             ref={coverRef}
-            onDoubleClick={handleCoverDoubleTap}
+            onClick={handleCoverTap}
+            onDoubleClick={handleCoverDoubleClick}
             onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
             <AlbumCover
