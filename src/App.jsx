@@ -13,9 +13,12 @@ function RadioApp() {
   const [currentStation, setCurrentStation] = useState(null);
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [buffering, setBuffering] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [closingHistory, setClosingHistory] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const retryTimeoutRef = useRef(null);
+  const retryCountRef = useRef(0);
 
   const [currentTrack, setCurrentTrack] = useState({
     title: 'Selecciona una radio',
@@ -24,7 +27,24 @@ function RadioApp() {
     cover: null
   });
 
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState(() => {
+    // Cargar historial desde localStorage al iniciar
+    try {
+      const saved = localStorage.getItem('radio-history');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // Guardar historial en localStorage cuando cambie
+  useEffect(() => {
+    try {
+      localStorage.setItem('radio-history', JSON.stringify(history));
+    } catch (err) {
+      console.error('Error guardando historial:', err);
+    }
+  }, [history]);
 
   /* ================= TIME ================= */
   useEffect(() => {
@@ -33,7 +53,10 @@ function RadioApp() {
   }, []);
 
   useEffect(() => {
-    return () => metadataTimer.current && clearInterval(metadataTimer.current);
+    return () => {
+      metadataTimer.current && clearInterval(metadataTimer.current);
+      retryTimeoutRef.current && clearTimeout(retryTimeoutRef.current);
+    };
   }, []);
 
   /* ================= HELPERS ================= */
@@ -51,6 +74,13 @@ function RadioApp() {
 
   const marqueeClass = (text, max) =>
     text && text.length > max ? 'marquee-content' : 'marquee-content short';
+
+  // Helper para generar enlace de Apple Music
+  const getAppleMusicLink = (track) => {
+    if (!track.title || !track.artist) return null;
+    const query = encodeURIComponent(`${track.artist} ${track.title}`);
+    return `https://music.apple.com/search?term=${query}`;
+  };
 
   /* ================= METADATA ================= */
   const fetchMetadata = async (station) => {
@@ -136,16 +166,15 @@ function RadioApp() {
         ) {
           return prev;
         }
-        return [
-          {
-            ...track,
-            station: station.name,
-            city: station.city,
-            country: station.country,
-            time: new Date().toLocaleTimeString('es-ES')
-          },
-          ...prev
-        ].slice(0, 50);
+        const newTrack = {
+          ...track,
+          station: station.name,
+          city: station.city,
+          country: station.country,
+          time: new Date().toLocaleTimeString('es-ES'),
+          appleMusicLink: getAppleMusicLink(track)
+        };
+        return [newTrack, ...prev].slice(0, 50);
       });
     } catch (err) {
       console.error(err);
@@ -155,30 +184,58 @@ function RadioApp() {
   };
 
   /* ================= PLAYER ================= */
-  const playStation = (station) => {
-    if (startingRef.current) return;
+  const playStation = (station, retryAttempt = 0) => {
+    if (startingRef.current && retryAttempt === 0) return;
     startingRef.current = true;
+    setBuffering(true);
 
     setCurrentStation(station);
     audioRef.current.src = station.stream;
     audioRef.current.load();
 
+    const handlePlaySuccess = () => {
+      setPlaying(true);
+      setBuffering(false);
+      retryCountRef.current = 0;
+      fetchMetadata(station);
+
+      metadataTimer.current &&
+        clearInterval(metadataTimer.current);
+
+        // Throttling: solo actualizar metadatos si la pestaña está visible
+        metadataTimer.current = setInterval(() => {
+          if (!document.hidden) {
+            fetchMetadata(station);
+          }
+        }, 30000);
+      startingRef.current = false;
+    };
+
+    const handlePlayError = () => {
+      setPlaying(false);
+      setBuffering(false);
+      startingRef.current = false;
+
+      // Reintento suave automático (máximo 3 intentos)
+      if (retryAttempt < 3) {
+        const delay = Math.min(1000 * Math.pow(2, retryAttempt), 5000);
+        retryTimeoutRef.current = setTimeout(() => {
+          playStation(station, retryAttempt + 1);
+        }, delay);
+      } else {
+        retryCountRef.current = 0;
+      }
+    };
+
     audioRef.current
       .play()
-      .then(() => {
-        setPlaying(true);
-        fetchMetadata(station);
+      .then(handlePlaySuccess)
+      .catch(handlePlayError);
 
-        metadataTimer.current &&
-          clearInterval(metadataTimer.current);
-
-        metadataTimer.current = setInterval(
-          () => fetchMetadata(station),
-          30000
-        );
-      })
-      .catch(() => setPlaying(false))
-      .finally(() => (startingRef.current = false));
+    // Detectar buffering
+    audioRef.current.addEventListener('waiting', () => setBuffering(true));
+    audioRef.current.addEventListener('playing', () => setBuffering(false));
+    audioRef.current.addEventListener('canplay', () => setBuffering(false));
   };
 
   const playRandomStation = () => {
@@ -193,10 +250,72 @@ function RadioApp() {
       audioRef.current.pause();
       setPlaying(false);
     } else {
-      audioRef.current.play();
+      audioRef.current.play().catch(() => {
+        // Si falla, intentar reconectar
+        if (currentStation) playStation(currentStation);
+      });
       setPlaying(true);
     }
   };
+
+  // Gestos: doble tap en carátula
+  const coverRef = useRef(null);
+  const lastTapRef = useRef(0);
+
+  const handleCoverDoubleTap = (e) => {
+    const now = Date.now();
+    const DOUBLE_TAP_DELAY = 300;
+    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
+      e.preventDefault();
+      togglePlay();
+    }
+    lastTapRef.current = now;
+  };
+
+  // Gestos: swipe lateral
+  const touchStartRef = useRef(null);
+  const touchEndRef = useRef(null);
+
+  const handleTouchStart = (e) => {
+    touchStartRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e) => {
+    touchEndRef.current = e.changedTouches[0].clientX;
+    handleSwipe();
+  };
+
+  const handleSwipe = () => {
+    if (!touchStartRef.current || !touchEndRef.current) return;
+    const distance = touchStartRef.current - touchEndRef.current;
+    const minSwipeDistance = 50;
+
+    if (Math.abs(distance) > minSwipeDistance) {
+      if (distance > 0) {
+        // Swipe izquierda: siguiente emisora
+        playRandomStation();
+      } else {
+        // Swipe derecha: también siguiente emisora (o podría ser anterior)
+        playRandomStation();
+      }
+    }
+    touchStartRef.current = null;
+    touchEndRef.current = null;
+  };
+
+  // Teclado: espacio para play/pause
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.code === 'Space' && !e.target.matches('input, textarea')) {
+        e.preventDefault();
+        togglePlay();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /* ================= UI ================= */
   return (
@@ -245,15 +364,29 @@ function RadioApp() {
           </div>
 
           {/* COVER + CONTROLES CENTRADOS SOBRE LA CARÁTULA */}
-          <div className="cover-with-controls">
+          <div
+            className="cover-with-controls"
+            ref={coverRef}
+            onDoubleClick={handleCoverDoubleTap}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
             <AlbumCover
               src={currentTrack.cover || currentStation?.logo}
+              stationId={currentStation?.id}
+              stationName={currentStation?.name}
             />
+            {buffering && (
+              <div className="buffering-indicator" aria-label="Cargando">
+                <div className="buffering-spinner" />
+              </div>
+            )}
 
             <div className="controls-overlay">
               <button
                 onClick={togglePlay}
                 className="play-button-overlay"
+                aria-label={playing ? 'Pausar' : 'Reproducir'}
               >
                 {playing ? <Pause size={48} /> : <Play size={48} />}
               </button>
@@ -261,6 +394,7 @@ function RadioApp() {
                 <button
                   onClick={playRandomStation}
                   className="skip-button-overlay"
+                  aria-label="Siguiente emisora"
                 >
                   <SkipForward size={32} />
                 </button>
@@ -334,7 +468,21 @@ function RadioApp() {
               history.map((track, index) => (
                 <div key={index} className="history-item">
                   <div className="history-info">
-                    <div className="history-title">{track.title}</div>
+                    <div className="history-title">
+                      {track.appleMusicLink ? (
+                        <a
+                          href={track.appleMusicLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="history-link"
+                          aria-label={`Abrir ${track.title} en Apple Music`}
+                        >
+                          {track.title}
+                        </a>
+                      ) : (
+                        track.title
+                      )}
+                    </div>
                     <div className="history-meta">
                       {track.artist} - {track.station}
                     </div>
