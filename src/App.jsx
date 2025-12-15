@@ -14,6 +14,7 @@ function RadioApp() {
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [closingHistory, setClosingHistory] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
   const [currentTrack, setCurrentTrack] = useState({
@@ -295,18 +296,35 @@ function RadioApp() {
 
           <button
             className="history-btn"
-            onClick={() => setShowHistory(true)}
+            onClick={() => {
+              setClosingHistory(false);
+              setShowHistory(true);
+            }}
           >
             Ver historial <span>{history.length}</span>
           </button>
         </div>
       ) : (
         /* HISTORY VIEW */
-        <div className="history-view">
-          <button onClick={() => setShowHistory(false)}>
-            <X size={28} />
-          </button>
-          <h2>Historial de Reproducción</h2>
+        <div
+          className={`history-view ${
+            closingHistory ? 'history-view-closing' : ''
+          }`}
+        >
+          <div className="history-header">
+            <h2>Historial de Reproducción</h2>
+            <button
+              onClick={() => {
+                setClosingHistory(true);
+                setTimeout(() => {
+                  setShowHistory(false);
+                  setClosingHistory(false);
+                }, 500);
+              }}
+            >
+              <X size={28} />
+            </button>
+          </div>
           <div className="history-list">
             {history.length === 0 ? (
               <p className="history-empty">

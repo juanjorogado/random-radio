@@ -72,6 +72,38 @@
   --motion-slow: 0.7s;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #111111;
+    --color-background-dark: #050505;
+    --color-surface: #181818;
+
+    --color-text-primary: #f5f3ed;
+    --color-text-secondary: #c2bfb8;
+    --color-text-tertiary: #8f8a80;
+    --color-text-muted: #6b665e;
+
+    --color-display-bg: #111111;
+    --color-display-text: #f5f3ed;
+    --color-display-accent: #ff8c5a;
+
+    --color-border: rgba(255, 255, 255, 0.06);
+    --color-shadow: rgba(0, 0, 0, 0.8);
+    --color-shadow-strong: rgba(0, 0, 0, 1);
+    --color-overlay: rgba(24, 24, 24, 0.8);
+
+    --gradient-background: linear-gradient(to bottom, #111111, #050505);
+    --gradient-cover: linear-gradient(135deg, #33302b, #181818);
+    --gradient-animated: linear-gradient(
+      135deg,
+      #33302b,
+      #181818,
+      #050505,
+      #2b2620
+    );
+  }
+}
+
 /* ====================================
    GLOBAL
    ==================================== */
@@ -443,28 +475,37 @@
   box-shadow: 0 20px 60px var(--color-shadow);
   border: 1px solid var(--color-border);
   position: relative;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: history-in var(--motion-medium) var(--ease-braun) forwards;
 }
 
-.history-view h2 {
+.history-view-closing {
+  animation: history-out var(--motion-medium) var(--ease-braun) forwards;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.history-header h2 {
   font-size: var(--font-size-xl);
   color: var(--color-text-primary);
-  margin-bottom: var(--space-md);
-  text-align: center;
+  margin: 0;
 }
 
-.history-view button {
-  position: absolute;
-  top: var(--space-xl);
-  right: var(--space-xl);
+.history-header button {
   border: none;
   background: none;
   color: var(--color-text-tertiary);
   cursor: pointer;
-  z-index: 10;
   transition: color var(--motion-fast) ease;
 }
 
-.history-view button:hover {
+.history-header button:hover {
   color: var(--color-text-secondary);
 }
 
@@ -539,6 +580,28 @@
   }
   100% {
     background-position: 0% 50%;
+  }
+}
+
+@keyframes history-in {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes history-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(16px);
   }
 }
 
