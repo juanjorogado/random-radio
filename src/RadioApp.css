@@ -118,7 +118,10 @@
    ==================================== */
 
 .station-header-top {
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-sm);
   text-transform: uppercase;
   letter-spacing: 2px;
   font-size: var(--font-size-sm);
@@ -126,24 +129,26 @@
   font-weight: var(--font-weight-light);
 }
 
-.station-playing {
+.station-header-content {
   display: inline-flex;
   align-items: center;
   gap: var(--space-sm);
+}
+
+.station-live-indicator {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
-  margin-top: var(--space-sm);
-  font-size: var(--font-size-sm);
-  color: var(--color-primary-dark);
 }
 
 /* ====================================
-   PLAYING INDICATOR (Nueva animación de onda)
+   PLAYING INDICATOR (Pulso Braun)
    ==================================== */
 
 .wave-indicator {
   position: relative;
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
 }
 
 .wave-indicator::before {
@@ -151,9 +156,9 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 12px;
-  height: 12px;
-  background: var(--color-primary);
+  width: 10px;
+  height: 10px;
+  background: var(--color-primary-dark);
   border-radius: var(--radius-full);
   transform: translate(-50%, -50%);
   z-index: 2;
@@ -164,13 +169,13 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 12px;
-  height: 12px;
-  background: var(--color-primary);
+  width: 10px;
+  height: 10px;
+  background: var(--color-primary-dark);
   border-radius: var(--radius-full);
   transform: translate(-50%, -50%);
-  animation: wave 1.5s infinite ease-out;
   opacity: 0;
+  animation: wave 1.8s infinite var(--ease-braun);
 }
 
 /* El span en el JSX no tiene función en esta nueva animación, pero se mantiene la estructura */
@@ -180,14 +185,19 @@
 
 @keyframes wave {
   0% {
-    width: 12px;
-    height: 12px;
-    opacity: 0.6;
+    width: 10px;
+    height: 10px;
+    opacity: 0.0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  35% {
+    opacity: 0.9;
   }
   100% {
-    width: 28px; /* Ligeramente más grande que 24px para un mejor efecto */
-    height: 28px;
+    width: 22px;
+    height: 22px;
     opacity: 0;
+    transform: translate(-50%, -50%) scale(1.02);
   }
 }
 

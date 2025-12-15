@@ -205,9 +205,20 @@ function RadioApp() {
       {!showHistory ? (
         <div className="main-container">
           <div className="station-header-top">
-            {currentStation
-              ? `${currentStation.name} — ${currentStation.city}`
-              : 'Selecciona una radio'}
+            {currentStation ? (
+              <span className="station-header-content">
+                {playing && (
+                  <span className="station-live-indicator">
+                    <span className="wave-indicator" />
+                  </span>
+                )}
+                <span>
+                  {currentStation.name} — {currentStation.city}
+                </span>
+              </span>
+            ) : (
+              'Selecciona una radio'
+            )}
           </div>
 
           <div className="clocks-horizontal">
@@ -280,15 +291,6 @@ function RadioApp() {
               {currentTrack.artist}{' '}
               {currentTrack.album && `- ${currentTrack.album}`}
             </div>
-            {playing && currentStation && (
-              <div className="station-playing">
-                {/* Animación de Onda (wave-indicator) */}
-                <div className="wave-indicator">
-                  <span />
-                </div>
-                <span>En directo</span>
-              </div>
-            )}
           </div>
 
           <button
