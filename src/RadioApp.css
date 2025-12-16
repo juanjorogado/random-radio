@@ -551,9 +551,12 @@
 }
 
 .history-header h2 {
-  font-size: var(--font-size-xl);
+  font-size: 1.0625rem;
   color: var(--color-text-primary);
   margin: 0;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.4;
 }
 
 
