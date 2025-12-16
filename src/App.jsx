@@ -510,7 +510,7 @@ function RadioApp() {
               setShowHistory(true);
             }}
           >
-            Ver historial <span>{history.length}</span>
+            Historial — ({history.length.toLocaleString('es-ES')})
           </button>
         </div>
       ) : (
