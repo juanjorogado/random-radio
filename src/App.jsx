@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
 
 import './RadioApp.css';
 import stations from './data/stations.json';
@@ -13,8 +12,7 @@ function RadioApp() {
   const [currentStation, setCurrentStation] = useState(null);
   const [playing, setPlaying] = useState(false);
   const [buffering, setBuffering] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
-  const [closingHistory, setClosingHistory] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [swipeDirection, setSwipeDirection] = useState(null);
 
@@ -22,6 +20,10 @@ function RadioApp() {
   const retryCountRef = useRef(0);
   const swipeTimeoutRef = useRef(null);
   const swipeLockRef = useRef(false);
+  
+  // Refs para swipe vertical del drawer
+  const drawerTouchStartYRef = useRef(null);
+  const drawerTouchStartXRef = useRef(null);
 
   const [currentTrack, setCurrentTrack] = useState({
     title: 'Selecciona una radio',
@@ -504,35 +506,57 @@ function RadioApp() {
           <button
             className="history-btn"
             onClick={() => {
-              setClosingHistory(false);
-              setShowHistory(true);
+              setHistoryOpen(true);
             }}
           >
             Historial — ({history.length.toLocaleString('es-ES')})
           </button>
         </div>
 
-      {/* HISTORY DRAWER */}
-      {showHistory && (
-        <div
-          className={`history-view ${
-            closingHistory ? 'history-view-closing' : ''
-          }`}
-        >
-          <div className="history-header">
-            <h2>Historial de Reproducción</h2>
-            <button
-              onClick={() => {
-                setClosingHistory(true);
-                setTimeout(() => {
-                  setShowHistory(false);
-                  setClosingHistory(false);
-                }, 500);
-              }}
-            >
-              <X size={28} />
-            </button>
-          </div>
+      {/* HISTORY DRAWER - Siempre visible, parcialmente cuando está cerrado */}
+      <div
+        className={`history-view ${historyOpen ? 'history-view-open' : 'history-view-closed'}`}
+        onTouchStart={(e) => {
+          drawerTouchStartYRef.current = e.touches[0].clientY;
+          drawerTouchStartXRef.current = e.touches[0].clientX;
+        }}
+        onTouchMove={(e) => {
+          // Permitir scroll dentro del drawer cuando está abierto, pero detectar swipe en el header
+          if (drawerTouchStartYRef.current !== null && historyOpen) {
+            const deltaY = e.touches[0].clientY - drawerTouchStartYRef.current;
+            const deltaX = Math.abs(e.touches[0].clientX - drawerTouchStartXRef.current);
+            // Si el swipe es principalmente vertical y hacia abajo, y estamos cerca del top
+            if (deltaY > 0 && Math.abs(deltaY) > deltaX && e.touches[0].clientY < 100) {
+              e.preventDefault();
+            }
+          }
+        }}
+        onTouchEnd={(e) => {
+          if (drawerTouchStartYRef.current === null) return;
+          const endY = e.changedTouches[0].clientY;
+          const endX = e.changedTouches[0].clientX;
+          const deltaY = endY - drawerTouchStartYRef.current;
+          const deltaX = Math.abs(endX - drawerTouchStartXRef.current);
+          const minSwipeDistance = 50;
+          
+          // Solo procesar si el movimiento es principalmente vertical
+          if (Math.abs(deltaY) > deltaX && Math.abs(deltaY) > minSwipeDistance) {
+            if (deltaY < 0 && !historyOpen) {
+              // Swipe hacia arriba cuando está cerrado: abrir drawer
+              setHistoryOpen(true);
+            } else if (deltaY > 0 && historyOpen) {
+              // Swipe hacia abajo cuando está abierto: cerrar drawer
+              setHistoryOpen(false);
+            }
+          }
+          
+          drawerTouchStartYRef.current = null;
+          drawerTouchStartXRef.current = null;
+        }}
+      >
+        <div className="history-header">
+          <h2>Historial de Reproducción</h2>
+        </div>
           <div className="history-list">
             {history.length === 0 ? (
               <p className="history-empty">
@@ -567,7 +591,6 @@ function RadioApp() {
             )}
           </div>
         </div>
-      )}
     </div>
   );
 }
