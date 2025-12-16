@@ -325,10 +325,26 @@ function RadioApp() {
     const deltaY = Math.abs(e.changedTouches[0].clientY - touchStartYRef.current);
     const deltaX = Math.abs(touchEndRef.current - touchStartRef.current);
     
+    // Guardar valores antes de limpiar
+    const startX = touchStartRef.current;
+    const endX = touchEndRef.current;
+    
     // Solo procesar swipe si el movimiento horizontal es mayor que el vertical y suficiente
     if (deltaX > deltaY && deltaX > 30) {
       isSwipeRef.current = true;
-      handleSwipe();
+      // Pasar los valores directamente
+      const distance = startX - endX;
+      const minSwipeDistance = 50;
+
+      if (Math.abs(distance) > minSwipeDistance) {
+        if (distance > 0) {
+          // Swipe de derecha a izquierda: carátula sale a la izquierda, nueva entra desde la derecha
+          startSwipe('left');
+        } else {
+          // Swipe de izquierda a derecha: carátula sale a la derecha, nueva entra desde la izquierda
+          startSwipe('right');
+        }
+      }
     } else {
       // Si es más vertical o movimiento pequeño, tratar como tap
       handleCoverTap(e);
@@ -376,21 +392,6 @@ function RadioApp() {
     }, 300);
   };
 
-  const handleSwipe = () => {
-    if (!touchStartRef.current || !touchEndRef.current) return;
-    const distance = touchStartRef.current - touchEndRef.current;
-    const minSwipeDistance = 50;
-
-    if (Math.abs(distance) > minSwipeDistance) {
-      if (distance > 0) {
-        // Swipe de derecha a izquierda: carátula sale a la izquierda, nueva entra desde la derecha
-        startSwipe('left');
-      } else {
-        // Swipe de izquierda a derecha: carátula sale a la derecha, nueva entra desde la izquierda
-        startSwipe('right');
-      }
-    }
-  };
 
   // Teclado: espacio para play/pause
   useEffect(() => {
@@ -411,8 +412,7 @@ function RadioApp() {
     <div className="radio-app">
       <audio ref={audioRef} crossOrigin="anonymous" />
 
-      {!showHistory ? (
-        <div className="main-container">
+      <div className="main-container">
           <div className="station-header-top">
             {currentStation ? (
               <span className="station-header-content">
@@ -511,8 +511,9 @@ function RadioApp() {
             Historial — ({history.length.toLocaleString('es-ES')})
           </button>
         </div>
-      ) : (
-        /* HISTORY VIEW */
+
+      {/* HISTORY DRAWER */}
+      {showHistory && (
         <div
           className={`history-view ${
             closingHistory ? 'history-view-closing' : ''

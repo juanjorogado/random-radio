@@ -182,8 +182,9 @@
   left: 50%;
   width: 0.5rem;
   height: 0.5rem;
-  background: #000000;
+  border: 0.125rem solid #C6845D;
   border-radius: var(--radius-full);
+  background: transparent;
   transform: translate(-50%, -50%);
   z-index: 2;
 }
@@ -195,8 +196,9 @@
   left: 50%;
   width: 0.625rem;
   height: 0.625rem;
-  background: #000000;
+  border: 0.125rem solid #C6845D;
   border-radius: var(--radius-full);
+  background: transparent;
   transform: translate(-50%, -50%);
   opacity: 0;
   animation: none;
@@ -490,29 +492,32 @@
 }
 
 /* ====================================
-   HISTORY VIEW
+   HISTORY VIEW (Drawer)
    ==================================== */
 
 .history-view {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   width: 100%;
-  max-width: 34.375rem;
-  height: calc(100vh - 1.5rem);
-  min-height: 43.75rem;
+  height: 92vh;
+  max-height: 92vh;
   background: var(--color-surface);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
   display: flex;
   flex-direction: column;
   padding: var(--space-xl);
-  box-shadow: 0 1.25rem 3.75rem var(--color-shadow);
-  border: 0.0625rem solid var(--color-border);
-  position: relative;
-  opacity: 0;
-  transform: translateY(0.75rem);
-  animation: history-in var(--motion-medium) var(--ease-braun) forwards;
+  box-shadow: 0 -0.5rem 2rem var(--color-shadow);
+  border-top: 0.0625rem solid var(--color-border);
+  z-index: 1000;
+  transform: translateY(100%);
+  animation: history-drawer-in var(--motion-medium) var(--ease-braun) forwards;
+  overflow: hidden;
 }
 
 .history-view-closing {
-  animation: history-out var(--motion-medium) var(--ease-braun) forwards;
+  animation: history-drawer-out var(--motion-medium) var(--ease-braun) forwards;
 }
 
 .history-header {
@@ -645,25 +650,21 @@
   }
 }
 
-@keyframes history-in {
+@keyframes history-drawer-in {
   0% {
-    opacity: 0;
-    transform: translateY(1rem);
+    transform: translateY(100%);
   }
   100% {
-    opacity: 1;
     transform: translateY(0);
   }
 }
 
-@keyframes history-out {
+@keyframes history-drawer-out {
   0% {
-    opacity: 1;
     transform: translateY(0);
   }
   100% {
-    opacity: 0;
-    transform: translateY(1rem);
+    transform: translateY(100%);
   }
 }
 
