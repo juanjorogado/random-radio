@@ -413,6 +413,8 @@
   text-align: left;
   overflow: hidden;
   padding: 0.75rem 0 0 0;
+  position: relative;
+  z-index: 1001;
 }
 
 .marquee-container {
@@ -516,6 +518,11 @@
   overflow: hidden;
   touch-action: pan-y;
   transition: transform var(--motion-medium) var(--ease-braun);
+}
+
+/* Cuando está cerrado, reducir z-index para no tapar el título */
+.history-view-closed {
+  z-index: 999;
 }
 
 /* Estado cerrado: muestra solo una parte (peek) */

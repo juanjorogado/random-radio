@@ -163,12 +163,15 @@ function RadioApp() {
       setCurrentTrack(track);
 
       setHistory((prev) => {
-        if (
-          prev[0]?.title === track.title &&
-          prev[0]?.artist === track.artist
-        ) {
+        // Verificar si la canción ya existe en el historial (no solo la primera)
+        const isDuplicate = prev.some(
+          (item) => item.title === track.title && item.artist === track.artist
+        );
+        
+        if (isDuplicate) {
           return prev;
         }
+        
         const newTrack = {
           ...track,
           station: station.name,
