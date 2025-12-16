@@ -1,19 +1,17 @@
 import { useImageStatus } from '../hooks/useImageStatus';
 
-// Generar gradiente único basado en el ID de la emisora
+// Generar gradiente único basado en el ID de la emisora usando solo los 3 colores permitidos
 const generateGradientFromId = (id, name) => {
-  if (!id && !name) return null;
+  if (!id && !name) return '#CBD8BF';
   const seed = (id || name || '').split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   
-  // Generar colores basados en el seed
-  const hue1 = (seed * 137.508) % 360;
-  const hue2 = (seed * 73.7) % 360;
-  const sat1 = 30 + (seed % 20);
-  const sat2 = 25 + (seed % 15);
-  const light1 = 45 + (seed % 15);
-  const light2 = 55 + (seed % 20);
+  // Usar solo los 3 colores: CBD8BF, E5ECDF, 000000
+  // Variar la opacidad o mezcla entre CBD8BF y E5ECDF
+  const colors = ['#CBD8BF', '#E5ECDF'];
+  const color1 = colors[seed % 2];
+  const color2 = colors[(seed + 1) % 2];
   
-  return `linear-gradient(135deg, hsl(${hue1}, ${sat1}%, ${light1}%), hsl(${hue2}, ${sat2}%, ${light2}%))`;
+  return `linear-gradient(135deg, ${color1}, ${color2})`;
 };
 
 export default function AlbumCover({ src, stationId, stationName }) {
