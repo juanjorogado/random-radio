@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, SkipForward, X } from 'lucide-react';
+import { X } from 'lucide-react';
 
 import './RadioApp.css';
 import stations from './data/stations.json';
@@ -12,7 +12,6 @@ function RadioApp() {
 
   const [currentStation, setCurrentStation] = useState(null);
   const [playing, setPlaying] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [buffering, setBuffering] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [closingHistory, setClosingHistory] = useState(false);
@@ -98,8 +97,6 @@ function RadioApp() {
       return;
     }
 
-    setLoading(true);
-
     try {
       const res = await fetch(station.metadataUrl);
       const data = await res.json();
@@ -182,8 +179,6 @@ function RadioApp() {
       });
     } catch (err) {
       console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
 

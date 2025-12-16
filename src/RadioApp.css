@@ -6,11 +6,8 @@
   /* Paleta minimalista - solo 3 colores */
   --color-primary: #000000;
   --color-primary-dark: #000000;
-  --color-primary-light: #000000;
-  --color-secondary: rgba(0, 0, 0, 0.1);
 
   --color-background: #CBD8BF;
-  --color-background-dark: #CBD8BF;
   --color-surface: #E5ECDF;
 
   --color-text-primary: #000000;
@@ -24,10 +21,7 @@
 
   --color-border: rgba(0, 0, 0, 0.08);
   --color-shadow: rgba(0, 0, 0, 0.1);
-  --color-shadow-strong: rgba(0, 0, 0, 0.2);
-  --color-overlay: rgba(229, 236, 223, 0.8);
 
-  --gradient-background: #CBD8BF;
   --gradient-cover: #CBD8BF;
   --gradient-animated: linear-gradient(135deg, #CBD8BF, #E5ECDF);
 
@@ -43,26 +37,17 @@
 
   --radius-sm: 0.5rem;
   --radius-md: 1rem;
-  --radius-lg: 1.5rem;
-  --radius-xl: 2.25rem;
   --radius-full: 50%;
 
   --font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 
-  --font-weight-light: 300;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
 
-  --font-size-xs: 1.0625rem;
   --font-size-sm: 1.0625rem;
   --font-size-md: 1.0625rem;
   --font-size-lg: 1.25rem;
   --font-size-xl: 1.5rem;
-  --font-size-2xl: 2rem;
-  --font-size-3xl: 2.25rem;
-
-  --button-size: 5.625rem;
-  --marquee-height: 3.125rem;
 
   /* Braun Atelier motion */
   --ease-braun: cubic-bezier(0.2, 0, 0.1, 1);
@@ -71,30 +56,30 @@
   --motion-slow: 0.7s;
 }
 
+/* ====================================
+   DARK MODE (Automático)
+   ==================================== */
+
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Mantener los mismos colores en modo oscuro */
-    --color-background: #CBD8BF;
-    --color-background-dark: #CBD8BF;
-    --color-surface: #E5ECDF;
+    /* Colores oscuros invertidos */
+    --color-background: #1a1a1a;
+    --color-surface: #2a2a2a;
 
-    --color-text-primary: #000000;
-    --color-text-secondary: #000000;
-    --color-text-tertiary: #000000;
-    --color-text-muted: rgba(0, 0, 0, 0.6);
+    --color-text-primary: #E5ECDF;
+    --color-text-secondary: #CBD8BF;
+    --color-text-tertiary: #a0a0a0;
+    --color-text-muted: rgba(229, 236, 223, 0.6);
 
-    --color-display-bg: #000000;
-    --color-display-text: #E5ECDF;
-    --color-display-accent: #000000;
+    --color-display-bg: #E5ECDF;
+    --color-display-text: #000000;
+    --color-display-accent: #CBD8BF;
 
-    --color-border: rgba(0, 0, 0, 0.08);
-    --color-shadow: rgba(0, 0, 0, 0.1);
-    --color-shadow-strong: rgba(0, 0, 0, 0.2);
-    --color-overlay: rgba(229, 236, 223, 0.8);
+    --color-border: rgba(229, 236, 223, 0.15);
+    --color-shadow: rgba(0, 0, 0, 0.5);
 
-    --gradient-background: #CBD8BF;
-    --gradient-cover: #CBD8BF;
-    --gradient-animated: linear-gradient(135deg, #CBD8BF, #E5ECDF);
+    --gradient-cover: #2a2a2a;
+    --gradient-animated: linear-gradient(135deg, #1a1a1a, #2a2a2a);
   }
 }
 
@@ -110,12 +95,14 @@
 
 .radio-app {
   min-height: 100vh;
-  background: #CBD8BF;
+  background: var(--color-background);
   display: block;
   padding: 0;
   font-family: var(--font-family);
   overflow: hidden;
+  transition: background-color var(--motion-medium) var(--ease-braun);
 }
+
 
 /* ====================================
    MAIN CONTAINER
@@ -162,7 +149,8 @@
   left: 0;
   right: 0;
   height: 0.0625rem;
-  background: #E5ECDF;
+  background: var(--color-surface);
+  transition: background-color var(--motion-medium) var(--ease-braun);
 }
 
 .station-header-content {
@@ -218,11 +206,6 @@
   animation: wave 1.8s infinite var(--ease-braun);
 }
 
-/* El span en el JSX no tiene función en esta nueva animación, pero se mantiene la estructura */
-.wave-indicator span {
-  display: none;
-}
-
 @keyframes wave {
   0% {
     width: 0.5rem;
@@ -263,20 +246,22 @@
 .clock-label-top {
   font-size: 1.0625rem;
   text-transform: none;
-  color: #000000;
+  color: var(--color-text-primary);
   margin-bottom: 0.25rem;
   font-weight: 400;
   letter-spacing: 0;
   line-height: 1.2;
+  transition: color var(--motion-medium) var(--ease-braun);
 }
 
 .clock-time-large {
   font-size: 2rem;
-  color: #000000;
+  color: var(--color-text-primary);
   font-weight: 400;
   font-variant-numeric: tabular-nums;
   line-height: 1;
   letter-spacing: 0;
+  transition: color var(--motion-medium) var(--ease-braun);
 }
 
 /* ====================================
@@ -397,19 +382,12 @@
   opacity: 0.5;
 }
 
-.album-cover-image,
-.album-cover-logo {
+.album-cover-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   z-index: 2;
   animation: braun-cover-in var(--motion-slow) var(--ease-braun);
-}
-
-.album-cover-logo {
-  width: 60%;
-  height: 60%;
-  opacity: 0.6;
 }
 
 @keyframes braun-cover-in {
@@ -423,13 +401,6 @@
   }
 }
 
-/* ====================================
-   CONTROLS
-   ==================================== */
-
-.controls-overlay {
-  display: none;
-}
 
 /* ====================================
    TRACK INFO / MARQUEE
@@ -712,15 +683,6 @@
    ==================================== */
 
 @media (max-width: 34.375rem) {
-  .play-button-overlay {
-    width: 4.6875rem;
-    height: 4.6875rem;
-  }
-  .skip-button-overlay {
-    width: 3.25rem;
-    height: 3.25rem;
-  }
-
   .main-container,
   .history-view {
     min-height: initial;
