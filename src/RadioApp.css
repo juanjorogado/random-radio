@@ -5,7 +5,6 @@
 :root {
   /* Paleta minimalista - solo 3 colores */
   --color-primary: #000000;
-  --color-primary-dark: #000000;
 
   --color-background: #CBD8BF;
   --color-surface: #E5ECDF;
@@ -15,8 +14,6 @@
   --color-text-tertiary: #000000;
   --color-text-muted: rgba(0, 0, 0, 0.6);
 
-  --color-display-bg: #000000;
-  --color-display-text: #E5ECDF;
   --color-display-accent: #000000;
 
   --color-border: rgba(0, 0, 0, 0.08);
@@ -25,15 +22,11 @@
   --gradient-cover: #CBD8BF;
   --gradient-animated: linear-gradient(135deg, #CBD8BF, #E5ECDF);
 
-  --space-xs: 0.375rem;
   --space-sm: 0.625rem;
   --space-md: 1rem;
   --space-lg: 1.25rem;
   --space-xl: 1.5rem;
-  --space-2xl: 2rem;
-  --space-3xl: 2.5rem;
   --space-4xl: 3.125rem;
-  --space-5xl: 4.375rem;
 
   --radius-sm: 0.5rem;
   --radius-md: 1rem;
@@ -44,10 +37,9 @@
   --font-weight-regular: 400;
   --font-weight-medium: 500;
 
-  --font-size-sm: 1.0625rem;
-  --font-size-md: 1.0625rem;
-  --font-size-lg: 1.25rem;
-  --font-size-xl: 1.5rem;
+  --font-size-sm: 1.25rem;
+  --font-size-lg: 1.5rem;
+  --font-size-xl: 1.875rem;
 
   /* Braun Atelier motion */
   --ease-braun: cubic-bezier(0.2, 0, 0.1, 1);
@@ -71,13 +63,12 @@
     --color-text-tertiary: #a0a0a0;
     --color-text-muted: rgba(229, 236, 223, 0.6);
 
-    --color-display-bg: #E5ECDF;
-    --color-display-text: #000000;
     --color-display-accent: #CBD8BF;
 
     --color-border: rgba(229, 236, 223, 0.15);
     --color-shadow: rgba(0, 0, 0, 0.5);
 
+    /* Cover en dark mode: usar paleta oscura sin verde */
     --gradient-cover: #2a2a2a;
     --gradient-animated: linear-gradient(135deg, #1a1a1a, #2a2a2a);
   }
@@ -332,17 +323,44 @@
 }
 
 .buffering-spinner {
-  width: 2.5rem;
-  height: 2.5rem;
-  border: 0.1875rem solid rgba(255, 255, 255, 0.2);
-  border-top-color: rgba(255, 255, 255, 0.8);
-  border-radius: var(--radius-full);
-  animation: spin 0.8s linear infinite;
+  width: 3rem;
+  height: 3rem;
+  position: relative;
+}
+
+.buffering-spinner svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(0deg);
+  animation: spin 2s linear infinite;
+}
+
+.buffering-spinner path {
+  fill: none;
+  stroke: var(--color-text-primary);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
+  animation: fill-progress 2s ease-in-out infinite;
 }
 
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes fill-progress {
+  0% {
+    stroke-dashoffset: 1000;
+  }
+  50% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -1000;
   }
 }
 
