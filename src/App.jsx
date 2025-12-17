@@ -29,6 +29,12 @@ function RadioApp() {
   // Refs para swipe vertical del drawer
   const drawerTouchStartYRef = useRef(null);
   const drawerTouchStartXRef = useRef(null);
+  
+  // Refs para gestos: doble tap en carátula (funciona en móvil y desktop)
+  const coverRef = useRef(null);
+  const lastTapRef = useRef(0);
+  const tapTimeoutRef = useRef(null);
+  const isSwipeRef = useRef(false);
 
   const [currentTrack, setCurrentTrack] = useState({
     title: 'Selecciona una radio',
@@ -124,7 +130,30 @@ function RadioApp() {
     }
 
     try {
-      const res = await fetch(station.metadataUrl);
+      // Timeout para evitar que la petición se quede colgada
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos
+
+      const res = await fetch(station.metadataUrl, {
+        signal: controller.signal,
+        headers: {
+          'Accept': 'application/json',
+        }
+      });
+
+      clearTimeout(timeoutId);
+
+      // Verificar si la respuesta es exitosa
+      if (!res.ok) {
+        throw new Error(`Error HTTP: ${res.status} ${res.statusText} - ${station.name}`);
+      }
+
+      // Verificar que el contenido sea JSON
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error(`Respuesta no es JSON - ${station.name}`);
+      }
+
       const data = await res.json();
 
       let track = {
@@ -207,7 +236,24 @@ function RadioApp() {
         return [newTrack, ...prev].slice(0, 50);
       });
     } catch (err) {
-      console.error(err);
+      // Manejo específico de diferentes tipos de errores
+      if (err.name === 'AbortError') {
+        console.error(`[${station.name}] Timeout al obtener metadatos: la petición tardó más de 10 segundos`);
+      } else if (err instanceof TypeError && err.message.includes('fetch')) {
+        console.error(`[${station.name}] Error de red: no se pudo conectar con la API de metadatos`, err.message);
+      } else if (err instanceof SyntaxError) {
+        console.error(`[${station.name}] Error al parsear JSON: respuesta inválida de la API`, err.message);
+      } else {
+        console.error(`[${station.name}] Error al obtener metadatos:`, err.message || err);
+      }
+      
+      // Mantener el track actual o mostrar un mensaje genérico
+      setCurrentTrack({
+        title: `Escuchando ${station.name}`,
+        artist: '',
+        album: '',
+        cover: null
+      });
     }
   };
 
@@ -283,12 +329,6 @@ function RadioApp() {
       setPlaying(true);
     }
   }, [currentStation, playing, playRandomStation]);
-
-  // Gestos: doble tap en carátula (funciona en móvil y desktop)
-  const coverRef = useRef(null);
-  const lastTapRef = useRef(0);
-  const tapTimeoutRef = useRef(null);
-  const isSwipeRef = useRef(false);
 
   const handleCoverTap = (e) => {
     // Si fue un swipe, ignorar el tap
