@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 import './RadioApp.css';
 import stations from './data/stations.json';
@@ -8,6 +8,11 @@ function RadioApp() {
   const audioRef = useRef(null);
   const metadataTimer = useRef(null);
   const startingRef = useRef(false);
+  
+  // Refs para los handlers de buffering (necesarios para poder eliminarlos)
+  const waitingHandlerRef = useRef(null);
+  const playingHandlerRef = useRef(null);
+  const canplayHandlerRef = useRef(null);
 
   const [currentStation, setCurrentStation] = useState(null);
   const [playing, setPlaying] = useState(false);
@@ -58,11 +63,30 @@ function RadioApp() {
   }, []);
 
   useEffect(() => {
+    // Crear handlers una sola vez
+    waitingHandlerRef.current = () => setBuffering(true);
+    playingHandlerRef.current = () => setBuffering(false);
+    canplayHandlerRef.current = () => setBuffering(false);
+    
+    const audio = audioRef.current;
+    if (audio) {
+      audio.addEventListener('waiting', waitingHandlerRef.current);
+      audio.addEventListener('playing', playingHandlerRef.current);
+      audio.addEventListener('canplay', canplayHandlerRef.current);
+    }
+    
     return () => {
       metadataTimer.current && clearInterval(metadataTimer.current);
       retryTimeoutRef.current && clearTimeout(retryTimeoutRef.current);
       swipeTimeoutRef.current && clearTimeout(swipeTimeoutRef.current);
       tapTimeoutRef.current && clearTimeout(tapTimeoutRef.current);
+      
+      // Limpiar event listeners del audio
+      if (audio && waitingHandlerRef.current && playingHandlerRef.current && canplayHandlerRef.current) {
+        audio.removeEventListener('waiting', waitingHandlerRef.current);
+        audio.removeEventListener('playing', playingHandlerRef.current);
+        audio.removeEventListener('canplay', canplayHandlerRef.current);
+      }
     };
   }, []);
 
@@ -236,19 +260,17 @@ function RadioApp() {
       .then(handlePlaySuccess)
       .catch(handlePlayError);
 
-    // Detectar buffering
-    audioRef.current.addEventListener('waiting', () => setBuffering(true));
-    audioRef.current.addEventListener('playing', () => setBuffering(false));
-    audioRef.current.addEventListener('canplay', () => setBuffering(false));
+    // Los event listeners de buffering se añaden una sola vez en useEffect
+    // No es necesario añadirlos aquí cada vez
   };
 
-  const playRandomStation = () => {
+  const playRandomStation = useCallback(() => {
     const random =
       stations[Math.floor(Math.random() * stations.length)];
     playStation(random);
-  };
+  }, []);
 
-  const togglePlay = () => {
+  const togglePlay = useCallback(() => {
     if (!currentStation) return playRandomStation();
     if (playing) {
       audioRef.current.pause();
@@ -260,7 +282,7 @@ function RadioApp() {
       });
       setPlaying(true);
     }
-  };
+  }, [currentStation, playing, playRandomStation]);
 
   // Gestos: doble tap en carátula (funciona en móvil y desktop)
   const coverRef = useRef(null);
@@ -409,8 +431,7 @@ function RadioApp() {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [togglePlay]);
 
   /* ================= UI ================= */
   return (
