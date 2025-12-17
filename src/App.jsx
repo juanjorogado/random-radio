@@ -3,6 +3,10 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './RadioApp.css';
 import stations from './data/stations.json';
 import AlbumCover from './components/AlbumCover';
+import HistoryDrawer from './components/HistoryDrawer';
+import StationHeader from './components/StationHeader';
+import Clocks from './components/Clocks';
+import { useDebounce } from './hooks/useDebounce';
 
 function RadioApp() {
   const audioRef = useRef(null);
@@ -51,14 +55,14 @@ function RadioApp() {
     }
   });
 
-  // Guardar historial en localStorage cuando cambie
-  useEffect(() => {
+  // Guardar historial en localStorage con debounce (500ms)
+  useDebounce(() => {
     try {
       localStorage.setItem('radio-history', JSON.stringify(history));
     } catch (err) {
       console.error('Error guardando historial:', err);
     }
-  }, [history]);
+  }, 500, [history]);
 
   /* ================= TIME ================= */
   useEffect(() => {
@@ -213,26 +217,36 @@ function RadioApp() {
 
       setCurrentTrack(track);
 
-      setHistory((prev) => {
-        // Verificar si la canción ya existe en el historial (no solo la primera)
-        const isDuplicate = prev.some(
-          (item) => item.title === track.title && item.artist === track.artist
-        );
-        
-        if (isDuplicate) {
-          return prev;
-        }
-        
-        const newTrack = {
-          ...track,
-          station: station.name,
-          city: station.city,
-          country: station.country,
-          time: new Date().toLocaleTimeString('es-ES'),
-          appleMusicLink: getAppleMusicLink(track)
-        };
-        return [newTrack, ...prev].slice(0, 50);
-      });
+      // Solo agregar al historial si hay información válida de título y artista
+      const hasValidInfo = track.title && 
+                          track.artist && 
+                          track.title !== 'Información no disponible' &&
+                          track.title !== 'Sin título' &&
+                          track.title !== 'En vivo' &&
+                          !track.title.startsWith('Escuchando');
+
+      if (hasValidInfo) {
+        setHistory((prev) => {
+          // Verificar si la canción ya existe en el historial (no solo la primera)
+          const isDuplicate = prev.some(
+            (item) => item.title === track.title && item.artist === track.artist
+          );
+          
+          if (isDuplicate) {
+            return prev;
+          }
+          
+          const newTrack = {
+            ...track,
+            station: station.name,
+            city: station.city,
+            country: station.country,
+            time: new Date().toLocaleTimeString('es-ES'),
+            appleMusicLink: getAppleMusicLink(track)
+          };
+          return [newTrack, ...prev].slice(0, 50);
+        });
+      }
     } catch (err) {
       // Manejo específico de diferentes tipos de errores
       if (err.name === 'AbortError') {
@@ -474,47 +488,12 @@ function RadioApp() {
       <audio ref={audioRef} crossOrigin="anonymous" />
 
       <div className="main-container">
-          <div className="station-header-top">
-            {currentStation ? (
-              <span className="station-header-content">
-                <span className="station-live-indicator">
-                  <span className={`wave-indicator ${playing ? 'wave-playing' : ''}`} />
-                </span>
-                <span>
-                  {currentStation.name} — {currentStation.city}
-                </span>
-              </span>
-            ) : (
-              <span className="station-header-content">
-                <span className="station-live-indicator">
-                  <span className="wave-indicator" />
-                </span>
-                <span>Selecciona una radio</span>
-              </span>
-            )}
-          </div>
-
-          <div className="clocks-horizontal">
-            <div className="clock-item">
-              <div className="clock-label-top">Hora local</div>
-              <div className="clock-time-large">
-                {currentTime.toLocaleTimeString('es-ES', {
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}
-              </div>
-            </div>
-            <div className="clock-item">
-              <div className="clock-label-top">
-                {currentStation ? currentStation.city : 'Ciudad'}
-              </div>
-              <div className="clock-time-large">
-                {currentStation
-                  ? getLocalTime(currentStation.timezone)
-                  : '--:--'}
-              </div>
-            </div>
-          </div>
+          <StationHeader currentStation={currentStation} playing={playing} />
+          <Clocks 
+            currentStation={currentStation} 
+            currentTime={currentTime} 
+            getLocalTime={getLocalTime} 
+          />
 
           {/* COVER + GESTOS (doble tap y swipe) */}
           <div
@@ -531,6 +510,8 @@ function RadioApp() {
               src={currentTrack.cover || currentStation?.logo}
               stationId={currentStation?.id}
               stationName={currentStation?.name}
+              city={currentStation?.city}
+              country={currentStation?.country}
             />
             {buffering && (
               <div className="buffering-indicator" aria-label="Cargando">
@@ -567,83 +548,13 @@ function RadioApp() {
         </div>
 
       {/* HISTORY DRAWER - Siempre visible, parcialmente cuando está cerrado */}
-      <div
-        className={`history-view ${historyOpen ? 'history-view-open' : 'history-view-closed'}`}
-        onTouchStart={(e) => {
-          drawerTouchStartYRef.current = e.touches[0].clientY;
-          drawerTouchStartXRef.current = e.touches[0].clientX;
-        }}
-        onTouchMove={(e) => {
-          // Permitir scroll dentro del drawer cuando está abierto, pero detectar swipe en el header
-          if (drawerTouchStartYRef.current !== null && historyOpen) {
-            const deltaY = e.touches[0].clientY - drawerTouchStartYRef.current;
-            const deltaX = Math.abs(e.touches[0].clientX - drawerTouchStartXRef.current);
-            // Si el swipe es principalmente vertical y hacia abajo, y estamos cerca del top
-            if (deltaY > 0 && Math.abs(deltaY) > deltaX && e.touches[0].clientY < 100) {
-              e.preventDefault();
-            }
-          }
-        }}
-        onTouchEnd={(e) => {
-          if (drawerTouchStartYRef.current === null) return;
-          const endY = e.changedTouches[0].clientY;
-          const endX = e.changedTouches[0].clientX;
-          const deltaY = endY - drawerTouchStartYRef.current;
-          const deltaX = Math.abs(endX - drawerTouchStartXRef.current);
-          const minSwipeDistance = 50;
-          
-          // Solo procesar si el movimiento es principalmente vertical
-          if (Math.abs(deltaY) > deltaX && Math.abs(deltaY) > minSwipeDistance) {
-            if (deltaY < 0 && !historyOpen) {
-              // Swipe hacia arriba cuando está cerrado: abrir drawer
-              setHistoryOpen(true);
-            } else if (deltaY > 0 && historyOpen) {
-              // Swipe hacia abajo cuando está abierto: cerrar drawer
-              setHistoryOpen(false);
-            }
-          }
-          
-          drawerTouchStartYRef.current = null;
-          drawerTouchStartXRef.current = null;
-        }}
-      >
-        <div className="history-header">
-          <h2>Historial de Reproducción</h2>
-        </div>
-          <div className="history-list">
-            {history.length === 0 ? (
-              <p className="history-empty">
-                Aún no hay canciones en el historial.
-              </p>
-            ) : (
-              history.map((track, index) => (
-                <div key={index} className="history-item">
-                  <div className="history-info">
-                    <div className="history-title">
-                      {track.appleMusicLink ? (
-                        <a
-                          href={track.appleMusicLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="history-link"
-                          aria-label={`Abrir ${track.title} en Apple Music`}
-                        >
-                          {track.title}
-                        </a>
-                      ) : (
-                        track.title
-                      )}
-                    </div>
-                    <div className="history-meta">
-                      {track.artist} - {track.station}
-                    </div>
-                  </div>
-                  <div className="history-time">{track.time}</div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
+      <HistoryDrawer
+        history={history}
+        historyOpen={historyOpen}
+        setHistoryOpen={setHistoryOpen}
+        drawerTouchStartYRef={drawerTouchStartYRef}
+        drawerTouchStartXRef={drawerTouchStartXRef}
+      />
     </div>
   );
 }

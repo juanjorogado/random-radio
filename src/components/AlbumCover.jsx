@@ -1,4 +1,5 @@
 import { useImageStatus } from '../hooks/useImageStatus';
+import { useCityImage } from '../hooks/useCityImage';
 import { useState, useEffect } from 'react';
 
 // Generar gradiente único basado en el ID de la emisora
@@ -24,8 +25,10 @@ const generateGradientFromId = (id, name, isDarkMode = false) => {
   }
 };
 
-export default function AlbumCover({ src, stationId, stationName }) {
+export default function AlbumCover({ src, stationId, stationName, city, country }) {
   const status = useImageStatus(src);
+  const { imageUrl: cityImageUrl } = useCityImage(city, country);
+  const cityImageStatus = useImageStatus(cityImageUrl);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
@@ -39,17 +42,28 @@ export default function AlbumCover({ src, stationId, stationName }) {
   }, []);
 
   const fallbackGradient = generateGradientFromId(stationId, stationName, isDarkMode);
+  
+  // Prioridad: cover de canción > imagen de ciudad > gradiente
+  const displayImage = src || (cityImageUrl && cityImageStatus === 'loaded' ? cityImageUrl : null);
+  const showCityImage = !src && cityImageUrl && cityImageStatus === 'loaded';
 
   return (
     <div 
       className="album-cover-main"
-      style={!src && fallbackGradient ? { background: fallbackGradient } : {}}
+      style={!displayImage && fallbackGradient ? { background: fallbackGradient } : {}}
     >
-      {status === 'loaded' && (
+      {status === 'loaded' && src && (
         <img
           src={src}
           className="album-cover-image"
           alt=""
+        />
+      )}
+      {showCityImage && (
+        <img
+          src={cityImageUrl}
+          className="album-cover-image city-sky-image"
+          alt={`Cielo de ${city}`}
         />
       )}
     </div>

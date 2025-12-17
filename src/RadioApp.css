@@ -37,9 +37,9 @@
   --font-weight-regular: 400;
   --font-weight-medium: 500;
 
-  --font-size-sm: 1.25rem;
-  --font-size-lg: 1.5rem;
-  --font-size-xl: 1.875rem;
+  --font-size-sm: 1.5rem;
+  --font-size-lg: 1.8rem;
+  --font-size-xl: 2.25rem;
 
   /* Braun Atelier motion */
   --ease-braun: cubic-bezier(0.2, 0, 0.1, 1);
@@ -417,6 +417,12 @@
   object-fit: cover;
   z-index: 2;
   animation: braun-cover-in var(--motion-slow) var(--ease-braun);
+}
+
+.city-sky-image {
+  filter: sepia(0.4) saturate(1.6) contrast(1.2) brightness(1.1) hue-rotate(-10deg);
+  mix-blend-mode: overlay;
+  opacity: 0.9;
 }
 
 @keyframes braun-cover-in {
