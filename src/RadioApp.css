@@ -114,7 +114,7 @@
   min-height: 100vh;
   background: transparent;
   border-radius: 0;
-  padding: 1.25rem 1.5rem 0 1.5rem;
+  padding: 1.25rem 1.5rem 4rem 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -341,7 +341,7 @@
 
 .album-cover-main {
   /* flex: 1; <-- ELIMINADO para forzar tamaño */
-  width: 100%; /* AÑADIDO */
+  width: 80%; /* AÑADIDO */
   aspect-ratio: 1 / 1; /* AÑADIDO: Formato 1:1 */
   border-radius: 0.5rem;
   background: var(--gradient-cover);
@@ -495,15 +495,10 @@
 }
 
 /* ====================================
-   HISTORY SECTION
+   HISTORY BUTTON
    ==================================== */
 
-.history-section {
-  margin-top: var(--space-xl);
-  width: 100%;
-}
-
-.history-toggle-btn {
+.history-btn {
   width: 100%;
   padding: 0.75rem 1rem;
   background: transparent;
@@ -517,72 +512,99 @@
   text-align: left;
   font-size: 1.0625rem;
   font-weight: 400;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-sm);
+  margin-top: var(--space-xl);
 }
 
-.history-toggle-btn:hover {
+.history-btn:hover {
   background: rgba(0, 0, 0, 0.02);
   border-color: var(--color-text-tertiary);
 }
 
-.history-toggle-btn:active {
+.history-btn:active {
   background: rgba(0, 0, 0, 0.04);
 }
 
-.history-toggle-btn:focus-visible {
+.history-btn:focus-visible {
   outline: 0.125rem solid var(--color-primary);
   outline-offset: 0.125rem;
 }
 
-.history-count {
-  color: var(--color-text-secondary);
-  font-weight: 400;
-}
-
-.history-arrow {
-  transition: transform var(--motion-fast) var(--ease-braun);
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-}
-
-.history-arrow-open {
-  transform: rotate(180deg);
-}
+/* ====================================
+   HISTORY VIEW (Drawer)
+   ==================================== */
 
 .history-view {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   width: 100%;
   background: var(--color-surface);
-  border-radius: var(--radius-md);
-  margin-top: var(--space-sm);
-  overflow: hidden;
-  max-height: 0;
-  opacity: 0;
-  transition: max-height var(--motion-medium) var(--ease-braun),
-              opacity var(--motion-medium) var(--ease-braun),
-              padding var(--motion-medium) var(--ease-braun);
-  padding: 0;
-}
-
-.history-view-open {
-  max-height: 60vh;
-  opacity: 1;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  display: flex;
+  flex-direction: column;
   padding: var(--space-xl);
-  padding-top: var(--space-lg);
+  padding-top: 2rem;
+  box-shadow: 0 -0.5rem 2rem var(--color-shadow);
+  border-top: 0.0625rem solid var(--color-border);
+  z-index: 1000;
+  overflow: hidden;
+  touch-action: pan-y;
+  transition: transform var(--motion-medium) var(--ease-braun);
 }
 
+/* Cuando está cerrado, reducir z-index para no tapar el título */
 .history-view-closed {
-  max-height: 0;
-  opacity: 0;
-  padding: 0;
+  z-index: 999;
 }
 
+/* Estado cerrado: muestra solo una parte pequeña (peek) que no tapa la info */
+.history-view-closed {
+  transform: translateY(calc(100% - 3rem));
+  max-height: 3rem;
+}
+
+/* Estado abierto: completamente visible */
+.history-view-open {
+  transform: translateY(0);
+  max-height: 92vh;
+}
+
+/* Muesca del drawer */
+.history-view::before {
+  content: "";
+  position: absolute;
+  top: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2.5rem;
+  height: 0.25rem;
+  background: var(--color-text-muted);
+  border-radius: 0.125rem;
+  opacity: 0.4;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-md);
+  padding-top: 0.5rem;
+  touch-action: none;
+}
+
+.history-header h2 {
+  font-size: 1.0625rem;
+  color: var(--color-text-primary);
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.4;
+}
 
 .history-list {
+  flex: 1;
   overflow-y: auto;
-  max-height: 60vh;
+  margin-top: var(--space-md);
   padding-right: var(--space-md);
   /* Scrollbar estético */
   scrollbar-width: thin;
