@@ -1,6 +1,6 @@
 {
-  "name": "Radio Mundial",
-  "short_name": "Radio",
+  "name": "onda",
+  "short_name": "onda",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#e8e4dc",

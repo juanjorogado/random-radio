@@ -1,4 +1,4 @@
-# Random Radio Web App
+# onda
 
 Aplicación web que reproduce emisoras de radio online de forma aleatoria a partir de una lista configurable, ideal para descubrir nuevas radios sin tener que elegir manualmente cada vez.
 
