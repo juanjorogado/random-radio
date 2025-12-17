@@ -26,10 +26,6 @@ function RadioApp() {
   const swipeTimeoutRef = useRef(null);
   const swipeLockRef = useRef(false);
   
-  // Refs para swipe vertical del drawer
-  const drawerTouchStartYRef = useRef(null);
-  const drawerTouchStartXRef = useRef(null);
-  
   // Refs para gestos: doble tap en carátula (funciona en móvil y desktop)
   const coverRef = useRef(null);
   const lastTapRef = useRef(0);
@@ -567,92 +563,56 @@ function RadioApp() {
             </div>
           </div>
 
-          <button
-            className="history-btn"
-            onClick={() => {
-              setHistoryOpen(true);
-            }}
-          >
-            Historial — ({history.length.toLocaleString('es-ES')})
-          </button>
-        </div>
+          {/* HISTORY SECTION - Debajo de la info de la canción */}
+          <div className="history-section">
+            <button
+              className="history-toggle-btn"
+              onClick={() => setHistoryOpen(!historyOpen)}
+              aria-expanded={historyOpen}
+              aria-label={historyOpen ? 'Cerrar historial' : 'Abrir historial'}
+            >
+              <span>Historial de Reproducción</span>
+              <span className="history-count">({history.length.toLocaleString('es-ES')})</span>
+              <span className={`history-arrow ${historyOpen ? 'history-arrow-open' : ''}`}>▼</span>
+            </button>
 
-      {/* HISTORY DRAWER - Siempre visible, parcialmente cuando está cerrado */}
-      <div
-        className={`history-view ${historyOpen ? 'history-view-open' : 'history-view-closed'}`}
-        onTouchStart={(e) => {
-          drawerTouchStartYRef.current = e.touches[0].clientY;
-          drawerTouchStartXRef.current = e.touches[0].clientX;
-        }}
-        onTouchMove={(e) => {
-          // Permitir scroll dentro del drawer cuando está abierto, pero detectar swipe en el header
-          if (drawerTouchStartYRef.current !== null && historyOpen) {
-            const deltaY = e.touches[0].clientY - drawerTouchStartYRef.current;
-            const deltaX = Math.abs(e.touches[0].clientX - drawerTouchStartXRef.current);
-            // Si el swipe es principalmente vertical y hacia abajo, y estamos cerca del top
-            if (deltaY > 0 && Math.abs(deltaY) > deltaX && e.touches[0].clientY < 100) {
-              e.preventDefault();
-            }
-          }
-        }}
-        onTouchEnd={(e) => {
-          if (drawerTouchStartYRef.current === null) return;
-          const endY = e.changedTouches[0].clientY;
-          const endX = e.changedTouches[0].clientX;
-          const deltaY = endY - drawerTouchStartYRef.current;
-          const deltaX = Math.abs(endX - drawerTouchStartXRef.current);
-          const minSwipeDistance = 50;
-          
-          // Solo procesar si el movimiento es principalmente vertical
-          if (Math.abs(deltaY) > deltaX && Math.abs(deltaY) > minSwipeDistance) {
-            if (deltaY < 0 && !historyOpen) {
-              // Swipe hacia arriba cuando está cerrado: abrir drawer
-              setHistoryOpen(true);
-            } else if (deltaY > 0 && historyOpen) {
-              // Swipe hacia abajo cuando está abierto: cerrar drawer
-              setHistoryOpen(false);
-            }
-          }
-          
-          drawerTouchStartYRef.current = null;
-          drawerTouchStartXRef.current = null;
-        }}
-      >
-        <div className="history-header">
-          <h2>Historial de Reproducción</h2>
-        </div>
-          <div className="history-list">
-            {history.length === 0 ? (
-              <p className="history-empty">
-                Aún no hay canciones en el historial.
-              </p>
-            ) : (
-              history.map((track, index) => (
-                <div key={index} className="history-item">
-                  <div className="history-info">
-                    <div className="history-title">
-                      {track.appleMusicLink ? (
-                        <a
-                          href={track.appleMusicLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="history-link"
-                          aria-label={`Abrir ${track.title} en Apple Music`}
-                        >
-                          {track.title}
-                        </a>
-                      ) : (
-                        track.title
-                      )}
+            <div
+              className={`history-view ${historyOpen ? 'history-view-open' : 'history-view-closed'}`}
+            >
+              <div className="history-list">
+                {history.length === 0 ? (
+                  <p className="history-empty">
+                    Aún no hay canciones en el historial.
+                  </p>
+                ) : (
+                  history.map((track, index) => (
+                    <div key={index} className="history-item">
+                      <div className="history-info">
+                        <div className="history-title">
+                          {track.appleMusicLink ? (
+                            <a
+                              href={track.appleMusicLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="history-link"
+                              aria-label={`Abrir ${track.title} en Apple Music`}
+                            >
+                              {track.title}
+                            </a>
+                          ) : (
+                            track.title
+                          )}
+                        </div>
+                        <div className="history-meta">
+                          {track.artist} - {track.station}
+                        </div>
+                      </div>
+                      <div className="history-time">{track.time}</div>
                     </div>
-                    <div className="history-meta">
-                      {track.artist} - {track.station}
-                    </div>
-                  </div>
-                  <div className="history-time">{track.time}</div>
-                </div>
-              ))
-            )}
+                  ))
+                )}
+              </div>
+            </div>
           </div>
         </div>
     </div>
