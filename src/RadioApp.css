@@ -101,6 +101,7 @@
   font-family: var(--font-family);
   overflow: hidden;
   transition: background-color var(--motion-medium) var(--ease-braun);
+  position: relative;
 }
 
 
@@ -120,6 +121,8 @@
   gap: 0;
   box-shadow: none;
   border: none;
+  position: relative;
+  z-index: 1;
 }
 
 /* ====================================
@@ -272,12 +275,16 @@
 
 .cover-with-controls {
   position: relative;
-  width: calc(100% + 3rem);
+  width: 100%;
+  max-width: 100%;
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  margin: 0 -1.5rem;
+  margin: 0 auto;
   padding: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .cover-with-controls:not(.cover-swipe-out-left):not(.cover-swipe-out-right):not(.cover-swipe-in-left):not(.cover-swipe-in-right) {
@@ -340,12 +347,13 @@
 }
 
 .album-cover-main {
-  /* flex: 1; <-- ELIMINADO para forzar tamaño */
-  width: 80%; /* AÑADIDO */
-  aspect-ratio: 1 / 1; /* AÑADIDO: Formato 1:1 */
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
   border-radius: 0.5rem;
   background: var(--gradient-cover);
   position: relative;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -414,7 +422,7 @@
   overflow: hidden;
   padding: 0.75rem 0 0 0;
   position: relative;
-  z-index: 1001;
+  z-index: 1002;
 }
 
 .marquee-container {
@@ -556,6 +564,11 @@
 /* Cuando está cerrado, reducir z-index para no tapar el título */
 .history-view-closed {
   z-index: 999;
+}
+
+/* Cuando está abierto, asegurar que no tape el marquee */
+.history-view-open {
+  z-index: 1000;
 }
 
 /* Estado cerrado: muestra solo una parte pequeña (peek) que no tapa la info */

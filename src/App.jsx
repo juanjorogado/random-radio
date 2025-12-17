@@ -566,15 +566,6 @@ function RadioApp() {
               {currentTrack.album && `- ${currentTrack.album}`}
             </div>
           </div>
-
-          <button
-            className="history-btn"
-            onClick={() => {
-              setHistoryOpen(true);
-            }}
-          >
-            Historial — ({history.length.toLocaleString('es-ES')})
-          </button>
         </div>
 
       {/* HISTORY DRAWER - Siempre visible, parcialmente cuando está cerrado */}
