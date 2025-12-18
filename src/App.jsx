@@ -11,18 +11,22 @@ import { useStationPlayer } from './hooks/useStationPlayer';
 import { useMetadata } from './hooks/useMetadata';
 import { useTrackHistory } from './hooks/useTrackHistory';
 import { useCoverTap } from './hooks/useCoverTap';
+import { useWakeLock } from './hooks/useWakeLock';
 import { getLocalTime } from './utils/getLocalTime';
+import { getLastStation } from './utils/lastStationStorage';
+import stations from './data/stations.json';
 
 function RadioApp() {
   const audioRef = useRef(null);
   const [currentStation, setCurrentStation] = useState(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   
   // Refs para swipe del drawer
   const drawerTouchStartYRef = useRef(null);
   const drawerTouchStartXRef = useRef(null);
-
+  
   // Audio player hook
   const audioPlayer = useAudioPlayer(audioRef);
   const {
@@ -45,10 +49,31 @@ function RadioApp() {
     setCurrentStation(station);
   };
   
-  const { playStation, playRandomStation, togglePlay } = useStationPlayer(
+  const { playStation, playRandomStation, playNextStation, playPreviousStation, togglePlay } = useStationPlayer(
     audioPlayer,
     handlePlaySuccess
   );
+
+  // Restaurar última estación al iniciar
+  useEffect(() => {
+    if (!isInitialized) {
+      const lastStation = getLastStation();
+      if (lastStation) {
+        // Verificar que la estación aún existe en la lista
+        const stationExists = stations.find(s => s.id === lastStation.id);
+        if (stationExists) {
+          // Pequeño delay para asegurar que el audio está listo
+          setTimeout(() => {
+            playStation(stationExists);
+          }, 100);
+        }
+      }
+      setIsInitialized(true);
+    }
+  }, [isInitialized, playStation]);
+
+  // Prevenir que la pantalla se apague cuando está reproduciendo
+  useWakeLock(playing);
 
   // Cover tap handlers
   const handleSingleTap = () => {
@@ -67,12 +92,47 @@ function RadioApp() {
     return () => clearInterval(timer);
   }, []);
 
-  // Keyboard: espacio para play/pause
+  // Swipe handlers para cambiar estación
+  const handleSwipeLeft = () => {
+    if (currentStation) {
+      playNextStation(currentStation.id);
+    } else {
+      playRandomStation();
+    }
+  };
+
+  const handleSwipeRight = () => {
+    if (currentStation) {
+      playPreviousStation(currentStation.id);
+    } else {
+      playRandomStation();
+    }
+  };
+
+  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyPress = (e) => {
-      if (e.code === 'Space' && !e.target.matches('input, textarea')) {
-        e.preventDefault();
-        handleSingleTap();
+      if (e.target.matches('input, textarea')) return;
+
+      switch (e.code) {
+        case 'Space':
+          e.preventDefault();
+          handleSingleTap();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          handleSwipeRight(); // Anterior (izquierda en teclado = anterior)
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          handleSwipeLeft(); // Siguiente (derecha en teclado = siguiente)
+          break;
+        case 'Enter':
+          e.preventDefault();
+          handleSingleTap();
+          break;
+        default:
+          break;
       }
     };
 
@@ -105,11 +165,13 @@ function RadioApp() {
             bufferingComplete={bufferingComplete}
             tapTransitioning={tapTransitioning}
             onCoverTap={handleCoverTap}
+            onSwipeLeft={handleSwipeLeft}
+            onSwipeRight={handleSwipeRight}
           />
 
           <TrackInfo track={currentTrack} />
         </div>
-      </div>
+        </div>
 
       <HistoryDrawer
         history={history}
