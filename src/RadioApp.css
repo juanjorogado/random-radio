@@ -435,7 +435,7 @@
   opacity: 0.7;
 }
 
-/* Indicador de tap suave en el centro */
+/* Indicador de tap suave en el centro - réplica del wave-indicator */
 .tap-indicator {
   position: absolute;
   top: 50%;
@@ -445,72 +445,70 @@
   pointer-events: none;
   opacity: var(--opacity-none);
   transition: opacity var(--motion-medium) var(--ease-braun);
-  width: 4rem;
-  height: 4rem;
+  width: var(--size-tap-indicator);
+  height: var(--size-tap-indicator);
 }
 
 .cover-with-controls:not(.cover-playing) .tap-indicator {
   opacity: var(--opacity-full);
 }
 
-/* Símbolo central - base fija */
-.tap-center-symbol {
+/* Círculo base fijo (equivalente al ::before del wave-indicator) */
+.tap-indicator::before {
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
+  width: var(--size-tap-indicator);
+  height: var(--size-tap-indicator);
+  border: var(--size-border-thin) solid var(--color-text-primary);
+  border-radius: var(--radius-full);
+  background: transparent;
   transform: translate(-50%, -50%);
-  font-size: 1rem;
-  line-height: 1;
-  color: var(--color-text-primary);
-  z-index: 3;
-  display: inline-block;
+  z-index: 2;
 }
 
-/* Símbolos de ondas - réplica del wave-indicator pero más grande */
-.tap-wave-ring {
+/* Círculo animado (equivalente al ::after del wave-indicator) */
+.tap-indicator::after {
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
+  width: var(--size-tap-indicator);
+  height: var(--size-tap-indicator);
+  border: var(--size-border-thin) solid var(--color-text-primary);
+  border-radius: var(--radius-full);
+  background: transparent;
   transform: translate(-50%, -50%);
-  font-size: 1rem;
-  line-height: 1;
-  color: var(--color-text-primary);
   opacity: var(--opacity-none);
-  display: inline-block;
+  animation: none;
 }
 
-.tap-wave-ring-1 {
-  animation: tap-wave-expand 1.8s var(--ease-braun) infinite;
+.cover-with-controls:not(.cover-playing) .tap-indicator::after {
+  animation: tap-wave 1.8s infinite var(--ease-braun);
 }
 
-.tap-wave-ring-2 {
-  animation: tap-wave-expand 1.8s var(--ease-braun) infinite;
-  animation-delay: 0.6s;
-}
-
-/* Cuando va a cargar, los anillos convergen al centro */
-.tap-indicator.tap-to-spinner .tap-wave-ring {
-  animation: tap-wave-converge 0.6s var(--ease-braun) forwards;
+/* Cuando va a cargar, el indicador desaparece */
+.tap-indicator.tap-to-spinner::before,
+.tap-indicator.tap-to-spinner::after {
+  animation: tap-fade 0.6s var(--ease-braun) forwards;
   animation-delay: 0.3s;
 }
 
-.tap-indicator.tap-to-spinner .tap-wave-ring-1 {
-  font-size: 1rem;
-}
-
-.tap-indicator.tap-to-spinner .tap-wave-ring-2 {
-  font-size: 1.5rem;
-}
-
-.tap-indicator.tap-to-spinner .tap-center-symbol {
-  animation: tap-center-fade 0.6s var(--ease-braun) forwards;
-  animation-delay: 0.3s;
-}
-
-/* Animación de expansión de ondas */
-@keyframes tap-wave-expand {
+@keyframes tap-fade {
   0% {
-    font-size: 1rem;
+    opacity: var(--opacity-full);
+  }
+  100% {
+    opacity: var(--opacity-none);
+  }
+}
+
+/* Animación de onda - réplica exacta del wave indicator */
+@keyframes tap-wave {
+  0% {
+    width: var(--size-tap-indicator);
+    height: var(--size-tap-indicator);
     opacity: var(--opacity-none);
     transform: translate(-50%, -50%) scale(1);
   }
@@ -518,24 +516,10 @@
     opacity: var(--opacity-medium);
   }
   100% {
-    font-size: 4rem;
+    width: calc(var(--size-tap-indicator) * 2);
+    height: calc(var(--size-tap-indicator) * 2);
     opacity: var(--opacity-none);
     transform: translate(-50%, -50%) scale(1.02);
-  }
-}
-
-
-/* Animación de convergencia al centro */
-@keyframes tap-wave-converge {
-  0% {
-    opacity: var(--opacity-medium);
-    transform: translate(-50%, -50%) scale(1);
-    font-size: 1rem;
-  }
-  100% {
-    font-size: 1rem;
-    opacity: var(--opacity-none);
-    transform: translate(-50%, -50%) scale(0);
   }
 }
 
