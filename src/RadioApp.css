@@ -25,13 +25,12 @@
   --gradient-cover: #CBD8BF;
   --gradient-animated: linear-gradient(135deg, #CBD8BF, #E5ECDF);
 
-  --space-xs: 0.25rem;
+  
   --space-sm: 0.625rem;
   --space-md: 1rem;
   --space-lg: 1.25rem;
   --space-xl: 1.5rem;
   --space-2xl: 2rem;
-  --space-4xl: 3.125rem;
 
   --radius-xs: 0.0625rem;
   --radius-sm: 0.5rem;
@@ -50,11 +49,11 @@
   --font-weight-regular: 400;
   --font-weight-medium: 500;
 
-  --font-size-sm: 1.5rem;
-  --font-size-lg: 2.3rem;
+  --font-size-sm: 1.2rem;
+  --font-size-lg: 2rem;
   --font-size-xl: 3rem;
 
-  --line-height-normal: 1.3;
+  --line-height-normal: 1.2;
   --line-height-relaxed: 1.5;
   --line-height-loose: 2;
 
@@ -142,6 +141,14 @@
 }
 
 /* ====================================
+   STATION DATA CONTAINER
+   ==================================== */
+
+.station-data-container {
+  animation: wave-fade-in var(--motion-slow) var(--ease-braun);
+}
+
+/* ====================================
    HEADER
    ==================================== */
 
@@ -149,8 +156,8 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  gap: var(--space-sm);
-  padding: 0 0 var(--space-xl) 0;
+  gap: var(--space-md);
+  padding: 0 0 var(--space-md) 0;
   text-transform: none;
   letter-spacing: 0;
   font-size: var(--font-size-sm);
@@ -158,7 +165,6 @@
   font-weight: var(--font-weight-regular);
   line-height: var(--line-height-relaxed);
   position: relative;
-  margin: 0 0 var(--space-md) 0;
 }
 
 .station-header-top::after {
@@ -175,7 +181,14 @@
 .station-header-content {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-md);
+  min-height: 1.8rem;
+}
+
+.station-header-text {
+  display: inline-block;
+  min-width: 0;
+  white-space: nowrap;
 }
 
 .station-live-indicator {
@@ -213,8 +226,8 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 0.625rem;
-  height: 0.625rem;
+  width: var(--space-sm);
+  height: var(--space-sm);
   border: var(--size-border-medium) solid var(--color-wave-accent);
   border-radius: var(--radius-full);
   background: transparent;
@@ -253,7 +266,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-md);
-  margin: 0 0 var(--space-md) 0;
+  margin: var(--space-sm) 0 var(--space-md) 0;
 }
 
 .clock-item {
@@ -326,50 +339,39 @@
 }
 
 .wave-spinner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-xs);
   width: 100%;
   height: 100%;
+  position: relative;
+  border: 1px solid var(--color-text-primary);
+  border-radius: var(--radius-full);
+  border-top-color: transparent;
+  border-right-color: transparent;
+  transform-origin: center;
+  animation: wave-spin 1s linear infinite;
 }
 
-.wave-bar {
-  width: var(--size-border-medium);
-  height: var(--space-2xl);
-  background: var(--color-text-muted);
-  border-radius: var(--radius-xs);
-  animation: wave-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+/* Animación de finalización: circunferencia desaparece */
+.buffering-indicator.buffering-complete .wave-spinner {
+  animation: wave-spin-complete 0.6s var(--ease-braun) forwards;
 }
 
-.wave-bar:nth-child(1) {
-  animation-delay: 0s;
-}
-
-.wave-bar:nth-child(2) {
-  animation-delay: 0.1s;
-}
-
-.wave-bar:nth-child(3) {
-  animation-delay: 0.2s;
-}
-
-.wave-bar:nth-child(4) {
-  animation-delay: 0.3s;
-}
-
-.wave-bar:nth-child(5) {
-  animation-delay: 0.4s;
-}
-
-@keyframes wave-pulse {
-  0%, 100% {
-    transform: scaleY(0.3);
-    opacity: var(--opacity-subtle);
+@keyframes wave-spin {
+  from {
+    transform: rotate(0deg);
   }
-  50% {
-    transform: scaleY(1);
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes wave-spin-complete {
+  0% {
+    transform: rotate(0deg);
     opacity: var(--opacity-full);
+  }
+  100% {
+    transform: rotate(180deg);
+    opacity: var(--opacity-none);
   }
 }
 
@@ -399,8 +401,8 @@
       0 0 0 rgba(0, 0, 0, 0);
   }
   50% {
-    box-shadow: 0 var(--size-border-medium) 0.375rem var(--color-shadow-medium),
-      0 0 0.75rem var(--color-shadow);
+    box-shadow: 0 var(--size-border-medium) var(--space-sm) var(--color-shadow-medium),
+      0 0 var(--space-md) var(--color-shadow);
   }
 }
 
@@ -430,6 +432,7 @@
 
 .city-sky-image {
   filter: grayscale(100%);
+  opacity: 0.7;
 }
 
 /* Indicador de tap suave en el centro */
@@ -442,62 +445,124 @@
   pointer-events: none;
   opacity: var(--opacity-none);
   transition: opacity var(--motion-medium) var(--ease-braun);
+  width: 4rem;
+  height: 4rem;
 }
 
 .cover-with-controls:not(.cover-playing) .tap-indicator {
   opacity: var(--opacity-full);
 }
 
-.tap-indicator-circle {
-  width: var(--size-spinner);
-  height: var(--size-spinner);
-  border: var(--size-border-thick) solid var(--color-text-primary);
-  border-radius: 50%;
-  opacity: var(--opacity-subtle);
-  animation: tap-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  position: relative;
-}
-
-.tap-indicator-circle::before {
-  content: "";
+/* Símbolo central - base fija */
+.tap-center-symbol {
   position: absolute;
-  inset: calc(-1 * var(--space-sm));
-  border: var(--size-border-thick) solid var(--color-text-primary);
-  border-radius: 50%;
-  opacity: var(--opacity-none);
-  animation: tap-pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--color-text-primary);
+  z-index: 3;
+  display: inline-block;
 }
 
-@keyframes tap-pulse-ring {
+/* Símbolos de ondas - réplica del wave-indicator pero más grande */
+.tap-wave-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--color-text-primary);
+  opacity: var(--opacity-none);
+  display: inline-block;
+}
+
+.tap-wave-ring-1 {
+  animation: tap-wave-expand 1.8s var(--ease-braun) infinite;
+}
+
+.tap-wave-ring-2 {
+  animation: tap-wave-expand 1.8s var(--ease-braun) infinite;
+  animation-delay: 0.6s;
+}
+
+/* Cuando va a cargar, los anillos convergen al centro */
+.tap-indicator.tap-to-spinner .tap-wave-ring {
+  animation: tap-wave-converge 0.6s var(--ease-braun) forwards;
+  animation-delay: 0.3s;
+}
+
+.tap-indicator.tap-to-spinner .tap-wave-ring-1 {
+  font-size: 1rem;
+}
+
+.tap-indicator.tap-to-spinner .tap-wave-ring-2 {
+  font-size: 1.5rem;
+}
+
+.tap-indicator.tap-to-spinner .tap-center-symbol {
+  animation: tap-center-fade 0.6s var(--ease-braun) forwards;
+  animation-delay: 0.3s;
+}
+
+/* Animación de expansión de ondas */
+@keyframes tap-wave-expand {
   0% {
-    transform: scale(0.8);
+    font-size: 1rem;
     opacity: var(--opacity-none);
+    transform: translate(-50%, -50%) scale(1);
   }
-  50% {
-    transform: scale(1.3);
-    opacity: var(--opacity-subtle);
+  35% {
+    opacity: var(--opacity-medium);
   }
   100% {
-    transform: scale(1.6);
+    font-size: 4rem;
     opacity: var(--opacity-none);
+    transform: translate(-50%, -50%) scale(1.02);
   }
 }
 
-@keyframes tap-pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: var(--opacity-subtle);
-  }
-  50% {
-    transform: scale(1.2);
+
+/* Animación de convergencia al centro */
+@keyframes tap-wave-converge {
+  0% {
     opacity: var(--opacity-medium);
+    transform: translate(-50%, -50%) scale(1);
+    font-size: 1rem;
+  }
+  100% {
+    font-size: 1rem;
+    opacity: var(--opacity-none);
+    transform: translate(-50%, -50%) scale(0);
+  }
+}
+
+@keyframes tap-center-fade {
+  0% {
+    opacity: var(--opacity-full);
+  }
+  100% {
+    opacity: var(--opacity-none);
   }
 }
 
 @keyframes braun-cover-in {
   from {
     opacity: var(--opacity-none);
-    transform: translateY(var(--space-xs));
+    transform: translateY(var(--space-sm)) scale(0.98);
+  }
+  to {
+    opacity: var(--opacity-full);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes wave-fade-in {
+  from {
+    opacity: var(--opacity-none);
+    transform: translateY(var(--space-sm));
   }
   to {
     opacity: var(--opacity-full);
@@ -529,6 +594,21 @@
   white-space: nowrap;
   min-width: 200%;
   animation: marquee 22s linear infinite;
+}
+
+.rotating-symbol {
+  display: inline-block;
+  animation: symbol-rotate 20s var(--ease-braun) infinite;
+  transform-origin: center center;
+}
+
+@keyframes symbol-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .marquee-text {
@@ -701,7 +781,7 @@
 
 .history-empty {
   text-align: center;
-  margin-top: var(--space-4xl);
+  margin-top: var(--space-2xl);
   color: var(--color-text-tertiary);
 }
 
