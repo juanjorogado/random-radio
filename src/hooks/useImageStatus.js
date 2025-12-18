@@ -5,16 +5,29 @@ export function useImageStatus(src) {
 
   useEffect(() => {
     if (!src) {
-      setStatus('error');
+      setStatus('idle');
       return;
     }
 
     setStatus('loading');
     const img = new Image();
 
-    img.onload = () => setStatus('loaded');
-    img.onerror = () => setStatus('error');
+    const handleLoad = () => {
+      setStatus('loaded');
+    };
+
+    const handleError = () => {
+      setStatus('error');
+    };
+
+    img.onload = handleLoad;
+    img.onerror = handleError;
     img.src = src;
+
+    return () => {
+      img.onload = null;
+      img.onerror = null;
+    };
   }, [src]);
 
   return status;

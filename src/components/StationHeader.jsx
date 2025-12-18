@@ -17,7 +17,6 @@ export default function StationHeader({ currentStation, playing }) {
           <span className="station-live-indicator">
             <span className="wave-indicator" />
           </span>
-          <span>Selecciona una radio</span>
         </span>
       )}
     </div>

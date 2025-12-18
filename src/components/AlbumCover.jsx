@@ -27,7 +27,7 @@ const generateGradientFromId = (id, name, isDarkMode = false) => {
 
 export default function AlbumCover({ src, stationId, stationName, city, country }) {
   const status = useImageStatus(src);
-  const { imageUrl: cityImageUrl } = useCityImage(city, country);
+  const { imageUrl: cityImageUrl, loading: cityImageLoading } = useCityImage(city, country);
   const cityImageStatus = useImageStatus(cityImageUrl);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
@@ -41,18 +41,19 @@ export default function AlbumCover({ src, stationId, stationName, city, country 
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
+
   const fallbackGradient = generateGradientFromId(stationId, stationName, isDarkMode);
   
-  // Prioridad: cover de canción > imagen de ciudad > gradiente
-  const displayImage = src || (cityImageUrl && cityImageStatus === 'loaded' ? cityImageUrl : null);
-  const showCityImage = !src && cityImageUrl && cityImageStatus === 'loaded';
+  // Prioridad: cover de canción (si carga exitosamente) > imagen de ciudad > gradiente
+  const showCoverImage = src && status === 'loaded';
+  const showCityImage = !showCoverImage && cityImageUrl && cityImageStatus === 'loaded';
 
   return (
     <div 
       className="album-cover-main"
-      style={!displayImage && fallbackGradient ? { background: fallbackGradient } : {}}
+      style={!showCoverImage && !showCityImage && fallbackGradient ? { background: fallbackGradient } : {}}
     >
-      {status === 'loaded' && src && (
+      {showCoverImage && (
         <img
           src={src}
           className="album-cover-image"
