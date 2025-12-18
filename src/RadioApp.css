@@ -37,9 +37,9 @@
   --font-weight-regular: 400;
   --font-weight-medium: 500;
 
-  --font-size-sm: 1.8rem;
-  --font-size-lg: 2rem;
-  --font-size-xl: 2.5rem;
+  --font-size-sm: 2rem;
+  --font-size-lg: 2.5rem;
+  --font-size-xl: 3rem;
 
   /* Braun Atelier motion */
   --ease-braun: cubic-bezier(0.2, 0, 0.1, 1);
@@ -341,10 +341,10 @@
 }
 
 .wave-bar {
-  width: 0.25rem;
+  width: 0.125rem;
   height: 2rem;
   background: var(--color-text-muted);
-  border-radius: 0.125rem;
+  border-radius: 0.0625rem;
   animation: wave-pulse 1.2s ease-in-out infinite;
 }
 
@@ -435,9 +435,43 @@
 }
 
 .city-sky-image {
-  filter: sepia(0.4) saturate(1.6) contrast(1.2) brightness(1.1) hue-rotate(-10deg);
-  mix-blend-mode: overlay;
-  opacity: 0.9;
+  filter: grayscale(100%);
+}
+
+/* Indicador de tap suave en el centro */
+.tap-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--motion-medium) var(--ease-braun);
+}
+
+.cover-with-controls:not(.cover-playing) .tap-indicator {
+  opacity: 1;
+}
+
+.tap-indicator-circle {
+  width: 3rem;
+  height: 3rem;
+  border: 2px solid var(--color-text-primary);
+  border-radius: 50%;
+  opacity: 0.3;
+  animation: tap-pulse 2s ease-in-out infinite;
+}
+
+@keyframes tap-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.5;
+  }
 }
 
 @keyframes braun-cover-in {
@@ -483,9 +517,9 @@
 }
 
 .song-title {
-  font-size: 1.0625rem;
+  font-size: var(--font-size-lg);
   color: var(--color-text-primary);
-  font-weight: 400;
+  font-weight: var(--font-weight-medium);
   margin-bottom: 0;
   line-height: 1.3;
 }
@@ -629,10 +663,11 @@
   top: 0.75rem;
   left: 50%;
   transform: translateX(-50%);
-  width: 2.5rem;
-  height: 0.25rem;
+  width: 3rem;
+  min-width: 3rem;
+  height: 0.0625rem;
   background: var(--color-text-muted);
-  border-radius: 0.125rem;
+  border-radius: 0.03125rem;
   opacity: 0.4;
 }
 

@@ -23,11 +23,7 @@ function RadioApp() {
   const [buffering, setBuffering] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [swipeDirection, setSwipeDirection] = useState(null);
-
   const retryTimeoutRef = useRef(null);
-  const swipeTimeoutRef = useRef(null);
-  const swipeLockRef = useRef(false);
   
   // Refs para swipe vertical del drawer
   const drawerTouchStartYRef = useRef(null);
@@ -36,12 +32,12 @@ function RadioApp() {
   // Refs para gestos: doble tap en carátula (funciona en móvil y desktop)
   const lastTapRef = useRef(0);
   const tapTimeoutRef = useRef(null);
-  const isSwipeRef = useRef(false);
 
   const [currentTrack, setCurrentTrack] = useState({
     title: 'Selecciona una radio',
     artist: '',
     album: '',
+    year: null,
     cover: null
   });
 
@@ -86,7 +82,6 @@ function RadioApp() {
     return () => {
       metadataTimer.current && clearInterval(metadataTimer.current);
       retryTimeoutRef.current && clearTimeout(retryTimeoutRef.current);
-      swipeTimeoutRef.current && clearTimeout(swipeTimeoutRef.current);
       tapTimeoutRef.current && clearTimeout(tapTimeoutRef.current);
       
       // Limpiar event listeners del audio
@@ -119,6 +114,33 @@ function RadioApp() {
     return `https://music.apple.com/search?term=${query}`;
   };
 
+  // Helper para formatear información de la canción en una sola línea
+  const formatTrackInfo = (track) => {
+    const parts = [];
+    
+    if (track.title) {
+      parts.push(track.title);
+    }
+    
+    if (track.artist) {
+      parts.push(track.artist);
+    }
+    
+    if (track.album) {
+      const albumPart = track.album;
+      if (track.year) {
+        parts.push(`${albumPart} (${track.year})`);
+      } else {
+        parts.push(albumPart);
+      }
+    } else if (track.year) {
+      // Si hay año pero no álbum, mostrarlo al final
+      parts.push(`(${track.year})`);
+    }
+    
+    return parts.join(' — ');
+  };
+
   /* ================= METADATA ================= */
   const fetchMetadata = async (station) => {
     if (!station?.metadataUrl) {
@@ -126,6 +148,7 @@ function RadioApp() {
         title: `Escuchando ${station.name}`,
         artist: '',
         album: '',
+        year: null,
         cover: null
       });
       return;
@@ -162,6 +185,7 @@ function RadioApp() {
         title: 'Información no disponible',
         artist: '',
         album: '',
+        year: null,
         cover: null
       };
 
@@ -172,6 +196,7 @@ function RadioApp() {
             title: play.song || 'Sin título',
             artist: play.artist || '',
             album: play.album || '',
+            year: play.release_date ? new Date(play.release_date).getFullYear() : null,
             cover: play.thumbnail_uri || null
           };
         }
@@ -182,6 +207,7 @@ function RadioApp() {
           title: data.title,
           artist: data.artist || '',
           album: data.album || '',
+          year: data.year || null,
           cover: data.cover
             ? `https://img.radioparadise.com/${data.cover}`
             : null
@@ -195,6 +221,7 @@ function RadioApp() {
             title: now.secondLine || now.firstLine || 'Sin título',
             artist: now.firstLine || '',
             album: '',
+            year: null,
             cover: now.cover || null
           };
         }
@@ -210,6 +237,7 @@ function RadioApp() {
               'En vivo',
             artist: live.now.embeds?.details?.description || '',
             album: '',
+            year: null,
             cover: live.now.embeds?.details?.media?.picture_large || null
           };
         }
@@ -264,17 +292,20 @@ function RadioApp() {
         title: `Escuchando ${station.name}`,
         artist: '',
         album: '',
+        year: null,
         cover: null
       });
     }
   };
 
   /* ================= PLAYER ================= */
-  const playStation = (station, retryAttempt = 0) => {
+  const playStation = (station, retryAttempt = 0, triedStations = new Set()) => {
     if (startingRef.current && retryAttempt === 0) return;
     startingRef.current = true;
     setBuffering(true);
 
+    // Agregar esta estación a las intentadas
+    triedStations.add(station.id);
     setCurrentStation(station);
     audioRef.current.src = station.stream;
     audioRef.current.load();
@@ -305,8 +336,30 @@ function RadioApp() {
       if (retryAttempt < 3) {
         const delay = Math.min(1000 * Math.pow(2, retryAttempt), 5000);
         retryTimeoutRef.current = setTimeout(() => {
-          playStation(station, retryAttempt + 1);
+          playStation(station, retryAttempt + 1, triedStations);
         }, delay);
+      } else {
+        // Si se agotaron los reintentos, intentar con la siguiente estación
+        const availableStations = stations.filter(s => !triedStations.has(s.id));
+        
+        if (availableStations.length > 0) {
+          // Intentar con una estación aleatoria de las disponibles
+          const nextStation = availableStations[Math.floor(Math.random() * availableStations.length)];
+          const delay = 1000; // Pequeño delay antes de intentar la siguiente
+          retryTimeoutRef.current = setTimeout(() => {
+            playStation(nextStation, 0, triedStations);
+          }, delay);
+        } else {
+          // Si se intentaron todas las estaciones, mostrar mensaje de error
+          console.warn('Todas las estaciones fallaron al cargar');
+          setCurrentTrack({
+            title: 'No se pudo conectar a ninguna estación',
+            artist: '',
+            album: '',
+            year: null,
+            cover: null
+          });
+        }
       }
     };
 
@@ -340,132 +393,30 @@ function RadioApp() {
   }, [currentStation, playing, playRandomStation]);
 
   const handleCoverTap = (e) => {
-    // Si fue un swipe, ignorar el tap
-    if (isSwipeRef.current) {
-      isSwipeRef.current = false;
-      return;
-    }
-
     const now = Date.now();
     const DOUBLE_TAP_DELAY = 300;
     
     if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
-      // Es un doble tap
+      // Es un doble tap - cambiar de emisora
       e.preventDefault();
       e.stopPropagation();
       if (tapTimeoutRef.current) {
         clearTimeout(tapTimeoutRef.current);
         tapTimeoutRef.current = null;
       }
-      togglePlay();
+      playRandomStation();
       lastTapRef.current = 0;
     } else {
       // Primer tap, esperar para ver si hay segundo
       lastTapRef.current = now;
       tapTimeoutRef.current = setTimeout(() => {
+        // Si pasó el tiempo sin segundo tap, es un tap simple - pausar/play
+        if (lastTapRef.current === now) {
+          togglePlay();
+        }
         lastTapRef.current = 0;
       }, DOUBLE_TAP_DELAY);
     }
-  };
-
-  const handleCoverDoubleClick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    togglePlay();
-  };
-
-  // Gestos: swipe lateral
-  const touchStartRef = useRef(null);
-  const touchEndRef = useRef(null);
-  const touchStartYRef = useRef(null);
-
-  const handleTouchStart = (e) => {
-    touchStartRef.current = e.touches[0].clientX;
-    touchStartYRef.current = e.touches[0].clientY;
-  };
-
-  const handleTouchMove = (e) => {
-    // Prevenir scroll vertical si hay movimiento horizontal
-    if (touchStartRef.current !== null) {
-      const deltaX = Math.abs(e.touches[0].clientX - touchStartRef.current);
-      const deltaY = Math.abs(e.touches[0].clientY - touchStartYRef.current);
-      if (deltaX > deltaY && deltaX > 10) {
-        e.preventDefault();
-      }
-    }
-  };
-
-  const handleTouchEnd = (e) => {
-    if (touchStartRef.current === null) return;
-    touchEndRef.current = e.changedTouches[0].clientX;
-    const deltaY = Math.abs(e.changedTouches[0].clientY - touchStartYRef.current);
-    const deltaX = Math.abs(touchEndRef.current - touchStartRef.current);
-    
-    // Guardar valores antes de limpiar
-    const startX = touchStartRef.current;
-    const endX = touchEndRef.current;
-    
-    // Solo procesar swipe si el movimiento horizontal es mayor que el vertical y suficiente
-    if (deltaX > deltaY && deltaX > 30) {
-      isSwipeRef.current = true;
-      // Pasar los valores directamente
-      const distance = startX - endX;
-      const minSwipeDistance = 50;
-
-      if (Math.abs(distance) > minSwipeDistance) {
-        if (distance > 0) {
-          // Swipe de derecha a izquierda: carátula sale a la izquierda, nueva entra desde la derecha
-          startSwipe('left');
-        } else {
-          // Swipe de izquierda a derecha: carátula sale a la derecha, nueva entra desde la izquierda
-          startSwipe('right');
-        }
-      }
-    } else {
-      // Si es más vertical o movimiento pequeño, tratar como tap
-      handleCoverTap(e);
-    }
-    
-    touchStartRef.current = null;
-    touchEndRef.current = null;
-    touchStartYRef.current = null;
-  };
-
-  const startSwipe = (direction) => {
-    if (swipeLockRef.current) return;
-    swipeLockRef.current = true;
-
-    // Determinar clases según dirección del swipe
-    // Si swipe es de derecha a izquierda (distance > 0), la carátula sale a la izquierda
-    // y la nueva entra desde la derecha
-    const outClass =
-      direction === 'left'
-        ? 'cover-swipe-out-left'
-        : 'cover-swipe-out-right';
-    const inClass =
-      direction === 'left'
-        ? 'cover-swipe-in-right'
-        : 'cover-swipe-in-left';
-
-    // Fase 1: Salida de la carátula actual
-    setSwipeDirection(outClass);
-
-    // Fase 2: Cambiar emisora y preparar entrada desde el lado opuesto
-    swipeTimeoutRef.current = setTimeout(() => {
-      playRandomStation();
-      // Aplicar clase de entrada inmediatamente después del cambio
-      setSwipeDirection(inClass);
-
-      // Fase 3: Transición a centro (estado neutro) después de que la entrada termine
-      swipeTimeoutRef.current = setTimeout(() => {
-        setSwipeDirection(null);
-
-        // Desbloquear después de que termine la animación completa
-        swipeTimeoutRef.current = setTimeout(() => {
-          swipeLockRef.current = false;
-        }, 100);
-      }, 300);
-    }, 300);
   };
 
 
@@ -495,16 +446,10 @@ function RadioApp() {
             getLocalTime={getLocalTime} 
           />
 
-          {/* COVER + GESTOS (doble tap y swipe) */}
+          {/* COVER + GESTOS (tap para play/pause, doble tap para cambiar emisora) */}
           <div
-            className={`cover-with-controls ${
-              swipeDirection ? swipeDirection : ''
-            } ${playing ? 'cover-playing' : ''}`}
+            className={`cover-with-controls ${playing ? 'cover-playing' : ''}`}
             onClick={handleCoverTap}
-            onDoubleClick={handleCoverDoubleClick}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
           >
             <AlbumCover
               src={currentTrack.cover || currentStation?.logo}
@@ -513,6 +458,11 @@ function RadioApp() {
               city={currentStation?.city}
               country={currentStation?.country}
             />
+            {!playing && !buffering && (
+              <div className="tap-indicator" aria-label="Tap para reproducir">
+                <div className="tap-indicator-circle"></div>
+              </div>
+            )}
             {buffering && (
               <div className="buffering-indicator" aria-label="Cargando">
                 <div className="buffering-spinner">
@@ -534,19 +484,15 @@ function RadioApp() {
               <div className="marquee-content">
                 {/* Marquee: siempre se mueve, texto duplicado */}
                 <span className="marquee-text song-title">
-                  {currentTrack.title}
+                  {formatTrackInfo(currentTrack)}
                 </span>
                 <span
                   className="marquee-text song-title"
                   aria-hidden="true"
                 >
-                  {currentTrack.title}
+                  {formatTrackInfo(currentTrack)}
                 </span>
               </div>
-            </div>
-            <div className="song-metadata">
-              {currentTrack.artist}{' '}
-              {currentTrack.album && `- ${currentTrack.album}`}
             </div>
           </div>
         </div>
