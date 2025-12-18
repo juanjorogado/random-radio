@@ -10,9 +10,7 @@ export default function TrackInfo({ track }) {
   const formattedText = parts.length > 1 ? (
     <>
       {parts[0]}
-      {' '}
-      <span className="rotating-symbol">◌</span>
-      {' '}
+      {' ◌ '}
       {parts.slice(1).join(' — ')}
     </>
   ) : trackInfoText;

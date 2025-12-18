@@ -580,21 +580,6 @@
   animation: marquee 22s linear infinite;
 }
 
-.rotating-symbol {
-  display: inline-block;
-  animation: symbol-rotate 20s var(--ease-braun) infinite;
-  transform-origin: center center;
-}
-
-@keyframes symbol-rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .marquee-text {
   padding-right: var(--space-2xl);
   /* Asegura que el contenido duplicado sea parte del mismo flujo */
