@@ -37,9 +37,9 @@
   --font-weight-regular: 400;
   --font-weight-medium: 500;
 
-  --font-size-sm: 1.5rem;
-  --font-size-lg: 1.8rem;
-  --font-size-xl: 2.25rem;
+  --font-size-sm: 1.8rem;
+  --font-size-lg: 2rem;
+  --font-size-xl: 2.5rem;
 
   /* Braun Atelier motion */
   --ease-braun: cubic-bezier(0.2, 0, 0.1, 1);
@@ -326,41 +326,56 @@
   width: 3rem;
   height: 3rem;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.buffering-spinner svg {
+.wave-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
   width: 100%;
   height: 100%;
-  transform: rotate(0deg);
-  animation: spin 2s linear infinite;
 }
 
-.buffering-spinner path {
-  fill: none;
-  stroke: var(--color-text-primary);
-  stroke-width: 2.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 2000;
-  stroke-dashoffset: 2000;
-  animation: fill-progress 2s ease-in-out infinite;
+.wave-bar {
+  width: 0.25rem;
+  height: 2rem;
+  background: var(--color-text-muted);
+  border-radius: 0.125rem;
+  animation: wave-pulse 1.2s ease-in-out infinite;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+.wave-bar:nth-child(1) {
+  animation-delay: 0s;
 }
 
-@keyframes fill-progress {
-  0% {
-    stroke-dashoffset: 1000;
+.wave-bar:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.wave-bar:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.wave-bar:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.wave-bar:nth-child(5) {
+  animation-delay: 0.4s;
+}
+
+@keyframes wave-pulse {
+  0%, 100% {
+    transform: scaleY(0.4);
+    opacity: 0.5;
   }
   50% {
-    stroke-dashoffset: 0;
-  }
-  100% {
-    stroke-dashoffset: -1000;
+    transform: scaleY(1);
+    opacity: 1;
   }
 }
 
