@@ -11,7 +11,7 @@ const METADATA_UPDATE_INTERVAL = 30000; // 30 segundos
  */
 export function useMetadata(station, onTrackUpdate) {
   const [currentTrack, setCurrentTrack] = useState({
-    title: 'Selecciona una radio',
+    title: 'Toca para lanzar una radio',
     artist: '',
     album: '',
     year: null,
@@ -22,7 +22,7 @@ export function useMetadata(station, onTrackUpdate) {
   useEffect(() => {
     if (!station) {
       setCurrentTrack({
-        title: 'Selecciona una radio',
+        title: 'Toca para lanzar una radio',
         artist: '',
         album: '',
         year: null,
