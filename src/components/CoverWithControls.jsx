@@ -3,6 +3,9 @@ import AlbumCover from './AlbumCover';
 import TapIndicator from './TapIndicator';
 import BufferingIndicator from './BufferingIndicator';
 
+const MIN_SWIPE_DISTANCE = 50;
+const MAX_VERTICAL_DISTANCE = 100;
+
 /**
  * Componente que envuelve la portada con controles e indicadores
  */
@@ -49,8 +52,6 @@ export default function CoverWithControls({
     const touch = e.changedTouches[0];
     const deltaX = touch.clientX - touchStartX.current;
     const deltaY = Math.abs(touch.clientY - touchStartY.current);
-    const MIN_SWIPE_DISTANCE = 50;
-    const MAX_VERTICAL_DISTANCE = 100;
 
     if (isSwipe.current && Math.abs(deltaX) > MIN_SWIPE_DISTANCE && deltaY < MAX_VERTICAL_DISTANCE) {
       if (deltaX < 0 && onSwipeLeft) {

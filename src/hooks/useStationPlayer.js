@@ -152,7 +152,7 @@ export function useStationPlayer(audioPlayer, onPlaySuccess) {
   /**
    * Toggle play/pause
    */
-  const togglePlay = useCallback((currentStation, playing, playFn) => {
+  const togglePlay = useCallback((currentStation, playing) => {
     if (!currentStation) {
       playRandomStation();
       return;
@@ -162,7 +162,7 @@ export function useStationPlayer(audioPlayer, onPlaySuccess) {
       audioPlayer.pause();
       setPlaying(false);
     } else {
-      playFn().catch(() => {
+      audioPlayer.play().catch(() => {
         if (currentStation) playStation(currentStation);
       });
       setPlaying(true);

@@ -45,13 +45,9 @@ function RadioApp() {
   });
 
   // Station player hook
-  const handlePlaySuccess = (station) => {
-    setCurrentStation(station);
-  };
-  
   const { playStation, playRandomStation, playNextStation, playPreviousStation, togglePlay } = useStationPlayer(
     audioPlayer,
-    handlePlaySuccess
+    setCurrentStation
   );
 
   // Restaurar última estación al iniciar
@@ -93,21 +89,8 @@ function RadioApp() {
   }, []);
 
   // Swipe handlers para cambiar estación
-  const handleSwipeLeft = () => {
-    if (currentStation) {
-      playNextStation(currentStation.id);
-    } else {
-      playRandomStation();
-    }
-  };
-
-  const handleSwipeRight = () => {
-    if (currentStation) {
-      playPreviousStation(currentStation.id);
-    } else {
-      playRandomStation();
-    }
-  };
+  const handleSwipeLeft = () => currentStation ? playNextStation(currentStation.id) : playRandomStation();
+  const handleSwipeRight = () => currentStation ? playPreviousStation(currentStation.id) : playRandomStation();
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -171,7 +154,7 @@ function RadioApp() {
 
           <TrackInfo track={currentTrack} />
         </div>
-        </div>
+      </div>
 
       <HistoryDrawer
         history={history}

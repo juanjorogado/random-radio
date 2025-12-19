@@ -60,16 +60,3 @@ export function playSoundFeedback(frequency = 800, duration = 50) {
   }
 }
 
-/**
- * Habilita o deshabilita el feedback sonoro
- */
-export function setSoundFeedbackEnabled(enabled) {
-  soundEnabled = enabled;
-}
-
-/**
- * Verifica si el feedback sonoro está habilitado
- */
-export function isSoundFeedbackEnabled() {
-  return soundEnabled;
-}
