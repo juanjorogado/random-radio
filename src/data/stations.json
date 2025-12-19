@@ -53,5 +53,102 @@
     "timezone": "Asia/Jerusalem",
     "stream": "https://radioalhara.out.airtime.pro/radioalhara_a",
     "logo": "https://radioalhara.net/wp-content/uploads/2020/04/cropped-radio-alhara-logo-black.png"
+  },
+  {
+    "id": "wfmu",
+    "name": "WFMU",
+    "country": "USA",
+    "city": "New Jersey",
+    "timezone": "America/New_York",
+    "stream": "https://wfmu.streamguys1.com/wfmu-freeform",
+    "logo": "https://wfmu.org/images/wfmu-logo.png"
+  },
+  {
+    "id": "bbc-radio-1",
+    "name": "BBC Radio 1",
+    "country": "UK",
+    "city": "London",
+    "timezone": "Europe/London",
+    "stream": "https://stream.live.vc.bbcmedia.co.uk/bbc_radio_one"
+  },
+  {
+    "id": "bbc-radio-2",
+    "name": "BBC Radio 2",
+    "country": "UK",
+    "city": "London",
+    "timezone": "Europe/London",
+    "stream": "https://stream.live.vc.bbcmedia.co.uk/bbc_radio_two"
+  },
+  {
+    "id": "bbc-radio-6",
+    "name": "BBC Radio 6 Music",
+    "country": "UK",
+    "city": "London",
+    "timezone": "Europe/London",
+    "stream": "https://stream.live.vc.bbcmedia.co.uk/bbc_6music"
+  },
+  {
+    "id": "radio-x",
+    "name": "Radio X",
+    "country": "UK",
+    "city": "London",
+    "timezone": "Europe/London",
+    "stream": "https://media-ice.musicradio.com/RadioXUK"
+  },
+  {
+    "id": "france-inter",
+    "name": "France Inter",
+    "country": "France",
+    "city": "Paris",
+    "timezone": "Europe/Paris",
+    "stream": "https://icecast.radiofrance.fr/franceinter-midfi.mp3"
+  },
+  {
+    "id": "fip",
+    "name": "FIP",
+    "country": "France",
+    "city": "Paris",
+    "timezone": "Europe/Paris",
+    "stream": "https://icecast.radiofrance.fr/fip-midfi.mp3"
+  },
+  {
+    "id": "radio-nova",
+    "name": "Radio Nova",
+    "country": "France",
+    "city": "Paris",
+    "timezone": "Europe/Paris",
+    "stream": "https://novazz.ice.infomaniak.ch/novazz-128.mp3"
+  },
+  {
+    "id": "rai-radio-1",
+    "name": "Rai Radio 1",
+    "country": "Italy",
+    "city": "Rome",
+    "timezone": "Europe/Rome",
+    "stream": "https://icestreaming.rai.it/1.mp3"
+  },
+  {
+    "id": "rai-radio-2",
+    "name": "Rai Radio 2",
+    "country": "Italy",
+    "city": "Rome",
+    "timezone": "Europe/Rome",
+    "stream": "https://icestreaming.rai.it/2.mp3"
+  },
+  {
+    "id": "rai-radio-3",
+    "name": "Rai Radio 3",
+    "country": "Italy",
+    "city": "Rome",
+    "timezone": "Europe/Rome",
+    "stream": "https://icestreaming.rai.it/3.mp3"
+  },
+  {
+    "id": "radio-deejay",
+    "name": "Radio Deejay",
+    "country": "Italy",
+    "city": "Milan",
+    "timezone": "Europe/Rome",
+    "stream": "https://deejay-radio-lh.akamaihd.net/i/RadioDeejay_1@183719/master.m3u8"
   }
 ]
