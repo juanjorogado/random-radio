@@ -133,101 +133,53 @@ export function useWeatherSkyImage(city, country) {
         });
     };
     
-    // Función fallback: siempre buscar cielo y nubes en Pexels
+    // Función fallback: usar Pollinations.ai para generar imagen de cielo y nubes
     const loadGenericFallback = () => {
       if (hasSetImage || isCancelled) return;
       
-      // Términos de búsqueda solo para cielo y nubes
-      const skyTerms = ['sky clouds', 'cloudy sky', 'blue sky clouds', 'sky'];
+      // Generar prompt para Pollinations.ai basado en la ciudad
+      const prompt = `beautiful sky with clouds, ${cleanCity} ${cleanCountry ? cleanCountry : ''}, cinematic, photorealistic, 1:1 aspect ratio`.trim();
+      const encodedPrompt = encodeURIComponent(prompt);
       
-      const tryFallbackSearch = (termIndex = 0) => {
-        if (isCancelled || hasSetImage || termIndex >= skyTerms.length) {
-          if (!hasSetImage && !isCancelled) {
+      // Pollinations.ai URL format
+      const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=800&height=800&model=flux&nologo=true`;
+      
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      
+      img.onload = () => {
+        if (!isCancelled && !hasSetImage) {
+          hasSetImage = true;
+          setImageUrl(pollinationsUrl);
+          setLoading(false);
+        }
+      };
+      
+      img.onerror = () => {
+        // Si falla, intentar con un prompt más simple
+        const simplePrompt = encodeURIComponent('beautiful sky with clouds, cinematic, photorealistic, 1:1 aspect ratio');
+        const simpleUrl = `https://image.pollinations.ai/prompt/${simplePrompt}?width=800&height=800&model=flux&nologo=true`;
+        
+        const fallbackImg = new Image();
+        fallbackImg.crossOrigin = 'anonymous';
+        fallbackImg.onload = () => {
+          if (!isCancelled && !hasSetImage) {
+            hasSetImage = true;
+            setImageUrl(simpleUrl);
+            setLoading(false);
+          }
+        };
+        fallbackImg.onerror = () => {
+          if (!isCancelled && !hasSetImage) {
             hasSetImage = true;
             setImageUrl(null);
             setLoading(false);
           }
-          return;
-        }
-        
-        const query = skyTerms[termIndex];
-        const encodedQuery = encodeURIComponent(query);
-        const pexelsUrl = `${PEXELS_BASE_URL}/search?query=${encodedQuery}&orientation=square&per_page=1&size=large`;
-        
-        fetch(pexelsUrl, {
-          headers: {
-            'Authorization': PEXELS_API_KEY
-          }
-        })
-          .then(response => {
-            if (!response.ok) {
-              if (termIndex < skyTerms.length - 1) {
-                tryFallbackSearch(termIndex + 1);
-              } else {
-                if (!isCancelled && !hasSetImage) {
-                  hasSetImage = true;
-                  setImageUrl(null);
-                  setLoading(false);
-                }
-              }
-              return null;
-            }
-            return response.json();
-          })
-          .then(data => {
-            if (!data || isCancelled || hasSetImage) return;
-            
-            const photo = data.photos?.[0];
-            const url = photo?.src?.large || photo?.src?.medium || null;
-            
-            if (url) {
-              const img = new Image();
-              img.crossOrigin = 'anonymous';
-              img.onload = () => {
-                if (!isCancelled && !hasSetImage) {
-                  hasSetImage = true;
-                  setImageUrl(url);
-                  setLoading(false);
-                }
-              };
-              img.onerror = () => {
-                if (termIndex < skyTerms.length - 1) {
-                  tryFallbackSearch(termIndex + 1);
-                } else {
-                  if (!isCancelled && !hasSetImage) {
-                    hasSetImage = true;
-                    setImageUrl(null);
-                    setLoading(false);
-                  }
-                }
-              };
-              img.src = url;
-            } else {
-              if (termIndex < skyTerms.length - 1) {
-                tryFallbackSearch(termIndex + 1);
-              } else {
-                if (!isCancelled && !hasSetImage) {
-                  hasSetImage = true;
-                  setImageUrl(null);
-                  setLoading(false);
-                }
-              }
-            }
-          })
-          .catch(() => {
-            if (termIndex < skyTerms.length - 1) {
-              tryFallbackSearch(termIndex + 1);
-            } else {
-              if (!isCancelled && !hasSetImage) {
-                hasSetImage = true;
-                setImageUrl(null);
-                setLoading(false);
-              }
-            }
-          });
+        };
+        fallbackImg.src = simpleUrl;
       };
       
-      tryFallbackSearch();
+      img.src = pollinationsUrl;
     };
     
     // Si no hay API key de OpenWeatherMap, usar búsqueda genérica
