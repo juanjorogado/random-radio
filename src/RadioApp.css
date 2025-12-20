@@ -793,3 +793,61 @@
     height: 100%;
   }
 }
+/* ============================================
+   SWIPE FEEDBACK
+   ============================================ */
+
+.swipe-feedback {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  pointer-events: none;
+  animation: swipe-fade 0.4s ease-braun;
+}
+
+.swipe-feedback.swipe-left {
+  right: 10%;
+  animation: swipe-slide-left 0.4s ease-braun;
+}
+
+.swipe-feedback.swipe-right {
+  left: 10%;
+  animation: swipe-slide-right 0.4s ease-braun;
+}
+
+.swipe-arrow {
+  font-size: 80px;
+  font-weight: 300;
+  color: var(--color-braun-orange);
+  line-height: 1;
+  opacity: 0.9;
+}
+
+@keyframes swipe-slide-left {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(30px);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-30px);
+  }
+}
+
+@keyframes swipe-slide-right {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-30px);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(30px);
+  }
+}
