@@ -148,11 +148,21 @@ export function useWeatherSkyImage(city, country) {
       const encodedPrompt = encodeURIComponent(prompt);
       const imageUrl = `${POLLINATIONS_API_URL}/${encodedPrompt}?width=800&height=800&nologo=true`;
       
+      // Timeout para no esperar demasiado si el servicio está caído
+      const pollinationsTimeout = setTimeout(() => {
+        if (!isCancelled && !hasSetImage) {
+          console.warn('Pollinations.ai timeout, using gradient fallback');
+          requestInProgressRef.current = false;
+          setLoading(false);
+        }
+      }, 15000); // 15 segundos de timeout
+      
       // Verificar que la imagen se carga correctamente
       const img = new Image();
       img.crossOrigin = 'anonymous';
       
       img.onload = () => {
+        clearTimeout(pollinationsTimeout);
         if (!isCancelled && !hasSetImage) {
           hasSetImage = true;
           // Guardar en caché
@@ -168,10 +178,12 @@ export function useWeatherSkyImage(city, country) {
       };
       
       img.onerror = () => {
+        clearTimeout(pollinationsTimeout);
         if (!isCancelled && !hasSetImage) {
-          console.warn('Pollinations.ai fallback failed');
+          console.warn('Pollinations.ai fallback failed, using gradient fallback');
           requestInProgressRef.current = false;
           setLoading(false);
+          // No establecer imageUrl, dejar que se use el gradiente
         }
       };
       
