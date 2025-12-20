@@ -179,8 +179,10 @@
 }
 
 .station-header-content {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  width: 100%;
   gap: var(--space-md);
   min-height: 1.8rem;
 }
