@@ -24,38 +24,65 @@ const RATE_LIMIT_THRESHOLD = 3; // Deshabilitar después de 3 errores 429
 const RATE_LIMIT_DISABLE_DURATION = 60 * 60 * 1000; // Deshabilitar por 1 hora
 
 /**
- * Mapea condiciones climáticas a prompts para generación de imágenes
+ * Determina la hora del día basándose en la hora actual y los tiempos de salida/puesta del sol
  */
-function getWeatherPrompt(weatherMain, weatherDescription, city, country) {
-  const main = weatherMain?.toLowerCase() || '';
-  const desc = weatherDescription?.toLowerCase() || '';
-  const location = city ? `${city}${country ? `, ${country}` : ''}` : '';
+function getTimeOfDay(currentTime, sunrise, sunset) {
+  const hour = new Date(currentTime * 1000).getHours();
+  const sunriseHour = new Date(sunrise * 1000).getHours();
+  const sunsetHour = new Date(sunset * 1000).getHours();
   
-  let weatherDesc = '';
+  if (hour >= sunriseHour && hour < sunriseHour + 2) {
+    return 'sunrise';
+  } else if (hour >= sunriseHour + 2 && hour < 12) {
+    return 'morning';
+  } else if (hour >= 12 && hour < sunsetHour - 2) {
+    return 'afternoon';
+  } else if (hour >= sunsetHour - 2 && hour < sunsetHour) {
+    return 'sunset';
+  } else if (hour >= sunsetHour || hour < sunriseHour) {
+    return 'night';
+  }
+  return 'day';
+}
+
+/**
+ * Genera un prompt detallado basado en datos específicos del clima
+ */
+function generateDetailedPrompt(weatherData, city, country) {
+  const weatherMain = weatherData.weather?.[0]?.main || '';
+  const weatherDescription = weatherData.weather?.[0]?.description || '';
+  const cloudsPercent = weatherData.clouds?.all || 0;
+  const currentTime = weatherData.dt || Date.now() / 1000;
+  const sunrise = weatherData.sys?.sunrise || 0;
+  const sunset = weatherData.sys?.sunset || 0;
+  
+  const location = city ? `${city}${country ? `, ${country}` : ''}` : '';
+  const timeOfDay = getTimeOfDay(currentTime, sunrise, sunset);
+  
+  // Mapear condiciones climáticas
+  let weatherCondition = '';
+  const main = weatherMain.toLowerCase();
   
   if (main.includes('clear') || main.includes('sunny')) {
-    weatherDesc = 'clear blue sky with white fluffy clouds';
+    weatherCondition = 'clear';
   } else if (main.includes('cloud')) {
-    if (desc.includes('few') || desc.includes('scattered')) {
-      weatherDesc = 'partly cloudy sky with scattered white clouds';
-    } else if (desc.includes('broken') || desc.includes('overcast')) {
-      weatherDesc = 'overcast cloudy sky with grey clouds';
-    } else {
-      weatherDesc = 'cloudy sky with clouds';
-    }
+    weatherCondition = 'cloudy';
   } else if (main.includes('rain') || main.includes('drizzle')) {
-    weatherDesc = 'rainy cloudy sky with dark storm clouds';
+    weatherCondition = 'rainy';
   } else if (main.includes('storm') || main.includes('thunder')) {
-    weatherDesc = 'dramatic stormy sky with dark thunderstorm clouds';
+    weatherCondition = 'stormy';
   } else if (main.includes('snow')) {
-    weatherDesc = 'winter snowy sky with clouds';
+    weatherCondition = 'snowy';
   } else if (main.includes('mist') || main.includes('fog') || main.includes('haze')) {
-    weatherDesc = 'misty foggy atmospheric sky';
+    weatherCondition = 'misty';
   } else {
-    weatherDesc = 'beautiful sky with clouds';
+    weatherCondition = 'atmospheric';
   }
   
-  return `${weatherDesc}${location ? `, ${location}` : ''}, cinematic, photorealistic, 1:1 aspect ratio`;
+  // Construir el prompt detallado
+  const prompt = `A photorealistic wide shot of a sky in ${location || 'the sky'} at ${timeOfDay}, ${cloudsPercent}% cloud coverage, ${weatherCondition} atmosphere, cinematic lighting, 8k resolution, showing only sky and clouds, no ground, no buildings, no other elements, square 1:1 aspect ratio`;
+  
+  return prompt;
 }
 
 export function useWeatherSkyImage(city, country) {
@@ -131,7 +158,7 @@ export function useWeatherSkyImage(city, country) {
         body: JSON.stringify({
           contents: [{
             parts: [{
-              text: `Generate a photorealistic image: ${prompt}. The image must be square (1:1 aspect ratio), 800x800 pixels, showing only sky and clouds, no ground, no buildings, no other elements.`
+              text: prompt
             }]
           }],
           generationConfig: {
@@ -139,6 +166,7 @@ export function useWeatherSkyImage(city, country) {
             topK: 40,
             topP: 0.95,
             maxOutputTokens: 1024,
+            responseMimeType: "image/jpeg",
           }
         })
       })
@@ -216,8 +244,9 @@ export function useWeatherSkyImage(city, country) {
         return;
       }
       
-      // Generar prompt basado en la ciudad
-      const prompt = `beautiful sky with clouds${cleanCity ? `, ${cleanCity}` : ''}${cleanCountry ? `, ${cleanCountry}` : ''}, cinematic, photorealistic, 1:1 aspect ratio`;
+      // Generar prompt genérico basado en la ciudad
+      const location = cleanCity ? `${cleanCity}${cleanCountry ? `, ${cleanCountry}` : ''}` : '';
+      const prompt = `A photorealistic wide shot of a sky in ${location || 'the sky'} at day, 50% cloud coverage, beautiful atmosphere, cinematic lighting, 8k resolution, showing only sky and clouds, no ground, no buildings, no other elements, square 1:1 aspect ratio`;
       generateImage(prompt);
     };
     
@@ -238,9 +267,7 @@ export function useWeatherSkyImage(city, country) {
       
       if (cachedWeather && (Date.now() - cachedWeather.timestamp) < WEATHER_CACHE_DURATION) {
         // Usar clima en caché
-        const weatherMain = cachedWeather.weatherMain;
-        const weatherDescription = cachedWeather.weatherDescription;
-        const prompt = getWeatherPrompt(weatherMain, weatherDescription, cleanCity, cleanCountry);
+        const prompt = generateDetailedPrompt(cachedWeather.weatherData, cleanCity, cleanCountry);
         generateImage(prompt);
       } else {
         // Obtener clima de la API
@@ -263,20 +290,16 @@ export function useWeatherSkyImage(city, country) {
               return;
             }
             
-            const weatherMain = weatherData.weather?.[0]?.main;
-            const weatherDescription = weatherData.weather?.[0]?.description;
-            
-            // Guardar clima en caché
+            // Guardar clima completo en caché
             weatherCache.set(weatherCacheKey, {
-              weatherMain,
-              weatherDescription,
+              weatherData,
               timestamp: Date.now()
             });
             
-            // Obtener prompt basado en el clima
-            const prompt = getWeatherPrompt(weatherMain, weatherDescription, cleanCity, cleanCountry);
+            // Generar prompt detallado con todos los datos del clima
+            const prompt = generateDetailedPrompt(weatherData, cleanCity, cleanCountry);
             
-            // Generar imagen
+            // Generar imagen con el prompt detallado
             generateImage(prompt);
           })
           .catch(() => {
