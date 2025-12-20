@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import AlbumCover from './AlbumCover';
 import TapIndicator from './TapIndicator';
 import BufferingIndicator from './BufferingIndicator';
@@ -23,6 +23,7 @@ export default function CoverWithControls({
   const touchStartX = useRef(null);
   const touchStartY = useRef(null);
   const gestureDetected = useRef(false);
+  const [swipeAnimation, setSwipeAnimation] = useState(null);
 
   const handleTouchStart = (e) => {
     const touch = e.touches[0];
@@ -53,8 +54,10 @@ export default function CoverWithControls({
       gestureDetected.current = true;
       
       if (deltaX < 0 && onSwipeLeft) {
+        setSwipeAnimation('left');
         onSwipeLeft();
       } else if (deltaX > 0 && onSwipeRight) {
+        setSwipeAnimation('right');
         onSwipeRight();
       }
     }
@@ -62,6 +65,16 @@ export default function CoverWithControls({
     touchStartX.current = null;
     touchStartY.current = null;
   };
+
+  // Limpiar animación después de que termine
+  useEffect(() => {
+    if (swipeAnimation) {
+      const timer = setTimeout(() => {
+        setSwipeAnimation(null);
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [swipeAnimation]);
 
   const handleClick = (e) => {
     // Prevenir click si se detectó un gesto
@@ -79,7 +92,7 @@ export default function CoverWithControls({
 
   return (
     <div
-      className={`cover-with-controls ${playing ? 'cover-playing' : ''}`}
+      className={`cover-with-controls ${playing ? 'cover-playing' : ''} ${swipeAnimation ? `swipe-${swipeAnimation}` : ''}`}
       onClick={handleClick}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}

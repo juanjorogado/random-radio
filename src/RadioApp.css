@@ -314,6 +314,46 @@
   padding: var(--space-sm);
   display: flex;
   justify-content: center;
+  transition: transform var(--motion-medium) var(--ease-braun);
+}
+
+/* Animación de swipe sutil */
+.cover-with-controls.swipe-left .album-cover-main {
+  animation: swipe-slide-left-subtle 0.4s var(--ease-braun);
+}
+
+.cover-with-controls.swipe-right .album-cover-main {
+  animation: swipe-slide-right-subtle 0.4s var(--ease-braun);
+}
+
+@keyframes swipe-slide-left-subtle {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(-15px);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes swipe-slide-right-subtle {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(15px);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
   align-items: center;
   transition: transform var(--motion-medium) var(--ease-braun),
     opacity var(--motion-medium) var(--ease-braun);
