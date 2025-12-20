@@ -67,8 +67,9 @@ export function useWeatherSkyImage(city, country) {
       if (isCancelled || hasSetImage) return;
       
       const encodedPrompt = encodeURIComponent(prompt);
-      // Nano Banana API - formato de URL para generación de imágenes
-      const nanoBananaUrl = `https://api.nanobanana.ai/generate?prompt=${encodedPrompt}&width=800&height=800&aspect_ratio=1:1`;
+      // Nano Banana API - usar formato correcto de URL
+      // Intentar con api.nano-banana.com según documentación
+      const nanoBananaUrl = `https://api.nano-banana.com/generate?prompt=${encodedPrompt}&width=800&height=800&aspect_ratio=1:1`;
       
       // Establecer la URL directamente
       // Nano Banana genera la imagen on-demand
