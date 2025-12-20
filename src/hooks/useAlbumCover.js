@@ -36,14 +36,20 @@ export function useAlbumCover(artist, album) {
       limit: '1'
     });
 
-    fetch(`${ITUNES_BASE_URL}?${params.toString()}`, {
+    // Usar un proxy CORS para evitar problemas de redirección
+    // Alternativamente, usar directamente la API con manejo de errores mejorado
+    const fetchUrl = `${ITUNES_BASE_URL}?${params.toString()}`;
+    
+    fetch(fetchUrl, {
       signal: controller.signal,
+      redirect: 'error', // No seguir redirecciones para evitar protocolos no válidos
       headers: {
         'Accept': 'application/json, text/javascript, */*'
       }
     })
       .then(res => {
         clearTimeout(timeoutId);
+        
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
