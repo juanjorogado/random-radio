@@ -17,6 +17,12 @@ const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 horas
 const weatherCache = new Map();
 const WEATHER_CACHE_DURATION = 60 * 60 * 1000; // 1 hora
 
+// Control de rate limiting - deshabilitar Gemini si hay demasiados errores
+let geminiRateLimitCount = 0;
+let geminiDisabledUntil = 0;
+const RATE_LIMIT_THRESHOLD = 3; // Deshabilitar después de 3 errores 429
+const RATE_LIMIT_DISABLE_DURATION = 60 * 60 * 1000; // Deshabilitar por 1 hora
+
 /**
  * Mapea condiciones climáticas a prompts para generación de imágenes
  */
@@ -108,6 +114,14 @@ export function useWeatherSkyImage(city, country) {
     const generateImage = (prompt) => {
       if (isCancelled || hasSetImage) return;
       
+      // Verificar si Gemini está deshabilitado por rate limiting
+      if (Date.now() < geminiDisabledUntil) {
+        console.warn('Gemini API disabled due to rate limiting, skipping request');
+        requestInProgressRef.current = false;
+        setLoading(false);
+        return;
+      }
+      
       // Llamar a la API de Gemini para generar imagen con Nano Banana
       fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
         method: 'POST',
@@ -130,8 +144,18 @@ export function useWeatherSkyImage(city, country) {
       })
         .then(response => {
           if (!response.ok) {
+            // Si es error 429, incrementar contador y deshabilitar si es necesario
+            if (response.status === 429) {
+              geminiRateLimitCount++;
+              if (geminiRateLimitCount >= RATE_LIMIT_THRESHOLD) {
+                geminiDisabledUntil = Date.now() + RATE_LIMIT_DISABLE_DURATION;
+                console.warn('Gemini API rate limit exceeded, disabling for 1 hour');
+              }
+            }
             throw new Error(`HTTP error! status: ${response.status}`);
           }
+          // Si la respuesta es exitosa, resetear el contador
+          geminiRateLimitCount = 0;
           return response.json();
         })
         .then(data => {
@@ -165,21 +189,32 @@ export function useWeatherSkyImage(city, country) {
           }
         })
         .catch((error) => {
-          // Si falla (incluyendo 429 rate limit), usar fallback y no cachear
+          // Si falla (incluyendo 429 rate limit), NO usar fallback que llame a Gemini
           requestInProgressRef.current = false;
           if (!isCancelled && !hasSetImage) {
-            // Si es error 429, esperar más tiempo antes de reintentar
+            // Si es error 429, no intentar más llamadas
             if (error.message && error.message.includes('429')) {
-              console.warn('Gemini API rate limit reached, using fallback');
+              console.warn('Gemini API rate limit reached, skipping image generation');
+              setLoading(false);
+              // No establecer imageUrl, dejar que se use el gradiente
+              return;
             }
-            loadGenericFallback();
+            // Para otros errores, tampoco usar fallback que llame a Gemini
+            setLoading(false);
           }
         });
     };
     
-    // Función fallback: generar imagen de cielo y nubes
+    // Función fallback: NO generar imagen si Gemini está deshabilitado
     const loadGenericFallback = () => {
       if (hasSetImage || isCancelled) return;
+      
+      // Si Gemini está deshabilitado, no intentar generar imagen
+      if (Date.now() < geminiDisabledUntil) {
+        requestInProgressRef.current = false;
+        setLoading(false);
+        return;
+      }
       
       // Generar prompt basado en la ciudad
       const prompt = `beautiful sky with clouds${cleanCity ? `, ${cleanCity}` : ''}${cleanCountry ? `, ${cleanCountry}` : ''}, cinematic, photorealistic, 1:1 aspect ratio`;
