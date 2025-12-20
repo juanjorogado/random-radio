@@ -25,7 +25,6 @@ export default function CoverWithControls({
 }) {
   const touchStartX = useRef(null);
   const touchStartY = useRef(null);
-  const isSwipe = useRef(false);
 
   const handleTouchStart = (e) => {
     const touch = e.touches[0];
@@ -34,16 +33,7 @@ export default function CoverWithControls({
   };
 
   const handleTouchMove = (e) => {
-    if (touchStartX.current !== null && touchStartY.current !== null) {
-      const touch = e.touches[0];
-      const deltaX = touch.clientX - touchStartX.current;
-      const deltaY = touch.clientY - touchStartY.current;
-      
-      // Detectar swipe horizontal
-      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
-        isSwipe.current = true;
-      }
-    }
+    // No necesitamos hacer nada aquí, decidimos el gesto en touchEnd
   };
 
   const handleTouchEnd = (e) => {
@@ -57,13 +47,17 @@ export default function CoverWithControls({
     const absDeltaX = Math.abs(deltaX);
     const absDeltaY = Math.abs(deltaY);
 
-    // Pull down - deslizar hacia abajo
-    if (!isSwipe.current && deltaY > MIN_PULL_DOWN_DISTANCE && absDeltaY > absDeltaX && onPullDown) {
+    // Determinar qué gesto se hizo basado en la dirección predominante
+    const isHorizontal = absDeltaX > absDeltaY;
+    const isVertical = absDeltaY > absDeltaX;
+
+    // Pull down - deslizar hacia abajo (vertical hacia abajo con distancia mínima)
+    if (isVertical && deltaY > MIN_PULL_DOWN_DISTANCE && onPullDown) {
       hapticFeedback('medium');
       onPullDown();
     }
-    // Swipe horizontal
-    else if (isSwipe.current && absDeltaX > MIN_SWIPE_DISTANCE && absDeltaY < MAX_VERTICAL_DISTANCE) {
+    // Swipe horizontal - izquierda o derecha
+    else if (isHorizontal && absDeltaX > MIN_SWIPE_DISTANCE && absDeltaY < MAX_VERTICAL_DISTANCE) {
       hapticFeedback('light');
       if (deltaX < 0 && onSwipeLeft) {
         onSwipeLeft();
@@ -74,7 +68,6 @@ export default function CoverWithControls({
 
     touchStartX.current = null;
     touchStartY.current = null;
-    isSwipe.current = false;
   };
 
   return (
