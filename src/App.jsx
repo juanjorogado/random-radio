@@ -71,16 +71,12 @@ function RadioApp() {
   // Prevenir que la pantalla se apague cuando está reproduciendo
   useWakeLock(playing);
 
-  // Cover tap handlers
-  const handleSingleTap = () => {
+  // Cover tap handler
+  const handleTap = () => {
     togglePlay(currentStation, playing);
   };
 
-  const handleDoubleTap = () => {
-    playRandomStation();
-  };
-
-  const handleCoverTap = useCoverTap(handleSingleTap, handleDoubleTap);
+  const handleCoverTap = useCoverTap(handleTap);
 
   // Time update
   useEffect(() => {
@@ -91,7 +87,9 @@ function RadioApp() {
   // Swipe handlers para cambiar estación
   const handleSwipeLeft = () => currentStation ? playNextStation(currentStation.id) : playRandomStation();
   const handleSwipeRight = () => currentStation ? playPreviousStation(currentStation.id) : playRandomStation();
-  const handlePullDown = () => currentStation ? playNextStation(currentStation.id) : playRandomStation();
+  
+  // Pull down para cargar nueva estación aleatoria
+  const handlePullDown = () => playRandomStation(currentStation?.id);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -101,7 +99,7 @@ function RadioApp() {
       switch (e.code) {
         case 'Space':
           e.preventDefault();
-          handleSingleTap();
+          handleTap();
           break;
         case 'ArrowLeft':
           e.preventDefault();
@@ -113,7 +111,7 @@ function RadioApp() {
           break;
         case 'Enter':
           e.preventDefault();
-          handleSingleTap();
+          handleTap();
           break;
         default:
           break;
