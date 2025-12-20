@@ -5,6 +5,7 @@ import BufferingIndicator from './BufferingIndicator';
 
 const MIN_SWIPE_DISTANCE = 50;
 const MAX_VERTICAL_DISTANCE = 100;
+const MIN_PULL_DOWN_DISTANCE = 80;
 
 /**
  * Componente que envuelve la portada con controles e indicadores
@@ -18,27 +19,27 @@ export default function CoverWithControls({
   tapTransitioning,
   onCoverTap,
   onSwipeLeft,
-  onSwipeRight
+  onSwipeRight,
+  onPullDown
 }) {
   const touchStartX = useRef(null);
   const touchStartY = useRef(null);
   const isSwipe = useRef(false);
 
   const handleTouchStart = (e) => {
-    if (onSwipeLeft || onSwipeRight) {
-      const touch = e.touches[0];
-      touchStartX.current = touch.clientX;
-      touchStartY.current = touch.clientY;
-    }
+    const touch = e.touches[0];
+    touchStartX.current = touch.clientX;
+    touchStartY.current = touch.clientY;
   };
 
   const handleTouchMove = (e) => {
-    if ((onSwipeLeft || onSwipeRight) && touchStartX.current !== null) {
+    if (touchStartX.current !== null && touchStartY.current !== null) {
       const touch = e.touches[0];
       const deltaX = touch.clientX - touchStartX.current;
-      const deltaY = Math.abs(touch.clientY - touchStartY.current);
+      const deltaY = touch.clientY - touchStartY.current;
       
-      if (Math.abs(deltaX) > deltaY && Math.abs(deltaX) > 10) {
+      // Detectar swipe horizontal
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
         isSwipe.current = true;
       }
     }
@@ -51,9 +52,16 @@ export default function CoverWithControls({
 
     const touch = e.changedTouches[0];
     const deltaX = touch.clientX - touchStartX.current;
-    const deltaY = Math.abs(touch.clientY - touchStartY.current);
+    const deltaY = touch.clientY - touchStartY.current;
+    const absDeltaX = Math.abs(deltaX);
+    const absDeltaY = Math.abs(deltaY);
 
-    if (isSwipe.current && Math.abs(deltaX) > MIN_SWIPE_DISTANCE && deltaY < MAX_VERTICAL_DISTANCE) {
+    // Pull down - deslizar hacia abajo
+    if (!isSwipe.current && deltaY > MIN_PULL_DOWN_DISTANCE && absDeltaY > absDeltaX && onPullDown) {
+      onPullDown();
+    }
+    // Swipe horizontal
+    else if (isSwipe.current && absDeltaX > MIN_SWIPE_DISTANCE && absDeltaY < MAX_VERTICAL_DISTANCE) {
       if (deltaX < 0 && onSwipeLeft) {
         onSwipeLeft();
       } else if (deltaX > 0 && onSwipeRight) {

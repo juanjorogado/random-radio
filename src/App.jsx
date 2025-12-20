@@ -91,6 +91,7 @@ function RadioApp() {
   // Swipe handlers para cambiar estación
   const handleSwipeLeft = () => currentStation ? playNextStation(currentStation.id) : playRandomStation();
   const handleSwipeRight = () => currentStation ? playPreviousStation(currentStation.id) : playRandomStation();
+  const handlePullDown = () => currentStation ? playNextStation(currentStation.id) : playRandomStation();
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -150,6 +151,7 @@ function RadioApp() {
             onCoverTap={handleCoverTap}
             onSwipeLeft={handleSwipeLeft}
             onSwipeRight={handleSwipeRight}
+            onPullDown={handlePullDown}
           />
 
           <TrackInfo track={currentTrack} />
