@@ -30,6 +30,8 @@ jobs:
       - name: Build
         run: |
           echo "Starting build..."
+          # Configurar homepage para GitHub Pages
+          npm pkg set homepage="/random-radio"
           npm run build
           echo "Build completed successfully"
 
