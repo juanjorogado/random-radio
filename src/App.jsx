@@ -95,11 +95,6 @@ function RadioApp() {
   const handleSwipeRight = useCallback(() => {
     currentStation ? playPreviousStation(currentStation.id) : playRandomStation();
   }, [currentStation, playPreviousStation, playRandomStation]);
-  
-  // Pull down para cargar nueva estación aleatoria
-  const handlePullDown = useCallback(() => {
-    playRandomStation(currentStation?.id);
-  }, [playRandomStation, currentStation]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -159,7 +154,6 @@ function RadioApp() {
             onCoverTap={handleCoverTap}
             onSwipeLeft={handleSwipeLeft}
             onSwipeRight={handleSwipeRight}
-            onPullDown={handlePullDown}
           />
 
           <TrackInfo track={currentTrack} />

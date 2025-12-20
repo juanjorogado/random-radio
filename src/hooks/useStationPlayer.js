@@ -1,7 +1,6 @@
 import { useRef, useCallback } from 'react';
 import stations from '../data/stations.json';
 import { saveLastStation } from '../utils/lastStationStorage';
-import { hapticFeedback } from '../utils/hapticFeedback';
 import { playSoundFeedback } from '../utils/soundFeedback';
 
 const MAX_RETRY_ATTEMPTS = 5;
@@ -54,9 +53,8 @@ export function useStationPlayer(audioPlayer, onPlaySuccess) {
       // Guardar última estación
       saveLastStation(station);
       
-      // Feedback háptico y sonoro solo si es un cambio de estación (no un reintento)
+      // Feedback sonoro solo si es un cambio de estación (no un reintento)
       if (retryAttempt === 0) {
-        hapticFeedback('light');
         playSoundFeedback();
       }
       

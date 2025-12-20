@@ -15,9 +15,9 @@ Aplicación web que reproduce emisoras de radio online de forma aleatoria a part
 - Marcado de emisoras favoritas almacenadas en localStorage.
 - Diseño responsive para escritorio y móvil.
 - Metadata automática desde APIs de radios (KEXP, Radio Paradise, FIP, NTS, etc.).
-- Gestos táctiles optimizados para uso en coche (swipe, pull down).
+- Gestos táctiles optimizados para uso en coche (swipe horizontal).
 - Prevención de apagado de pantalla durante reproducción.
-- Feedback háptico y sonoro.
+- Feedback sonoro opcional.
 
 ## Tecnologías
 
