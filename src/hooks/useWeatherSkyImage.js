@@ -9,6 +9,8 @@ const OPENWEATHER_API_KEY = process.env.REACT_APP_OPENWEATHER_API_KEY || '';
 const OPENWEATHER_BASE_URL = 'https://api.openweathermap.org/data/2.5';
 // Usar el modelo correcto para generación de imágenes: gemini-2.5-flash-image
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent';
+// Fallback: Pollinations.ai (gratuito, sin API key)
+const POLLINATIONS_API_URL = 'https://image.pollinations.ai/prompt';
 
 // Caché en memoria para evitar llamadas repetidas
 const imageCache = new Map();
@@ -138,15 +140,52 @@ export function useWeatherSkyImage(city, country) {
       let timeoutId;
       let hasSetImage = false;
     
+    // Función para generar imagen con Pollinations.ai (fallback)
+    const generateImageWithPollinations = (prompt) => {
+      if (isCancelled || hasSetImage) return;
+      
+      // Pollinations.ai genera imágenes directamente desde URL
+      const encodedPrompt = encodeURIComponent(prompt);
+      const imageUrl = `${POLLINATIONS_API_URL}/${encodedPrompt}?width=800&height=800&nologo=true`;
+      
+      // Verificar que la imagen se carga correctamente
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      
+      img.onload = () => {
+        if (!isCancelled && !hasSetImage) {
+          hasSetImage = true;
+          // Guardar en caché
+          imageCache.set(cacheKey, {
+            imageUrl,
+            timestamp: Date.now(),
+            source: 'pollinations'
+          });
+          setImageUrl(imageUrl);
+          setLoading(false);
+          requestInProgressRef.current = false;
+        }
+      };
+      
+      img.onerror = () => {
+        if (!isCancelled && !hasSetImage) {
+          console.warn('Pollinations.ai fallback failed');
+          requestInProgressRef.current = false;
+          setLoading(false);
+        }
+      };
+      
+      img.src = imageUrl;
+    };
+    
     // Función para generar imagen con Gemini API (Nano Banana)
     const generateImage = (prompt) => {
       if (isCancelled || hasSetImage) return;
       
       // Verificar si Gemini está deshabilitado por rate limiting
       if (Date.now() < geminiDisabledUntil) {
-        console.warn('Gemini API disabled due to rate limiting, skipping request');
-        requestInProgressRef.current = false;
-        setLoading(false);
+        console.warn('Gemini API disabled due to rate limiting, using Pollinations.ai fallback');
+        generateImageWithPollinations(prompt);
         return;
       }
       
@@ -251,18 +290,22 @@ export function useWeatherSkyImage(city, country) {
           }
         })
         .catch((error) => {
-          // Si falla (incluyendo 429 rate limit), NO usar fallback que llame a Gemini
+          // Si falla (incluyendo 429 rate limit), usar Pollinations.ai como fallback
           requestInProgressRef.current = false;
           if (!isCancelled && !hasSetImage) {
-            // Si es error 429, no intentar más llamadas
-            if (error.message && error.message.includes('429')) {
-              console.warn('Gemini API rate limit reached, skipping image generation');
-              setLoading(false);
-              // No establecer imageUrl, dejar que se use el gradiente
-              return;
+            // Si es error 429 o cualquier error, usar Pollinations.ai
+            if (error.message && (error.message.includes('429') || error.message.includes('quota'))) {
+              console.warn('Gemini API quota exceeded, using Pollinations.ai fallback');
+              geminiRateLimitCount++;
+              if (geminiRateLimitCount >= RATE_LIMIT_THRESHOLD) {
+                geminiDisabledUntil = Date.now() + RATE_LIMIT_DISABLE_DURATION;
+                console.warn('Gemini API disabled for 1 hour, will use Pollinations.ai');
+              }
+            } else {
+              console.warn('Gemini API error, using Pollinations.ai fallback:', error.message);
             }
-            // Para otros errores, tampoco usar fallback que llame a Gemini
-            setLoading(false);
+            // Usar Pollinations.ai como fallback
+            generateImageWithPollinations(prompt);
           }
         });
     };
