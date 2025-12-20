@@ -1,7 +1,7 @@
 {
   "name": "onda",
   "version": "0.1.0",
-  "homepage": ".",
+  "homepage": "/random-radio",
   "private": true,
   "dependencies": {
     "react": "^19.2.3",
