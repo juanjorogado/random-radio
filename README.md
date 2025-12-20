@@ -14,6 +14,28 @@ Aplicación web que reproduce emisoras de radio online de forma aleatoria a part
 - Lista de emisoras visibles con búsqueda por nombre / género.
 - Marcado de emisoras favoritas almacenadas en localStorage.
 - Diseño responsive para escritorio y móvil.
+- Reconocimiento automático de canciones con ACRCloud (opcional, como fallback).
+- Gestos táctiles optimizados para uso en coche (swipe, pull down).
+- Prevención de apagado de pantalla durante reproducción.
+- Feedback háptico y sonoro.
+
+## Configuración Opcional: ACRCloud
+
+La app incluye soporte para reconocimiento automático de audio usando ACRCloud como fallback cuando las radios no proporcionan metadata.
+
+### Configuración:
+
+1. Regístrate en [ACRCloud](https://www.acrcloud.com/) y obtén tus credenciales
+2. Crea un archivo `.env` en la raíz del proyecto:
+
+```bash
+REACT_APP_ACRCLOUD_ACCESS_KEY=tu_access_key
+REACT_APP_ACRCLOUD_ACCESS_SECRET=tu_access_secret
+```
+
+3. Reinicia el servidor de desarrollo
+
+**Nota:** ACRCloud es completamente opcional. Si no configuras las credenciales, la app funcionará normalmente usando solo la metadata de las APIs de las radios.
 
 ## Tecnologías
 

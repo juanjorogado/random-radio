@@ -24,3 +24,4 @@ export function hapticFeedback(type = 'light') {
     // Silenciar errores si la vibración no está disponible o está bloqueada
   }
 }
+

@@ -36,3 +36,4 @@ export function clearLastStation() {
     console.warn('Error limpiando última estación:', err);
   }
 }
+

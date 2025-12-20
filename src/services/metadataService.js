@@ -209,3 +209,4 @@ function handleMetadataError(err, station) {
     console.error(`[${station.name}] Error al obtener metadatos:`, err.message || err);
   }
 }
+

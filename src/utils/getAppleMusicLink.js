@@ -10,3 +10,4 @@ export function getAppleMusicLink(track) {
   const query = encodeURIComponent(`${track.artist} ${track.title}`);
   return `https://music.apple.com/search?term=${query}`;
 }
+

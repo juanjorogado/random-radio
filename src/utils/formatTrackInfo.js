@@ -36,3 +36,4 @@ export function formatTrackInfo(track) {
   // Primer separador es ◌, el resto es —
   return parts[0] + ' ◌ ' + parts.slice(1).join(' — ');
 }
+
