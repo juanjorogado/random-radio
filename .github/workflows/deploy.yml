@@ -6,17 +6,19 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18.x'
           cache: 'npm'
@@ -26,7 +28,6 @@ jobs:
 
       - name: Build
         run: npm run build
-        continue-on-error: false
 
       - name: Verify build output
         run: |
@@ -36,12 +37,12 @@ jobs:
           fi
           echo "Build directory contents:"
           ls -la build/
+          echo "Checking for index.html:"
+          ls -la build/index.html || echo "ERROR: index.html not found!"
 
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main'
         with:
-          folder: build
-          branch: gh-pages
-          clean: true
-          git-config-name: "GitHub Actions"
-          git-config-email: "actions@github.com"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
