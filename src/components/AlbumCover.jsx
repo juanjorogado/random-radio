@@ -1,5 +1,5 @@
 import { useImageStatus } from '../hooks/useImageStatus';
-import { useCityImage } from '../hooks/useCityImage';
+import { useWeatherSkyImage } from '../hooks/useWeatherSkyImage';
 import { useAlbumCover } from '../hooks/useAlbumCover';
 import { useState, useEffect } from 'react';
 
@@ -36,8 +36,8 @@ export default function AlbumCover({ src, stationId, stationName, city, country,
   );
   const albumCoverStatus = useImageStatus(albumCoverUrl);
   const stationLogoStatus = useImageStatus(stationLogo);
-  const { imageUrl: cityImageUrl } = useCityImage(city, country);
-  const cityImageStatus = useImageStatus(cityImageUrl);
+  const { imageUrl: weatherSkyImageUrl } = useWeatherSkyImage(city, country);
+  const weatherSkyImageStatus = useImageStatus(weatherSkyImageUrl);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
@@ -53,16 +53,16 @@ export default function AlbumCover({ src, stationId, stationName, city, country,
 
   const fallbackGradient = generateGradientFromId(stationId, stationName, isDarkMode);
   
-  // Prioridad: cover de canción (src) > cover de álbum buscado > logo de estación > imagen de ciudad > gradiente
+  // Prioridad: cover de canción (src) > cover de álbum buscado > logo de estación > imagen de cielo según clima > gradiente
   const showCoverImage = src && status === 'loaded';
   const showAlbumCover = !showCoverImage && albumCoverUrl && albumCoverStatus === 'loaded';
   const showStationLogo = !showCoverImage && !showAlbumCover && stationLogo && stationLogoStatus === 'loaded';
-  const showCityImage = !showCoverImage && !showAlbumCover && !showStationLogo && cityImageUrl && cityImageStatus === 'loaded';
+  const showWeatherSkyImage = !showCoverImage && !showAlbumCover && !showStationLogo && weatherSkyImageUrl && weatherSkyImageStatus === 'loaded';
 
   return (
     <div 
       className="album-cover-main"
-      style={!showCoverImage && !showAlbumCover && !showStationLogo && !showCityImage && fallbackGradient ? { background: fallbackGradient } : {}}
+      style={!showCoverImage && !showAlbumCover && !showStationLogo && !showWeatherSkyImage && fallbackGradient ? { background: fallbackGradient } : {}}
     >
       {showCoverImage && (
         <img
@@ -85,10 +85,10 @@ export default function AlbumCover({ src, stationId, stationName, city, country,
           alt={stationName ? `Logo de ${stationName}` : ''}
         />
       )}
-      {showCityImage && (
+      {showWeatherSkyImage && (
         <img
-          src={cityImageUrl}
-          className="album-cover-image city-sky-image"
+          src={weatherSkyImageUrl}
+          className="album-cover-image weather-sky-image"
           alt={`Cielo de ${city}`}
         />
       )}

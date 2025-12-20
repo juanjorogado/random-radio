@@ -428,9 +428,9 @@
   animation: braun-cover-in var(--motion-slow) var(--ease-braun);
 }
 
-.city-sky-image {
-  filter: grayscale(100%);
-  opacity: var(--opacity-medium);
+.weather-sky-image {
+  filter: grayscale(0%);
+  opacity: var(--opacity-full);
 }
 
 /* Indicador de tap suave en el centro - réplica del wave-indicator */
