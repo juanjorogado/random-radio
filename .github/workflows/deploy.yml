@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           echo "Installing dependencies..."
-          npm ci
+          npm install
           echo "Dependencies installed successfully"
 
       - name: Build
