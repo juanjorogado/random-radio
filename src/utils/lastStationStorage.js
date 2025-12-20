@@ -26,15 +26,3 @@ export function getLastStation() {
   }
 }
 
-/**
- * Limpia la última estación guardada
- */
-export function clearLastStation() {
-  try {
-    localStorage.removeItem(LAST_STATION_KEY);
-  } catch (err) {
-    console.warn('Error limpiando última estación:', err);
-  }
-}
-
-

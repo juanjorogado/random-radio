@@ -4,13 +4,8 @@
   "homepage": ".",
   "private": true,
   "dependencies": {
-    "@testing-library/dom": "^10.4.1",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^13.5.0",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3",
-    "web-vitals": "^2.1.4"
+    "react-dom": "^19.2.3"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -18,8 +13,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
-    "generate-icons": "node scripts/generate-icons.js"
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [

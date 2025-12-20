@@ -59,4 +59,3 @@ export function playSoundFeedback(frequency = 800, duration = 50) {
     // Silenciar errores
   }
 }
-

@@ -37,4 +37,3 @@ export function formatTrackInfo(track) {
   return parts[0] + ' ◌ ' + parts.slice(1).join(' — ');
 }
 
-
