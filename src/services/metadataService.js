@@ -76,12 +76,6 @@ function parseMetadataByStation(stationId, data, station) {
     case 'kexp':
       track = parseKEXP(data);
       break;
-    case 'rp':
-      track = parseRadioParadise(data);
-      break;
-    case 'fip':
-      track = parseFIP(data);
-      break;
     case 'nts':
       track = parseNTS(data);
       break;
