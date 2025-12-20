@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/random-radio/static/css/main.97090499.css",
+    "main.js": "/random-radio/static/js/main.0d4258ef.js",
+    "index.html": "/random-radio/index.html",
+    "main.97090499.css.map": "/random-radio/static/css/main.97090499.css.map",
+    "main.0d4258ef.js.map": "/random-radio/static/js/main.0d4258ef.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.97090499.css",
+    "static/js/main.0d4258ef.js"
+  ]
+}
