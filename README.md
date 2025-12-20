@@ -26,6 +26,36 @@ Aplicación web que reproduce emisoras de radio online de forma aleatoria a part
 - Estado ligero en el navegador (sin backend obligatorio).
 - Opcional: API/JSON externo para cargar la lista de emisoras.
 
+## APIs de Metadatos
+
+La aplicación soporta múltiples estaciones de radio con sus respectivas APIs de metadatos:
+
+### Estaciones Soportadas
+
+- **KEXP (Seattle, USA)**: Obtiene información en tiempo real de la canción en reproducción.
+- **Radio Paradise**: Proporciona metadatos detallados de la programación musical.
+- **FIP (Francia)**: Muestra información de la programación actual.
+- **NTS Radio**: Incluye detalles del show y canción actual.
+
+Para más detalles sobre cómo implementar nuevas APIs de estaciones, consulta el archivo `METADATA_APIS.md`.
+
+## Logo y Assets
+
+- **Logo principal**: `public/logo.svg` (200x200px)
+- **Favicon**: `public/favicon.ico`
+
+### Generar PNG desde SVG
+
+Para generar archivos PNG desde el SVG, puedes usar:
+
+```bash
+# Generar logo192.png
+convert -resize 192x192 logo.svg logo192.png
+
+# Generar logo512.png
+convert -resize 512x512 logo.svg logo512.png
+```
+
 ## Empezando
 
 ### Requisitos

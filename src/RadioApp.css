@@ -313,9 +313,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.cover-with-controls {
   transition: transform var(--motion-medium) var(--ease-braun),
     opacity var(--motion-medium) var(--ease-braun);
 }
@@ -397,12 +394,11 @@
 
 @keyframes shadow-pulse {
   0%, 100% {
-    box-shadow: 0 var(--size-border-thin) 0.1875rem var(--color-shadow-light),
-      0 0 0 rgba(0, 0, 0, 0);
+    box-shadow: 0 var(--size-border-thin) 0.1875rem var(--color-shadow-light);
   }
   50% {
-    box-shadow: 0 var(--size-border-medium) var(--space-sm) var(--color-shadow-medium),
-      0 0 var(--space-md) var(--color-shadow);
+    box-shadow: 0 0.5rem 1.5rem var(--color-shadow-medium),
+                0 0 var(--space-md) var(--color-shadow);
   }
 }
 
@@ -432,7 +428,7 @@
 
 .city-sky-image {
   filter: grayscale(100%);
-  opacity: 0.7;
+  opacity: var(--opacity-medium);
 }
 
 /* Indicador de tap suave en el centro - réplica del wave-indicator */
@@ -821,33 +817,5 @@
   font-weight: 300;
   color: var(--color-braun-orange);
   line-height: 1;
-  opacity: 0.9;
-}
-
-@keyframes swipe-slide-left {
-  0% {
-    opacity: 0;
-    transform: translateY(-50%) translateX(30px);
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-50%) translateX(-30px);
-  }
-}
-
-@keyframes swipe-slide-right {
-  0% {
-    opacity: 0;
-    transform: translateY(-50%) translateX(-30px);
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-50%) translateX(30px);
-  }
+  opacity: var(--opacity-medium);
 }
