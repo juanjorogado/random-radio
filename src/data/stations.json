@@ -29,38 +29,12 @@
     "logo": "https://upload.wikimedia.org/wikipedia/commons/5/5e/Dublab_logo.png"
   },
   {
-    "id": "resonance",
-    "name": "Resonance FM",
-    "country": "UK",
-    "city": "London",
-    "timezone": "Europe/London",
-    "stream": "https://stream.resonance.fm/resonance",
-    "logo": "https://resonancefm.com/wp-content/uploads/2020/02/resonance-logo-black.png"
-  },
-  {
     "id": "nts-2",
     "name": "NTS 2",
     "country": "UK",
     "city": "London",
     "timezone": "Europe/London",
     "stream": "https://stream-mixtape-geo.ntslive.net/mixtape2"
-  },
-  {
-    "id": "wfmu",
-    "name": "WFMU",
-    "country": "USA",
-    "city": "New Jersey",
-    "timezone": "America/New_York",
-    "stream": "https://wfmu.streamguys1.com/wfmu-freeform",
-    "logo": "https://wfmu.org/images/wfmu-logo.png"
-  },
-  {
-    "id": "radio-x",
-    "name": "Radio X",
-    "country": "UK",
-    "city": "London",
-    "timezone": "Europe/London",
-    "stream": "https://media-ice.musicradio.com/RadioXUK"
   },
   {
     "id": "france-inter",
@@ -110,12 +84,4 @@
     "timezone": "Europe/Rome",
     "stream": "https://icestreaming.rai.it/3.mp3"
   },
-  {
-    "id": "radio-deejay",
-    "name": "Radio Deejay",
-    "country": "Italy",
-    "city": "Milan",
-    "timezone": "Europe/Rome",
-    "stream": "https://deejay-radio-lh.akamaihd.net/i/RadioDeejay_1@183719/master.m3u8"
-  }
 ]
