@@ -47,7 +47,22 @@ export function useAlbumCover(artist, album) {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
-        // iTunes puede devolver text/javascript, pero es JSON válido
+        // iTunes puede devolver text/javascript o application/json, ambos son JSON válido
+        const contentType = res.headers.get('content-type') || '';
+        if (contentType.includes('json') || contentType.includes('javascript')) {
+          // Intentar parsear como JSON directamente
+          return res.json().catch(() => {
+            // Si falla, intentar como texto
+            return res.text().then(text => {
+              try {
+                return JSON.parse(text);
+              } catch (e) {
+                throw new Error('Invalid JSON response');
+              }
+            });
+          });
+        }
+        // Si no es JSON, intentar parsear como texto
         return res.text().then(text => {
           try {
             return JSON.parse(text);
