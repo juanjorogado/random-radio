@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react';
 
 /**
  * Hook para obtener imagen de cielo/nubes basada en el clima actual de la ciudad
- * Usa Nano Banana para generar imágenes de cielo y nubes
+ * Usa Gemini API con Nano Banana para generar imágenes de cielo y nubes
  */
+const GEMINI_API_KEY = process.env.REACT_APP_GEMINI_API_KEY || 'AIzaSyD1nXG0h60NJiJhtgxiZhFbDZyN7mTDLyM';
 const OPENWEATHER_API_KEY = process.env.REACT_APP_OPENWEATHER_API_KEY || '';
 const OPENWEATHER_BASE_URL = 'https://api.openweathermap.org/data/2.5';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent';
 
 /**
- * Mapea condiciones climáticas a prompts para Nano Banana
+ * Mapea condiciones climáticas a prompts para generación de imágenes
  */
 function getWeatherPrompt(weatherMain, weatherDescription, city, country) {
   const main = weatherMain?.toLowerCase() || '';
@@ -62,31 +64,74 @@ export function useWeatherSkyImage(city, country) {
     let timeoutId;
     let hasSetImage = false;
     
-    // Función para generar imagen con Nano Banana
-    const generateNanoBananaImage = (prompt) => {
+    // Función para generar imagen con Gemini API (Nano Banana)
+    const generateImage = (prompt) => {
       if (isCancelled || hasSetImage) return;
       
-      const encodedPrompt = encodeURIComponent(prompt);
-      // Nano Banana API - usar formato correcto de URL
-      // Intentar con api.nano-banana.com según documentación
-      const nanoBananaUrl = `https://api.nano-banana.com/generate?prompt=${encodedPrompt}&width=800&height=800&aspect_ratio=1:1`;
-      
-      // Establecer la URL directamente
-      // Nano Banana genera la imagen on-demand
-      if (!isCancelled && !hasSetImage) {
-        hasSetImage = true;
-        setImageUrl(nanoBananaUrl);
-        setLoading(false);
-      }
+      // Llamar a la API de Gemini para generar imagen con Nano Banana
+      fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: `Generate a photorealistic image: ${prompt}. The image must be square (1:1 aspect ratio), 800x800 pixels, showing only sky and clouds, no ground, no buildings, no other elements.`
+            }]
+          }],
+          generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 1024,
+          }
+        })
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (isCancelled || hasSetImage) return;
+          
+          // Gemini API devuelve la imagen en base64
+          const candidate = data.candidates?.[0];
+          const part = candidate?.content?.parts?.[0];
+          
+          if (part?.inlineData?.data) {
+            // Imagen en base64
+            const imageData = part.inlineData.data;
+            const mimeType = part.inlineData.mimeType || 'image/png';
+            const imageUrl = `data:${mimeType};base64,${imageData}`;
+            
+            if (!isCancelled && !hasSetImage) {
+              hasSetImage = true;
+              setImageUrl(imageUrl);
+              setLoading(false);
+            }
+          } else {
+            // Si no hay imagen, usar fallback
+            loadGenericFallback();
+          }
+        })
+        .catch(() => {
+          // Si falla, usar fallback
+          if (!isCancelled && !hasSetImage) {
+            loadGenericFallback();
+          }
+        });
     };
     
-    // Función fallback: usar Nano Banana para generar imagen de cielo y nubes
+    // Función fallback: generar imagen de cielo y nubes
     const loadGenericFallback = () => {
       if (hasSetImage || isCancelled) return;
       
-      // Generar prompt para Nano Banana basado en la ciudad
+      // Generar prompt basado en la ciudad
       const prompt = `beautiful sky with clouds${cleanCity ? `, ${cleanCity}` : ''}${cleanCountry ? `, ${cleanCountry}` : ''}, cinematic, photorealistic, 1:1 aspect ratio`;
-      generateNanoBananaImage(prompt);
+      generateImage(prompt);
     };
     
     // Si no hay API key de OpenWeatherMap, usar fallback genérico inmediatamente
@@ -122,8 +167,8 @@ export function useWeatherSkyImage(city, country) {
         // Obtener prompt basado en el clima
         const prompt = getWeatherPrompt(weatherMain, weatherDescription, cleanCity, cleanCountry);
         
-        // Generar imagen con Nano Banana
-        generateNanoBananaImage(prompt);
+        // Generar imagen
+        generateImage(prompt);
       })
       .catch(() => {
         // Si falla, usar fallback genérico
