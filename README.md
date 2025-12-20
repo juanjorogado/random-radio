@@ -25,17 +25,16 @@ La app incluye soporte para reconocimiento automático de audio usando ACRCloud 
 
 ### Configuración:
 
-1. Regístrate en [ACRCloud](https://www.acrcloud.com/) y obtén tus credenciales
+1. Regístrate en [ACRCloud](https://www.acrcloud.com/) y obtén tu Bearer Token
 2. Crea un archivo `.env` en la raíz del proyecto:
 
 ```bash
-REACT_APP_ACRCLOUD_ACCESS_KEY=tu_access_key
-REACT_APP_ACRCLOUD_ACCESS_SECRET=tu_access_secret
+REACT_APP_ACRCLOUD_BEARER_TOKEN=tu_bearer_token_aqui
 ```
 
 3. Reinicia el servidor de desarrollo
 
-**Nota:** ACRCloud es completamente opcional. Si no configuras las credenciales, la app funcionará normalmente usando solo la metadata de las APIs de las radios.
+**Nota:** ACRCloud es completamente opcional. Si no configuras el token, la app funcionará normalmente usando solo la metadata de las APIs de las radios.
 
 ## Tecnologías
 

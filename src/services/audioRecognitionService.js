@@ -4,9 +4,7 @@
 
 // Configuración de ACRCloud
 const ACRCLOUD_CONFIG = {
-  host: 'identify-eu-west-1.acrcloud.com',
-  access_key: process.env.REACT_APP_ACRCLOUD_ACCESS_KEY || '',
-  access_secret: process.env.REACT_APP_ACRCLOUD_ACCESS_SECRET || '',
+  bearerToken: process.env.REACT_APP_ACRCLOUD_BEARER_TOKEN || '',
   endpoint: 'https://eu-api-v2.acrcloud.com/api/external-metadata/tracks'
 };
 
@@ -62,54 +60,16 @@ async function captureAudioFromStream(audioElement, durationMs = 10000) {
 }
 
 /**
- * Genera la firma HMAC requerida por ACRCloud
- */
-async function generateSignature(audioData, timestamp) {
-  const { access_key, access_secret } = ACRCLOUD_CONFIG;
-  
-  const stringToSign = [
-    'POST',
-    '/v1/identify',
-    access_key,
-    'audio',
-    '1',
-    timestamp
-  ].join('\n');
-  
-  try {
-    const encoder = new TextEncoder();
-    const key = await crypto.subtle.importKey(
-      'raw',
-      encoder.encode(access_secret),
-      { name: 'HMAC', hash: 'SHA-1' },
-      false,
-      ['sign']
-    );
-    
-    const signature = await crypto.subtle.sign(
-      'HMAC',
-      key,
-      encoder.encode(stringToSign)
-    );
-    
-    return btoa(String.fromCharCode(...new Uint8Array(signature)));
-  } catch (error) {
-    console.error('Error generando firma:', error);
-    return '';
-  }
-}
-
-/**
  * Reconoce la canción usando ACRCloud
  * @param {HTMLAudioElement} audioElement - Elemento de audio reproduciendo
  * @returns {Promise<Object|null>} Información del track o null si no se reconoce
  */
 export async function recognizeTrack(audioElement) {
-  const { host, access_key, access_secret } = ACRCLOUD_CONFIG;
+  const { bearerToken, endpoint } = ACRCLOUD_CONFIG;
   
-  // Verificar que tengamos las credenciales
-  if (!access_key || !access_secret) {
-    console.warn('ACRCloud: Credenciales no configuradas');
+  // Verificar que tengamos el token
+  if (!bearerToken) {
+    console.warn('ACRCloud: Bearer token no configurado');
     return null;
   }
   
@@ -119,51 +79,44 @@ export async function recognizeTrack(audioElement) {
     const audioBlob = await captureAudioFromStream(audioElement, 10000);
     
     // Preparar datos para ACRCloud
-    const timestamp = Math.floor(Date.now() / 1000);
-    const signature = await generateSignature(audioBlob, timestamp);
-    
     const formData = new FormData();
-    formData.append('sample', audioBlob, 'audio.webm');
-    formData.append('access_key', access_key);
-    formData.append('data_type', 'audio');
-    formData.append('signature_version', '1');
-    formData.append('signature', signature);
-    formData.append('sample_bytes', audioBlob.size.toString());
-    formData.append('timestamp', timestamp.toString());
+    formData.append('audio', audioBlob, 'audio.webm');
     
-    // Enviar a ACRCloud
+    // Enviar a ACRCloud con Bearer Token
     console.log('🎵 ACRCloud: Enviando para reconocimiento...');
-    const response = await fetch(`https://${host}/v1/identify`, {
+    const response = await fetch(endpoint, {
       method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${bearerToken}`
+      },
       body: formData
     });
     
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`ACRCloud error ${response.status}:`, errorText);
       throw new Error(`ACRCloud error: ${response.status}`);
     }
     
     const data = await response.json();
+    console.log('🎵 ACRCloud respuesta:', data);
     
-    // Parsear respuesta
-    if (data.status?.code === 0 && data.metadata?.music?.length > 0) {
-      const track = data.metadata.music[0];
+    // Parsear respuesta de ACRCloud External Metadata API
+    if (data && data.data && data.data.length > 0) {
+      const track = data.data[0];
       console.log('✅ ACRCloud: Canción reconocida', track);
       
       return {
-        title: track.title || '',
-        artist: track.artists?.[0]?.name || '',
-        album: track.album?.name || '',
+        title: track.name || track.title || '',
+        artist: track.artists?.[0]?.name || track.artist || '',
+        album: track.album?.name || track.album || '',
         year: track.release_date ? new Date(track.release_date).getFullYear() : null,
-        cover: track.album?.cover || null,
+        cover: track.album?.cover || track.cover_image || null,
         // Información adicional que podría ser útil
-        isrc: track.external_ids?.isrc || null,
+        isrc: track.isrc || null,
         duration: track.duration_ms || null,
-        spotify: track.external_metadata?.spotify?.track?.id 
-          ? `https://open.spotify.com/track/${track.external_metadata.spotify.track.id}`
-          : null,
-        appleMusic: track.external_metadata?.apple_music?.track?.id
-          ? `https://music.apple.com/track/${track.external_metadata.apple_music.track.id}`
-          : null
+        spotify: track.external_ids?.spotify || null,
+        appleMusic: track.external_ids?.apple_music || null
       };
     } else {
       console.log('❌ ACRCloud: No se pudo reconocer la canción');
@@ -180,6 +133,6 @@ export async function recognizeTrack(audioElement) {
  * @returns {boolean}
  */
 export function isACRCloudConfigured() {
-  return !!(ACRCLOUD_CONFIG.access_key && ACRCLOUD_CONFIG.access_secret);
+  return !!ACRCLOUD_CONFIG.bearerToken;
 }
 
