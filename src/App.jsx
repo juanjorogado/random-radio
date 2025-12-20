@@ -40,7 +40,7 @@ function RadioApp() {
   const { history, addTrack } = useTrackHistory();
 
   // Metadata hook
-  const { currentTrack } = useMetadata(currentStation, audioRef, (track, station) => {
+  const { currentTrack } = useMetadata(currentStation, (track, station) => {
     addTrack(track, station);
   });
 
