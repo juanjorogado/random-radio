@@ -62,9 +62,11 @@ function RadioApp() {
         const stationExists = stations.find(s => s.id === lastStation.id);
         if (stationExists) {
           // Pequeño delay para asegurar que el audio está listo
-          setTimeout(() => {
+          const initTimeout = setTimeout(() => {
             playStation(stationExists);
           }, 100);
+          
+          return () => clearTimeout(initTimeout);
         }
       }
       setIsInitialized(true);

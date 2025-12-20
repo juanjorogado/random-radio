@@ -53,7 +53,7 @@ export default function HistoryDrawer({
           </p>
         ) : (
           history.map((track, index) => (
-            <div key={index} className="history-item">
+            <div key={`${track.title}-${track.artist}-${track.time}-${index}`} className="history-item">
               <div className="history-info">
                 <div className="history-title">
                   {track.appleMusicLink ? (

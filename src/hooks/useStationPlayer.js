@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 import stations from '../data/stations.json';
 import { saveLastStation } from '../utils/lastStationStorage';
 import { playSoundFeedback } from '../utils/soundFeedback';
@@ -16,6 +16,26 @@ const MAX_RETRY_DELAY = 8000;
 export function useStationPlayer(audioPlayer, onPlaySuccess) {
   const startingRef = useRef(false);
   const retryTimeoutRef = useRef(null);
+  const bufferingTimeoutRef = useRef(null);
+  const completeTimeoutRef = useRef(null);
+
+  // Limpiar timeouts al desmontar el componente
+  useEffect(() => {
+    return () => {
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
+        retryTimeoutRef.current = null;
+      }
+      if (bufferingTimeoutRef.current) {
+        clearTimeout(bufferingTimeoutRef.current);
+        bufferingTimeoutRef.current = null;
+      }
+      if (completeTimeoutRef.current) {
+        clearTimeout(completeTimeoutRef.current);
+        completeTimeoutRef.current = null;
+      }
+    };
+  }, []);
 
   const {
     setSource,
@@ -32,10 +52,24 @@ export function useStationPlayer(audioPlayer, onPlaySuccess) {
   const playStation = useCallback((station, retryAttempt = 0, triedStations = new Set()) => {
     if (startingRef.current && retryAttempt === 0) return;
     
+    // Limpiar timeout anterior si existe
+    if (retryTimeoutRef.current) {
+      clearTimeout(retryTimeoutRef.current);
+      retryTimeoutRef.current = null;
+    }
+    
     startingRef.current = true;
     setTapTransitioning(true);
     
-    setTimeout(() => {
+    // Limpiar timeouts anteriores
+    if (bufferingTimeoutRef.current) {
+      clearTimeout(bufferingTimeoutRef.current);
+    }
+    if (completeTimeoutRef.current) {
+      clearTimeout(completeTimeoutRef.current);
+    }
+    
+    bufferingTimeoutRef.current = setTimeout(() => {
       setBuffering(true);
     }, 500);
 
@@ -43,11 +77,18 @@ export function useStationPlayer(audioPlayer, onPlaySuccess) {
     setSource(station.stream);
 
     const handlePlaySuccess = () => {
+      if (bufferingTimeoutRef.current) {
+        clearTimeout(bufferingTimeoutRef.current);
+        bufferingTimeoutRef.current = null;
+      }
+      
       setPlaying(true);
       setBufferingComplete(true);
-      setTimeout(() => {
+      
+      completeTimeoutRef.current = setTimeout(() => {
         setBuffering(false);
         setBufferingComplete(false);
+        completeTimeoutRef.current = null;
       }, 600);
       
       // Guardar última estación
@@ -66,6 +107,15 @@ export function useStationPlayer(audioPlayer, onPlaySuccess) {
     };
 
     const handlePlayError = () => {
+      if (bufferingTimeoutRef.current) {
+        clearTimeout(bufferingTimeoutRef.current);
+        bufferingTimeoutRef.current = null;
+      }
+      if (completeTimeoutRef.current) {
+        clearTimeout(completeTimeoutRef.current);
+        completeTimeoutRef.current = null;
+      }
+      
       setPlaying(false);
       setBuffering(false);
       setBufferingComplete(false);
@@ -160,10 +210,13 @@ export function useStationPlayer(audioPlayer, onPlaySuccess) {
       audioPlayer.pause();
       setPlaying(false);
     } else {
-      audioPlayer.play().catch(() => {
-        if (currentStation) playStation(currentStation);
-      });
-      setPlaying(true);
+      audioPlayer.play()
+        .then(() => {
+          setPlaying(true);
+        })
+        .catch(() => {
+          if (currentStation) playStation(currentStation);
+        });
     }
   }, [audioPlayer, setPlaying, playRandomStation, playStation]);
 

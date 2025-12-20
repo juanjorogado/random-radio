@@ -14,10 +14,16 @@ export function useAudioPlayer(audioRef) {
   const waitingHandlerRef = useRef(null);
   const playingHandlerRef = useRef(null);
   const canplayHandlerRef = useRef(null);
+  const bufferingTimeoutRef = useRef(null);
 
   // Configurar event listeners del audio
   useEffect(() => {
     waitingHandlerRef.current = () => {
+      // Limpiar timeout anterior si existe
+      if (bufferingTimeoutRef.current) {
+        clearTimeout(bufferingTimeoutRef.current);
+        bufferingTimeoutRef.current = null;
+      }
       setBuffering(true);
       setBufferingComplete(false);
       setTapTransitioning(false);
@@ -25,12 +31,26 @@ export function useAudioPlayer(audioRef) {
     
     playingHandlerRef.current = () => {
       setBufferingComplete(true);
-      setTimeout(() => setBuffering(false), 600);
+      // Limpiar timeout anterior si existe
+      if (bufferingTimeoutRef.current) {
+        clearTimeout(bufferingTimeoutRef.current);
+      }
+      bufferingTimeoutRef.current = setTimeout(() => {
+        setBuffering(false);
+        bufferingTimeoutRef.current = null;
+      }, 600);
     };
     
     canplayHandlerRef.current = () => {
       setBufferingComplete(true);
-      setTimeout(() => setBuffering(false), 600);
+      // Limpiar timeout anterior si existe
+      if (bufferingTimeoutRef.current) {
+        clearTimeout(bufferingTimeoutRef.current);
+      }
+      bufferingTimeoutRef.current = setTimeout(() => {
+        setBuffering(false);
+        bufferingTimeoutRef.current = null;
+      }, 600);
     };
     
     const audio = audioRef.current;
@@ -45,6 +65,11 @@ export function useAudioPlayer(audioRef) {
         audio.removeEventListener('waiting', waitingHandlerRef.current);
         audio.removeEventListener('playing', playingHandlerRef.current);
         audio.removeEventListener('canplay', canplayHandlerRef.current);
+      }
+      // Limpiar timeout al desmontar
+      if (bufferingTimeoutRef.current) {
+        clearTimeout(bufferingTimeoutRef.current);
+        bufferingTimeoutRef.current = null;
       }
     };
   }, [audioRef]);
