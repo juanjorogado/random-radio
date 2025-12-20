@@ -39,7 +39,7 @@ export function useAlbumCover(artist, album) {
     fetch(`${ITUNES_BASE_URL}?${params.toString()}`, {
       signal: controller.signal,
       headers: {
-        'Accept': 'application/json'
+        'Accept': 'application/json, text/javascript, */*'
       }
     })
       .then(res => {
@@ -47,7 +47,14 @@ export function useAlbumCover(artist, album) {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
-        return res.json();
+        // iTunes puede devolver text/javascript, pero es JSON válido
+        return res.text().then(text => {
+          try {
+            return JSON.parse(text);
+          } catch (e) {
+            throw new Error('Invalid JSON response');
+          }
+        });
       })
       .then(data => {
         // iTunes devuelve results[0].artworkUrl100 o artworkUrl60

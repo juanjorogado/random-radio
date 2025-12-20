@@ -64,30 +64,6 @@
     "logo": "https://wfmu.org/images/wfmu-logo.png"
   },
   {
-    "id": "bbc-radio-1",
-    "name": "BBC Radio 1",
-    "country": "UK",
-    "city": "London",
-    "timezone": "Europe/London",
-    "stream": "https://stream.live.vc.bbcmedia.co.uk/bbc_radio_one"
-  },
-  {
-    "id": "bbc-radio-2",
-    "name": "BBC Radio 2",
-    "country": "UK",
-    "city": "London",
-    "timezone": "Europe/London",
-    "stream": "https://stream.live.vc.bbcmedia.co.uk/bbc_radio_two"
-  },
-  {
-    "id": "bbc-radio-6",
-    "name": "BBC Radio 6 Music",
-    "country": "UK",
-    "city": "London",
-    "timezone": "Europe/London",
-    "stream": "https://stream.live.vc.bbcmedia.co.uk/bbc_6music"
-  },
-  {
     "id": "radio-x",
     "name": "Radio X",
     "country": "UK",
