@@ -46,15 +46,6 @@
     "stream": "https://stream-mixtape-geo.ntslive.net/mixtape2"
   },
   {
-    "id": "radio-alhara",
-    "name": "Radio AlHara",
-    "country": "Palestina",
-    "city": "Bethlehem",
-    "timezone": "Asia/Jerusalem",
-    "stream": "https://radioalhara.out.airtime.pro/radioalhara_a",
-    "logo": "https://radioalhara.net/wp-content/uploads/2020/04/cropped-radio-alhara-logo-black.png"
-  },
-  {
     "id": "wfmu",
     "name": "WFMU",
     "country": "USA",
