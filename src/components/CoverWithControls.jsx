@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import AlbumCover from './AlbumCover';
 import TapIndicator from './TapIndicator';
 import BufferingIndicator from './BufferingIndicator';
+import { hapticFeedback } from '../utils/hapticFeedback';
 
 const MIN_SWIPE_DISTANCE = 50;
 const MAX_VERTICAL_DISTANCE = 100;
@@ -58,10 +59,12 @@ export default function CoverWithControls({
 
     // Pull down - deslizar hacia abajo
     if (!isSwipe.current && deltaY > MIN_PULL_DOWN_DISTANCE && absDeltaY > absDeltaX && onPullDown) {
+      hapticFeedback('medium');
       onPullDown();
     }
     // Swipe horizontal
     else if (isSwipe.current && absDeltaX > MIN_SWIPE_DISTANCE && absDeltaY < MAX_VERTICAL_DISTANCE) {
+      hapticFeedback('light');
       if (deltaX < 0 && onSwipeLeft) {
         onSwipeLeft();
       } else if (deltaX > 0 && onSwipeRight) {

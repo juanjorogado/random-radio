@@ -1,4 +1,5 @@
 import { useRef, useCallback } from 'react';
+import { hapticFeedback } from '../utils/hapticFeedback';
 
 const DOUBLE_TAP_DELAY = 300;
 
@@ -25,6 +26,9 @@ export function useCoverTap(onSingleTap, onDoubleTap) {
         tapTimeoutRef.current = null;
       }
       
+      // Feedback háptico para doble tap
+      hapticFeedback('medium');
+      
       if (onDoubleTap) {
         onDoubleTap();
       }
@@ -33,6 +37,10 @@ export function useCoverTap(onSingleTap, onDoubleTap) {
     } else {
       // Primer tap, esperar para ver si hay segundo
       lastTapRef.current = now;
+      
+      // Feedback háptico inmediato en el primer tap
+      hapticFeedback('light');
+      
       tapTimeoutRef.current = setTimeout(() => {
         // Si pasó el tiempo sin segundo tap, es un tap simple
         if (lastTapRef.current === now) {
@@ -47,3 +55,4 @@ export function useCoverTap(onSingleTap, onDoubleTap) {
 
   return handleCoverTap;
 }
+
