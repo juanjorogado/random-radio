@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 import './RadioApp.css';
 import StationHeader from './components/StationHeader';
@@ -39,10 +39,13 @@ function RadioApp() {
   // Track history hook
   const { history, addTrack } = useTrackHistory();
 
-  // Metadata hook
-  const { currentTrack } = useMetadata(currentStation, (track, station) => {
+  // Callback estable para actualizar track
+  const handleTrackUpdate = useCallback((track, station) => {
     addTrack(track, station);
-  });
+  }, [addTrack]);
+
+  // Metadata hook
+  const { currentTrack } = useMetadata(currentStation, handleTrackUpdate);
 
   // Station player hook
   const { playStation, playRandomStation, playNextStation, playPreviousStation, togglePlay } = useStationPlayer(
@@ -72,9 +75,9 @@ function RadioApp() {
   useWakeLock(playing);
 
   // Cover tap handler
-  const handleTap = () => {
+  const handleTap = useCallback(() => {
     togglePlay(currentStation, playing);
-  };
+  }, [togglePlay, currentStation, playing]);
 
   const handleCoverTap = useCoverTap(handleTap);
 
@@ -85,11 +88,18 @@ function RadioApp() {
   }, []);
 
   // Swipe handlers para cambiar estación
-  const handleSwipeLeft = () => currentStation ? playNextStation(currentStation.id) : playRandomStation();
-  const handleSwipeRight = () => currentStation ? playPreviousStation(currentStation.id) : playRandomStation();
+  const handleSwipeLeft = useCallback(() => {
+    currentStation ? playNextStation(currentStation.id) : playRandomStation();
+  }, [currentStation, playNextStation, playRandomStation]);
+  
+  const handleSwipeRight = useCallback(() => {
+    currentStation ? playPreviousStation(currentStation.id) : playRandomStation();
+  }, [currentStation, playPreviousStation, playRandomStation]);
   
   // Pull down para cargar nueva estación aleatoria
-  const handlePullDown = () => playRandomStation(currentStation?.id);
+  const handlePullDown = useCallback(() => {
+    playRandomStation(currentStation?.id);
+  }, [playRandomStation, currentStation]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -120,7 +130,7 @@ function RadioApp() {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [currentStation, playing]);
+  }, [handleTap, handleSwipeLeft, handleSwipeRight]);
 
   return (
     <div className="radio-app">

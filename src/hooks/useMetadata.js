@@ -59,7 +59,8 @@ export function useMetadata(station, onTrackUpdate) {
         clearInterval(metadataTimerRef.current);
       }
     };
-  }, [station?.id, onTrackUpdate]); // Solo actualizar cuando cambia el ID de la estación
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [station?.id]); // onTrackUpdate está envuelto en useCallback y no cambia
 
   return { currentTrack };
 }
