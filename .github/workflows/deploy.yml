@@ -26,6 +26,16 @@ jobs:
 
       - name: Build
         run: npm run build
+        continue-on-error: false
+
+      - name: Verify build output
+        run: |
+          if [ ! -d "build" ]; then
+            echo "Error: build directory not found"
+            exit 1
+          fi
+          echo "Build directory contents:"
+          ls -la build/
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
@@ -33,4 +43,5 @@ jobs:
           folder: build
           branch: gh-pages
           clean: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+          git-config-name: "GitHub Actions"
+          git-config-email: "actions@github.com"
