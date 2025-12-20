@@ -24,21 +24,33 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          echo "Installing dependencies..."
+          npm ci
+          echo "Dependencies installed successfully"
 
       - name: Build
-        run: npm run build
+        run: |
+          echo "Starting build..."
+          npm run build
+          echo "Build completed successfully"
 
       - name: Verify build output
         run: |
+          echo "Verifying build output..."
           if [ ! -d "build" ]; then
-            echo "Error: build directory not found"
+            echo "ERROR: build directory not found"
             exit 1
           fi
+          echo "Build directory exists"
           echo "Build directory contents:"
           ls -la build/
-          echo "Checking for index.html:"
-          ls -la build/index.html || echo "ERROR: index.html not found!"
+          if [ ! -f "build/index.html" ]; then
+            echo "ERROR: index.html not found in build directory"
+            exit 1
+          fi
+          echo "index.html found"
+          echo "Build verification successful"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -46,3 +58,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build
+          cname: false
