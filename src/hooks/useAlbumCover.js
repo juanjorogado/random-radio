@@ -36,13 +36,12 @@ export function useAlbumCover(artist, album) {
       limit: '1'
     });
 
-    // Usar un proxy CORS para evitar problemas de redirección
-    // Alternativamente, usar directamente la API con manejo de errores mejorado
+    // Usar proxy CORS para evitar problemas de redirección a protocolos no válidos
     const fetchUrl = `${ITUNES_BASE_URL}?${params.toString()}`;
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(fetchUrl)}`;
     
-    fetch(fetchUrl, {
+    fetch(proxyUrl, {
       signal: controller.signal,
-      redirect: 'error', // No seguir redirecciones para evitar protocolos no válidos
       headers: {
         'Accept': 'application/json, text/javascript, */*'
       }
