@@ -133,28 +133,101 @@ export function useWeatherSkyImage(city, country) {
         });
     };
     
-    // Función fallback genérica
+    // Función fallback: siempre buscar cielo y nubes en Pexels
     const loadGenericFallback = () => {
       if (hasSetImage || isCancelled) return;
-      const seed = (cleanCity + cleanCountry).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      const fallbackUrl = `https://picsum.photos/seed/${seed}/800/800`;
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => {
-        if (!isCancelled && !hasSetImage) {
-          hasSetImage = true;
-          setImageUrl(fallbackUrl);
-          setLoading(false);
+      
+      // Términos de búsqueda solo para cielo y nubes
+      const skyTerms = ['sky clouds', 'cloudy sky', 'blue sky clouds', 'sky'];
+      
+      const tryFallbackSearch = (termIndex = 0) => {
+        if (isCancelled || hasSetImage || termIndex >= skyTerms.length) {
+          if (!hasSetImage && !isCancelled) {
+            hasSetImage = true;
+            setImageUrl(null);
+            setLoading(false);
+          }
+          return;
         }
+        
+        const query = skyTerms[termIndex];
+        const encodedQuery = encodeURIComponent(query);
+        const pexelsUrl = `${PEXELS_BASE_URL}/search?query=${encodedQuery}&orientation=square&per_page=1&size=large`;
+        
+        fetch(pexelsUrl, {
+          headers: {
+            'Authorization': PEXELS_API_KEY
+          }
+        })
+          .then(response => {
+            if (!response.ok) {
+              if (termIndex < skyTerms.length - 1) {
+                tryFallbackSearch(termIndex + 1);
+              } else {
+                if (!isCancelled && !hasSetImage) {
+                  hasSetImage = true;
+                  setImageUrl(null);
+                  setLoading(false);
+                }
+              }
+              return null;
+            }
+            return response.json();
+          })
+          .then(data => {
+            if (!data || isCancelled || hasSetImage) return;
+            
+            const photo = data.photos?.[0];
+            const url = photo?.src?.large || photo?.src?.medium || null;
+            
+            if (url) {
+              const img = new Image();
+              img.crossOrigin = 'anonymous';
+              img.onload = () => {
+                if (!isCancelled && !hasSetImage) {
+                  hasSetImage = true;
+                  setImageUrl(url);
+                  setLoading(false);
+                }
+              };
+              img.onerror = () => {
+                if (termIndex < skyTerms.length - 1) {
+                  tryFallbackSearch(termIndex + 1);
+                } else {
+                  if (!isCancelled && !hasSetImage) {
+                    hasSetImage = true;
+                    setImageUrl(null);
+                    setLoading(false);
+                  }
+                }
+              };
+              img.src = url;
+            } else {
+              if (termIndex < skyTerms.length - 1) {
+                tryFallbackSearch(termIndex + 1);
+              } else {
+                if (!isCancelled && !hasSetImage) {
+                  hasSetImage = true;
+                  setImageUrl(null);
+                  setLoading(false);
+                }
+              }
+            }
+          })
+          .catch(() => {
+            if (termIndex < skyTerms.length - 1) {
+              tryFallbackSearch(termIndex + 1);
+            } else {
+              if (!isCancelled && !hasSetImage) {
+                hasSetImage = true;
+                setImageUrl(null);
+                setLoading(false);
+              }
+            }
+          });
       };
-      img.onerror = () => {
-        if (!isCancelled && !hasSetImage) {
-          hasSetImage = true;
-          setImageUrl(null);
-          setLoading(false);
-        }
-      };
-      img.src = fallbackUrl;
+      
+      tryFallbackSearch();
     };
     
     // Si no hay API key de OpenWeatherMap, usar búsqueda genérica
