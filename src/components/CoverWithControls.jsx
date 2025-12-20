@@ -1,8 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import AlbumCover from './AlbumCover';
 import TapIndicator from './TapIndicator';
 import BufferingIndicator from './BufferingIndicator';
-import SwipeFeedback from './SwipeFeedback';
 
 const MIN_SWIPE_DISTANCE = 50;
 const MAX_VERTICAL_DISTANCE = 100;
@@ -24,14 +23,12 @@ export default function CoverWithControls({
   const touchStartX = useRef(null);
   const touchStartY = useRef(null);
   const gestureDetected = useRef(false);
-  const [swipeDirection, setSwipeDirection] = useState(null);
 
   const handleTouchStart = (e) => {
     const touch = e.touches[0];
     touchStartX.current = touch.clientX;
     touchStartY.current = touch.clientY;
     gestureDetected.current = false;
-    setSwipeDirection(null);
   };
 
   const handleTouchMove = (e) => {
@@ -56,10 +53,8 @@ export default function CoverWithControls({
       gestureDetected.current = true;
       
       if (deltaX < 0 && onSwipeLeft) {
-        setSwipeDirection('left');
         onSwipeLeft();
       } else if (deltaX > 0 && onSwipeRight) {
-        setSwipeDirection('right');
         onSwipeRight();
       }
     }
@@ -108,8 +103,6 @@ export default function CoverWithControls({
       {(buffering || bufferingComplete) && (
         <BufferingIndicator complete={bufferingComplete} />
       )}
-      
-      <SwipeFeedback direction={swipeDirection} />
     </div>
   );
 }
