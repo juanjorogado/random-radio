@@ -36,7 +36,7 @@ export default function AlbumCover({ src, stationId, stationName, city, country,
   );
   const albumCoverStatus = useImageStatus(albumCoverUrl);
   const stationLogoStatus = useImageStatus(stationLogo);
-  const { imageUrl: cityImageUrl, loading: cityImageLoading } = useCityImage(city, country);
+  const { imageUrl: cityImageUrl } = useCityImage(city, country);
   const cityImageStatus = useImageStatus(cityImageUrl);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
