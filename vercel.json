@@ -1,7 +1,13 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
+  "git": {
+    "deploymentEnabled": {
+      "main": true
+    }
+  },
+  "buildCommand": "npm install && npm run build",
   "outputDirectory": "build",
+  "installCommand": "npm install",
   "rewrites": [
     {
       "source": "/(.*)",
