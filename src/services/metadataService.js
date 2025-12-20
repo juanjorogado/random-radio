@@ -38,7 +38,7 @@ export async function fetchMetadata(station) {
     }
 
     const contentType = res.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
+    if (!contentType || (!contentType.includes('application/json') && !contentType.includes('json'))) {
       throw new Error(`Respuesta no es JSON - ${station.name}`);
     }
 
@@ -119,53 +119,6 @@ function parseKEXP(data) {
     album: play.album || '',
     year: play.release_date ? new Date(play.release_date).getFullYear() : null,
     cover: play.thumbnail_uri || null
-  };
-}
-
-/**
- * Parsea metadatos de Radio Paradise
- */
-function parseRadioParadise(data) {
-  if (!data.title) {
-    return {
-      title: 'Información no disponible',
-      artist: '',
-      album: '',
-      year: null,
-      cover: null
-    };
-  }
-
-  return {
-    title: data.title,
-    artist: data.artist || '',
-    album: data.album || '',
-    year: data.year || null,
-    cover: data.cover ? `https://img.radioparadise.com/${data.cover}` : null
-  };
-}
-
-/**
- * Parsea metadatos de FIP
- */
-function parseFIP(data) {
-  const now = data?.now;
-  if (!now) {
-    return {
-      title: 'Sin título',
-      artist: '',
-      album: '',
-      year: null,
-      cover: null
-    };
-  }
-
-  return {
-    title: now.secondLine || now.firstLine || 'Sin título',
-    artist: now.firstLine || '',
-    album: '',
-    year: null,
-    cover: now.cover || null
   };
 }
 
