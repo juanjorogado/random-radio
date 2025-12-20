@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 
 /**
  * Hook para debounce de valores
@@ -6,26 +6,33 @@ import { useEffect, useRef } from 'react';
  * @param {number} delay - Tiempo de espera en ms
  * @param {Array} dependencies - Dependencias que activan el debounce
  */
-export function useDebounce(callback, delay, dependencies) {
+export function useDebounce(callback, delay, dependencies = []) {
   const timeoutRef = useRef(null);
+  
+  // Memoize the callback to prevent unnecessary re-renders
+  const memoizedCallback = useCallback(
+    (...args) => callback(...args),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [callback, ...dependencies]
+  );
 
   useEffect(() => {
-    // Limpiar timeout anterior
+    // Clear previous timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
 
-    // Crear nuevo timeout
+    // Set new timeout
     timeoutRef.current = setTimeout(() => {
-      callback();
+      memoizedCallback();
     }, delay);
 
-    // Cleanup
+    // Cleanup function
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, dependencies);
+  }, [memoizedCallback, delay]); // Add delay to dependencies
 }
 
