@@ -7,8 +7,8 @@ import { useState, useEffect, useRef } from 'react';
 const GEMINI_API_KEY = process.env.REACT_APP_GEMINI_API_KEY || 'AIzaSyD1nXG0h60NJiJhtgxiZhFbDZyN7mTDLyM';
 const OPENWEATHER_API_KEY = process.env.REACT_APP_OPENWEATHER_API_KEY || '';
 const OPENWEATHER_BASE_URL = 'https://api.openweathermap.org/data/2.5';
-// Usar el modelo correcto para generación de imágenes
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent';
+// Usar el modelo correcto para generación de imágenes: gemini-2.5-flash-image
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent';
 
 // Caché en memoria para evitar llamadas repetidas
 const imageCache = new Map();
@@ -163,16 +163,10 @@ export function useWeatherSkyImage(city, country) {
             }]
           }],
           generationConfig: {
-            responseMimeType: "image/jpeg",
-            responseSchema: {
-              type: "object",
-              properties: {
-                image: {
-                  type: "string",
-                  description: "Base64 encoded JPEG image"
-                }
-              }
-            }
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 1024,
           }
         })
       })
