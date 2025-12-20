@@ -7,7 +7,8 @@ import { useState, useEffect, useRef } from 'react';
 const GEMINI_API_KEY = process.env.REACT_APP_GEMINI_API_KEY || 'AIzaSyD1nXG0h60NJiJhtgxiZhFbDZyN7mTDLyM';
 const OPENWEATHER_API_KEY = process.env.REACT_APP_OPENWEATHER_API_KEY || '';
 const OPENWEATHER_BASE_URL = 'https://api.openweathermap.org/data/2.5';
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent';
+// Usar el modelo correcto para generación de imágenes
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent';
 
 // Caché en memoria para evitar llamadas repetidas
 const imageCache = new Map();
@@ -162,16 +163,31 @@ export function useWeatherSkyImage(city, country) {
             }]
           }],
           generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 1024,
             responseMimeType: "image/jpeg",
+            responseSchema: {
+              type: "object",
+              properties: {
+                image: {
+                  type: "string",
+                  description: "Base64 encoded JPEG image"
+                }
+              }
+            }
           }
         })
       })
-        .then(response => {
+        .then(async response => {
           if (!response.ok) {
+            // Intentar obtener el mensaje de error del body
+            let errorMessage = `HTTP error! status: ${response.status}`;
+            try {
+              const errorData = await response.json();
+              errorMessage = errorData.error?.message || errorData.message || errorMessage;
+              console.error('Gemini API error:', errorData);
+            } catch (e) {
+              // Si no se puede parsear el error, usar el mensaje por defecto
+            }
+            
             // Si es error 429, incrementar contador y deshabilitar si es necesario
             if (response.status === 429) {
               geminiRateLimitCount++;
@@ -180,7 +196,7 @@ export function useWeatherSkyImage(city, country) {
                 console.warn('Gemini API rate limit exceeded, disabling for 1 hour');
               }
             }
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(errorMessage);
           }
           // Si la respuesta es exitosa, resetear el contador
           geminiRateLimitCount = 0;
@@ -189,14 +205,37 @@ export function useWeatherSkyImage(city, country) {
         .then(data => {
           if (isCancelled || hasSetImage) return;
           
-          // Gemini API devuelve la imagen en base64
-          const candidate = data.candidates?.[0];
-          const part = candidate?.content?.parts?.[0];
+          // Gemini API puede devolver la imagen de diferentes formas
+          let imageData = null;
+          let mimeType = 'image/jpeg';
           
-          if (part?.inlineData?.data) {
-            // Imagen en base64
-            const imageData = part.inlineData.data;
-            const mimeType = part.inlineData.mimeType || 'image/png';
+          // Intentar obtener la imagen del responseSchema (estructura JSON)
+          if (data.image) {
+            imageData = data.image;
+          } 
+          // Intentar obtener de candidates (estructura inlineData)
+          else {
+            const candidate = data.candidates?.[0];
+            const part = candidate?.content?.parts?.[0];
+            
+            if (part?.inlineData?.data) {
+              imageData = part.inlineData.data;
+              mimeType = part.inlineData.mimeType || 'image/jpeg';
+            } else if (part?.text) {
+              // Si viene como texto base64
+              try {
+                const parsed = JSON.parse(part.text);
+                if (parsed.image) {
+                  imageData = parsed.image;
+                }
+              } catch (e) {
+                // Si no es JSON, puede ser base64 directo
+                imageData = part.text;
+              }
+            }
+          }
+          
+          if (imageData) {
             const imageUrl = `data:${mimeType};base64,${imageData}`;
             
             if (!isCancelled && !hasSetImage) {
@@ -212,6 +251,7 @@ export function useWeatherSkyImage(city, country) {
             }
           } else {
             // Si no hay imagen, usar fallback
+            console.warn('No image data received from Gemini API:', data);
             requestInProgressRef.current = false;
             loadGenericFallback();
           }
