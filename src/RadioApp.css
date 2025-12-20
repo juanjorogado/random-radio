@@ -469,7 +469,7 @@
 }
 
 .weather-sky-image {
-  filter: grayscale(0%);
+  filter: grayscale(100%);
   opacity: var(--opacity-full);
 }
 

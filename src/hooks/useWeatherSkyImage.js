@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 
 /**
  * Hook para obtener imagen de cielo/nubes basada en el clima actual de la ciudad
- * Usa Pollinations.ai para generar imágenes de cielo y nubes
+ * Usa Nano Banana para generar imágenes de cielo y nubes
  */
 const OPENWEATHER_API_KEY = process.env.REACT_APP_OPENWEATHER_API_KEY || '';
 const OPENWEATHER_BASE_URL = 'https://api.openweathermap.org/data/2.5';
 
 /**
- * Mapea condiciones climáticas a prompts para Pollinations.ai
+ * Mapea condiciones climáticas a prompts para Nano Banana
  */
 function getWeatherPrompt(weatherMain, weatherDescription, city, country) {
   const main = weatherMain?.toLowerCase() || '';
@@ -62,30 +62,30 @@ export function useWeatherSkyImage(city, country) {
     let timeoutId;
     let hasSetImage = false;
     
-    // Función para generar imagen con Pollinations.ai
-    const generatePollinationsImage = (prompt) => {
+    // Función para generar imagen con Nano Banana
+    const generateNanoBananaImage = (prompt) => {
       if (isCancelled || hasSetImage) return;
       
       const encodedPrompt = encodeURIComponent(prompt);
-      // Usar formato correcto de Pollinations.ai
-      const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=800&height=800&model=flux&nologo=true&enhance=true`;
+      // Nano Banana API - formato de URL para generación de imágenes
+      const nanoBananaUrl = `https://api.nanobanana.ai/generate?prompt=${encodedPrompt}&width=800&height=800&aspect_ratio=1:1`;
       
-      // Establecer la URL directamente sin esperar a que cargue
-      // Pollinations.ai genera la imagen on-demand, así que la URL es válida
+      // Establecer la URL directamente
+      // Nano Banana genera la imagen on-demand
       if (!isCancelled && !hasSetImage) {
         hasSetImage = true;
-        setImageUrl(pollinationsUrl);
+        setImageUrl(nanoBananaUrl);
         setLoading(false);
       }
     };
     
-    // Función fallback: usar Pollinations.ai para generar imagen de cielo y nubes
+    // Función fallback: usar Nano Banana para generar imagen de cielo y nubes
     const loadGenericFallback = () => {
       if (hasSetImage || isCancelled) return;
       
-      // Generar prompt para Pollinations.ai basado en la ciudad
+      // Generar prompt para Nano Banana basado en la ciudad
       const prompt = `beautiful sky with clouds${cleanCity ? `, ${cleanCity}` : ''}${cleanCountry ? `, ${cleanCountry}` : ''}, cinematic, photorealistic, 1:1 aspect ratio`;
-      generatePollinationsImage(prompt);
+      generateNanoBananaImage(prompt);
     };
     
     // Si no hay API key de OpenWeatherMap, usar fallback genérico inmediatamente
@@ -121,8 +121,8 @@ export function useWeatherSkyImage(city, country) {
         // Obtener prompt basado en el clima
         const prompt = getWeatherPrompt(weatherMain, weatherDescription, cleanCity, cleanCountry);
         
-        // Generar imagen con Pollinations.ai
-        generatePollinationsImage(prompt);
+        // Generar imagen con Nano Banana
+        generateNanoBananaImage(prompt);
       })
       .catch(() => {
         // Si falla, usar fallback genérico
