@@ -831,33 +831,3 @@
     height: 100%;
   }
 }
-/* ============================================
-   SWIPE FEEDBACK
-   ============================================ */
-
-.swipe-feedback {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 100;
-  pointer-events: none;
-  animation: swipe-fade 0.4s ease-braun;
-}
-
-.swipe-feedback.swipe-left {
-  right: 10%;
-  animation: swipe-slide-left 0.4s ease-braun;
-}
-
-.swipe-feedback.swipe-right {
-  left: 10%;
-  animation: swipe-slide-right 0.4s ease-braun;
-}
-
-.swipe-arrow {
-  font-size: 80px;
-  font-weight: 300;
-  color: var(--color-braun-orange);
-  line-height: 1;
-  opacity: var(--opacity-medium);
-}
