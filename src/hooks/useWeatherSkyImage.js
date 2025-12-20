@@ -67,45 +67,16 @@ export function useWeatherSkyImage(city, country) {
       if (isCancelled || hasSetImage) return;
       
       const encodedPrompt = encodeURIComponent(prompt);
-      const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=800&height=800&model=flux&nologo=true`;
+      // Usar formato correcto de Pollinations.ai
+      const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=800&height=800&model=flux&nologo=true&enhance=true`;
       
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      
-      img.onload = () => {
-        if (!isCancelled && !hasSetImage) {
-          hasSetImage = true;
-          setImageUrl(pollinationsUrl);
-          setLoading(false);
-        }
-      };
-      
-      img.onerror = () => {
-        // Si falla, intentar con un prompt más simple
-        const simplePrompt = 'beautiful sky with clouds, cinematic, photorealistic, 1:1 aspect ratio';
-        const simpleEncoded = encodeURIComponent(simplePrompt);
-        const simpleUrl = `https://image.pollinations.ai/prompt/${simpleEncoded}?width=800&height=800&model=flux&nologo=true`;
-        
-        const fallbackImg = new Image();
-        fallbackImg.crossOrigin = 'anonymous';
-        fallbackImg.onload = () => {
-          if (!isCancelled && !hasSetImage) {
-            hasSetImage = true;
-            setImageUrl(simpleUrl);
-            setLoading(false);
-          }
-        };
-        fallbackImg.onerror = () => {
-          if (!isCancelled && !hasSetImage) {
-            hasSetImage = true;
-            setImageUrl(null);
-            setLoading(false);
-          }
-        };
-        fallbackImg.src = simpleUrl;
-      };
-      
-      img.src = pollinationsUrl;
+      // Establecer la URL directamente sin esperar a que cargue
+      // Pollinations.ai genera la imagen on-demand, así que la URL es válida
+      if (!isCancelled && !hasSetImage) {
+        hasSetImage = true;
+        setImageUrl(pollinationsUrl);
+        setLoading(false);
+      }
     };
     
     // Función fallback: usar Pollinations.ai para generar imagen de cielo y nubes
@@ -117,15 +88,9 @@ export function useWeatherSkyImage(city, country) {
       generatePollinationsImage(prompt);
     };
     
-    // Si no hay API key de OpenWeatherMap, usar fallback genérico
+    // Si no hay API key de OpenWeatherMap, usar fallback genérico inmediatamente
     if (!OPENWEATHER_API_KEY) {
       loadGenericFallback();
-      
-      timeoutId = setTimeout(() => {
-        if (!isCancelled && !hasSetImage) {
-          loadGenericFallback();
-        }
-      }, 8000);
       
       return () => {
         isCancelled = true;
@@ -166,12 +131,12 @@ export function useWeatherSkyImage(city, country) {
         }
       });
     
-    // Timeout de 10 segundos
+    // Timeout de 5 segundos - si no hay respuesta del clima, usar fallback
     timeoutId = setTimeout(() => {
       if (!isCancelled && !hasSetImage) {
         loadGenericFallback();
       }
-    }, 10000);
+    }, 5000);
     
     return () => {
       isCancelled = true;
